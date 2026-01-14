@@ -23,7 +23,7 @@
                     <UFormField label="人机验证" :error="capError">
                         <div
                             class="cap-wrapper w-full overflow-hidden rounded-lg border border-slate-800 bg-slate-900/40">
-                            <cap-widget :data-cap-api-endpoint="capApiEndpoint" @solve="handleCapSolve" />
+                            <cap-widget :data-cap-api-endpoint="api" @solve="handleCapSolve" />
                         </div>
                     </UFormField>
                 </client-only>
@@ -50,22 +50,34 @@ import Cap from '@cap.js/widget'
 const form = reactive({ email: '', password: '' })
 const loading = ref(false)
 const capToken = ref('')
-const capError = ref('')
-const capApiEndpoint = '/api/cap'
+const api = '/api/cap/'
+const toast = useToast()
 
 const handleCapSolve = (e) => {
     capToken.value = e.detail.token
-    capError.value = ''
+    console.log('CAP Solved, token:', capToken.value)
 }
 
 const handleLogin = async () => {
     loading.value = true
     try {
-        console.log('Login Info:', { ...form, token: capToken.value })
-        await new Promise(resolve => setTimeout(resolve, 1500))
-        navigateTo('/dashboard')
+        const loginResponse = await $fetch('/api/auth/login', {
+            method: 'POST',
+            body: {
+                ...form,
+                token: capToken.value,
+            },
+        })
+        toast.add({
+            title: 'Login success',
+            color: 'success'
+        })
     } catch (err) {
-        capError.value = '登录失败，请重试'
+        toast.add({
+            title: 'Login failed',
+            description: err.data?.message || 'An error occurred during login.',
+            color: 'error'
+        })
     } finally {
         loading.value = false
     }
