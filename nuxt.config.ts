@@ -9,7 +9,12 @@ export default defineNuxtConfig({
   },
   routeRules: {
     '/api/v1/**': { 
-      proxy: 'http://localhost:5100/api/**' 
+      proxy: 'http://localhost:5170/api/**' 
+    }
+  },
+  vue: {
+    compilerOptions: {
+      isCustomElement: (tag) => tag.startsWith('cap-')
     }
   }
 })

@@ -20,7 +20,7 @@
                 </UFormField>
 
                 <client-only>
-                    <UFormField label="人机验证" :error="capError">
+                    <UFormField label="人机验证">
                         <div
                             class="cap-wrapper w-full overflow-hidden rounded-lg border border-slate-800 bg-slate-900/40">
                             <cap-widget :data-cap-api-endpoint="api" @solve="handleCapSolve" />
@@ -61,11 +61,11 @@ const handleCapSolve = (e) => {
 const handleLogin = async () => {
     loading.value = true
     try {
-        const loginResponse = await $fetch('/api/auth/login', {
+        const loginResponse = await $fetch('/api/v1/login', {
             method: 'POST',
             body: {
                 ...form,
-                token: capToken.value,
+                captcha_token: capToken.value,
             },
         })
         toast.add({
