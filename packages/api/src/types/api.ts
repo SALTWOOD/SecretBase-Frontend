@@ -6,7 +6,7 @@ export abstract class API {
     protected constructor(
         path: string,
         public readonly method: Method,
-        public readonly params: Record<string, unknown>,
+        public readonly data: Record<string, unknown>,
         public readonly headers?: Record<string, string>,
     ) {
         this.path = `/api/v1${path}`;

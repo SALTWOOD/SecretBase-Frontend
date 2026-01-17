@@ -1,5 +1,5 @@
-import { API } from "../types/api";
-import { Method } from "../types/method";
+import { API } from "../../types/api";
+import { Method } from "../../types/method";
 
 export class PostLogin extends API {
     constructor(params: {
@@ -7,7 +7,7 @@ export class PostLogin extends API {
         password: string;
         captcha_token: string;
     }) {
-        super("/login", Method.POST, params);
+        super("/auth/login", Method.POST, params);
     }
 }
 

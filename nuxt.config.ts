@@ -9,7 +9,7 @@ export default defineNuxtConfig({
   },
   routeRules: {
     '/api/v1/**': { 
-      proxy: 'http://localhost:5170/api/**' 
+      proxy: 'http://localhost:5170/api/v1/**' 
     }
   },
   vue: {
