@@ -46,8 +46,7 @@
 
 <script setup lang="ts">
 import '@cap.js/widget'
-import { useRequester } from '~/composables/useRequester'
-import { PostLogin, type PostLoginResponse } from '@secret-base/api/src/api/auth/login.post'
+import { postAuthLogin } from '@secret-base/api/src/sdk.gen'
 
 const form = reactive({ email: '', password: '' })
 const loading = ref(false)
@@ -68,26 +67,20 @@ const handleCapReset = (...rest: any[]) => {
 
 const handleLogin = async () => {
     loading.value = true
-    try {
-        const response = await useRequester().execute<PostLoginResponse>(new PostLogin({
+    const response = await postAuthLogin({
+        body: {
             email: form.email,
             password: form.password,
-            captcha_token: capToken.value
-        }));
-        console.log('Login response:', response);
+            captchaToken: capToken.value
+        }
+    })
+    if (!response.error) {
         toast.add({
             title: 'Login success',
             color: 'success'
         })
-    } catch (err) {
-        toast.add({
-            title: 'Login failed',
-            description: (err as { message?: string })?.message || 'An error occurred during login.',
-            color: 'error'
-        })
-    } finally {
-        loading.value = false
     }
+    loading.value = false
 }
 </script>
 
