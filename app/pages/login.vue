@@ -60,7 +60,7 @@ const handleCapSolve = (e: CustomEvent) => {
     console.log('CAP Solved, token:', capToken.value)
 }
 
-const handleCapReset = (...rest: any[]) => {
+const handleCapReset = () => {
     capToken.value = ''
     console.log('CAP Expired')
 }
