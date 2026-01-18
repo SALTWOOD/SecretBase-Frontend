@@ -23,7 +23,7 @@
                     <UFormField label="人机验证">
                         <div
                             class="cap-wrapper w-full overflow-hidden rounded-lg border border-slate-800 bg-slate-900/40">
-                            <cap-widget :data-cap-api-endpoint="api" @solve="handleCapSolve" />
+                            <cap-widget :data-cap-api-endpoint="api" @solve="handleCapSolve" @reset="handleCapReset" />
                         </div>
                     </UFormField>
                 </client-only>
@@ -55,9 +55,15 @@ const capToken = ref('')
 const api = '/api/cap/'
 const toast = useToast()
 
-const handleCapSolve = (e) => {
+const handleCapSolve = (e: CustomEvent) => {
     capToken.value = e.detail.token
+    console.log(e);
     console.log('CAP Solved, token:', capToken.value)
+}
+
+const handleCapReset = (...rest: any[]) => {
+    capToken.value = ''
+    console.log('CAP Expired')
 }
 
 const handleLogin = async () => {
@@ -76,7 +82,7 @@ const handleLogin = async () => {
     } catch (err) {
         toast.add({
             title: 'Login failed',
-            description: err?.message || 'An error occurred during login.',
+            description: (err as { message?: string })?.message || 'An error occurred during login.',
             color: 'error'
         })
     } finally {
