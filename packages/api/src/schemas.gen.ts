@@ -21,3 +21,32 @@ export const AuthLoginModelSchema = {
         }
     }
 } as const;
+
+export const IFormFileSchema = {
+    type: 'string',
+    format: 'binary'
+} as const;
+
+export const UpdateProfileModelSchema = {
+    type: 'object',
+    properties: {
+        newPassword: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        username: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        oldPassword: {
+            type: [
+                'null',
+                'string'
+            ]
+        }
+    }
+} as const;

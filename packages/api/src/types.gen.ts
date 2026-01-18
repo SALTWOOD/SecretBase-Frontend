@@ -10,6 +10,14 @@ export type AuthLoginModel = {
     captchaToken?: null | string;
 };
 
+export type IFormFile = Blob | File;
+
+export type UpdateProfileModel = {
+    newPassword?: null | string;
+    username?: null | string;
+    oldPassword?: null | string;
+};
+
 export type PostAuthLoginData = {
     body: AuthLoginModel;
     path?: never;
@@ -24,14 +32,58 @@ export type PostAuthLoginResponses = {
     200: unknown;
 };
 
-export type GetUserInfoData = {
+export type PostAuthRenewData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/User/info';
+    url: '/Auth/renew';
 };
 
-export type GetUserInfoResponses = {
+export type PostAuthRenewResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type GetUserProfileData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/User/profile';
+};
+
+export type GetUserProfileResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type PostUserProfileData = {
+    body: UpdateProfileModel;
+    path?: never;
+    query?: never;
+    url: '/User/profile';
+};
+
+export type PostUserProfileResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type PostUserAvatarData = {
+    body: {
+        file?: IFormFile;
+    };
+    path?: never;
+    query?: never;
+    url: '/User/avatar';
+};
+
+export type PostUserAvatarResponses = {
     /**
      * OK
      */
