@@ -113,7 +113,7 @@ const refresh = () => {
 </script>
 
 <style scoped>
-@reference "../../assets/css/main.css";
+@reference "~/assets/css/main.css";
 
 .glass-card {
   @apply bg-slate-900/40 backdrop-blur-xl border-slate-800 shadow-xl;
