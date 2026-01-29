@@ -48,8 +48,8 @@
           <UButton variant="ghost" color="neutral" block class="justify-start px-2">
             <UAvatar src="https://github.com/nuxt.png" size="sm" />
             <div class="text-left ml-2 overflow-hidden">
-              <p class="text-sm font-bold text-white truncate">Admin User</p>
-              <p class="text-xs text-slate-500 truncate">admin@secret.base</p>
+              <p class="text-sm font-bold text-white truncate">{{ user?.name }}</p>
+              <p class="text-xs text-slate-500 truncate">{{ user?.email }}</p>
             </div>
           </UButton>
         </UDropdown>
@@ -75,6 +75,11 @@
 <script setup lang="ts">
 const route = useRoute()
 const isAdmin = ref(true)
+const user = reactive({
+  name: 'Akarin',
+  email: 'akarin@secret.base'
+})
+const userStore = useUserStore()
 
 const navigationGroups = computed(() => [
   {
@@ -113,7 +118,7 @@ const isGroupActive = (group: any) => {
 }
 
 const breadcrumbItems = computed(() => {
-  const flatItems = navigationGroups.value.flatMap(g => g.type === 'single' ? [g] : g.items)
+  const flatItems = navigationGroups.value.flatMap((g: any) => g.type === 'single' ? [{ label: g.label, icon: g.icon, path: g.path }] : (g.items || []))
   const current = flatItems.find(i => i.path === route.path)
 
   return [
@@ -126,6 +131,13 @@ const userMenu = [
   [{ label: '个人设置', icon: 'i-heroicons-cog-8-tooth', to: '/dash/user/profile' }],
   [{ label: '退出登录', icon: 'i-heroicons-arrow-right-on-rectangle', color: 'red' as const, click: () => console.log('Logout') }]
 ]
+
+onMounted(() => {
+  if (userStore.user) {
+    user.name = userStore.user.username
+    user.email = userStore.user.email
+  }
+})
 </script>
 
 <style scoped>
@@ -133,7 +145,7 @@ const userMenu = [
 
 .admin-layout { @apply min-h-screen flex bg-slate-950 text-slate-300; }
 .sidebar { @apply w-64 border-r border-slate-900 bg-slate-950/80 backdrop-blur-xl flex flex-col sticky top-0 h-screen; }
-.brand-area { @apply p-6 text-center font-black tracking-tighter text-xl italic text-white border-b border-slate-900; }
+.brand-area { @apply p-6 text-center font-black tracking-tighter text-xl text-white border-b border-slate-900; }
 .content-wrapper { @apply flex-1 flex flex-col min-w-0; }
 .top-nav { @apply h-16 border-b border-slate-900 px-8 flex items-center justify-between bg-slate-950/50 backdrop-blur-md sticky top-0 z-10; }
 </style>

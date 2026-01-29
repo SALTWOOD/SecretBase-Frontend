@@ -7,7 +7,7 @@ export default defineAppConfig({
     },
     button: {
       slots: {
-        base: 'transition-all duration-200 font-bold active:scale-95 italic',
+        base: 'transition-all duration-200 font-bold active:scale-95',
         root: 'rounded-xl'
       },
       variants: {
