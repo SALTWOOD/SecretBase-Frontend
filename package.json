@@ -11,7 +11,7 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "api:gen": "openapi-ts"
+    "gen:api": "openapi-ts"
   },
   "dependencies": {
     "@cap.js/server": "^4.0.5",
