@@ -2,7 +2,8 @@
 
 import { type Client, formDataBodySerializer, type Options as Options2, type TDataShape } from './client';
 import { client } from './client.gen';
-import type { GetUserProfileData, GetUserProfileResponses, PostAuthLoginData, PostAuthLoginResponses, PostAuthRenewData, PostAuthRenewResponses, PostUserAvatarData, PostUserAvatarResponses, PostUserProfileData, PostUserProfileResponses } from './types.gen';
+import { getUserProfileResponseTransformer, postAuthLoginResponseTransformer, postAuthRenewResponseTransformer } from './transformers.gen';
+import type { GetUserProfileData, GetUserProfileResponses, PostAuthLoginData, PostAuthLoginErrors, PostAuthLoginResponses, PostAuthRenewData, PostAuthRenewErrors, PostAuthRenewResponses, PostUserAvatarData, PostUserAvatarResponses, PostUserProfileData, PostUserProfileErrors, PostUserProfileResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -18,7 +19,8 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
     meta?: Record<string, unknown>;
 };
 
-export const postAuthLogin = <ThrowOnError extends boolean = false>(options: Options<PostAuthLoginData, ThrowOnError>) => (options.client ?? client).post<PostAuthLoginResponses, unknown, ThrowOnError>({
+export const postAuthLogin = <ThrowOnError extends boolean = false>(options: Options<PostAuthLoginData, ThrowOnError>) => (options.client ?? client).post<PostAuthLoginResponses, PostAuthLoginErrors, ThrowOnError>({
+    responseTransformer: postAuthLoginResponseTransformer,
     url: '/Auth/login',
     ...options,
     headers: {
@@ -27,11 +29,19 @@ export const postAuthLogin = <ThrowOnError extends boolean = false>(options: Opt
     }
 });
 
-export const postAuthRenew = <ThrowOnError extends boolean = false>(options?: Options<PostAuthRenewData, ThrowOnError>) => (options?.client ?? client).post<PostAuthRenewResponses, unknown, ThrowOnError>({ url: '/Auth/renew', ...options });
+export const postAuthRenew = <ThrowOnError extends boolean = false>(options?: Options<PostAuthRenewData, ThrowOnError>) => (options?.client ?? client).post<PostAuthRenewResponses, PostAuthRenewErrors, ThrowOnError>({
+    responseTransformer: postAuthRenewResponseTransformer,
+    url: '/Auth/renew',
+    ...options
+});
 
-export const getUserProfile = <ThrowOnError extends boolean = false>(options?: Options<GetUserProfileData, ThrowOnError>) => (options?.client ?? client).get<GetUserProfileResponses, unknown, ThrowOnError>({ url: '/User/profile', ...options });
+export const getUserProfile = <ThrowOnError extends boolean = false>(options?: Options<GetUserProfileData, ThrowOnError>) => (options?.client ?? client).get<GetUserProfileResponses, unknown, ThrowOnError>({
+    responseTransformer: getUserProfileResponseTransformer,
+    url: '/User/profile',
+    ...options
+});
 
-export const postUserProfile = <ThrowOnError extends boolean = false>(options: Options<PostUserProfileData, ThrowOnError>) => (options.client ?? client).post<PostUserProfileResponses, unknown, ThrowOnError>({
+export const postUserProfile = <ThrowOnError extends boolean = false>(options: Options<PostUserProfileData, ThrowOnError>) => (options.client ?? client).post<PostUserProfileResponses, PostUserProfileErrors, ThrowOnError>({
     url: '/User/profile',
     ...options,
     headers: {

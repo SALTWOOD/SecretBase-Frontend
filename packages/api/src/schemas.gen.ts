@@ -22,9 +22,34 @@ export const AuthLoginModelSchema = {
     }
 } as const;
 
+export const AuthResponseSchema = {
+    type: 'object',
+    properties: {
+        message: {
+            type: 'string'
+        },
+        user: {
+            $ref: '#/components/schemas/UserTable'
+        },
+        expires: {
+            type: 'string',
+            format: 'date-time'
+        }
+    }
+} as const;
+
 export const IFormFileSchema = {
     type: 'string',
     format: 'binary'
+} as const;
+
+export const MessageResponseSchema = {
+    type: 'object',
+    properties: {
+        message: {
+            type: 'string'
+        }
+    }
 } as const;
 
 export const UpdateProfileModelSchema = {
@@ -43,6 +68,46 @@ export const UpdateProfileModelSchema = {
             ]
         },
         oldPassword: {
+            type: [
+                'null',
+                'string'
+            ]
+        }
+    }
+} as const;
+
+export const UserRoleSchema = {
+    type: 'integer'
+} as const;
+
+export const UserTableSchema = {
+    type: 'object',
+    properties: {
+        id: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        username: {
+            type: 'string'
+        },
+        email: {
+            type: 'string'
+        },
+        role: {
+            $ref: '#/components/schemas/UserRole'
+        },
+        isBanned: {
+            type: 'boolean'
+        },
+        registerTime: {
+            type: 'string',
+            format: 'date-time'
+        },
+        avatar: {
             type: [
                 'null',
                 'string'

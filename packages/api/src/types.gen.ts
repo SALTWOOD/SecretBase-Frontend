@@ -10,12 +10,34 @@ export type AuthLoginModel = {
     captchaToken?: null | string;
 };
 
+export type AuthResponse = {
+    message?: string;
+    user?: UserTable;
+    expires?: Date;
+};
+
 export type IFormFile = Blob | File;
+
+export type MessageResponse = {
+    message?: string;
+};
 
 export type UpdateProfileModel = {
     newPassword?: null | string;
     username?: null | string;
     oldPassword?: null | string;
+};
+
+export type UserRole = number;
+
+export type UserTable = {
+    id?: number | string;
+    username?: string;
+    email?: string;
+    role?: UserRole;
+    isBanned?: boolean;
+    registerTime?: Date;
+    avatar?: null | string;
 };
 
 export type PostAuthLoginData = {
@@ -25,12 +47,27 @@ export type PostAuthLoginData = {
     url: '/Auth/login';
 };
 
+export type PostAuthLoginErrors = {
+    /**
+     * Bad Request
+     */
+    400: MessageResponse;
+    /**
+     * Forbidden
+     */
+    403: MessageResponse;
+};
+
+export type PostAuthLoginError = PostAuthLoginErrors[keyof PostAuthLoginErrors];
+
 export type PostAuthLoginResponses = {
     /**
      * OK
      */
-    200: unknown;
+    200: AuthResponse;
 };
+
+export type PostAuthLoginResponse = PostAuthLoginResponses[keyof PostAuthLoginResponses];
 
 export type PostAuthRenewData = {
     body?: never;
@@ -39,12 +76,23 @@ export type PostAuthRenewData = {
     url: '/Auth/renew';
 };
 
+export type PostAuthRenewErrors = {
+    /**
+     * Unauthorized
+     */
+    401: MessageResponse;
+};
+
+export type PostAuthRenewError = PostAuthRenewErrors[keyof PostAuthRenewErrors];
+
 export type PostAuthRenewResponses = {
     /**
      * OK
      */
-    200: unknown;
+    200: AuthResponse;
 };
+
+export type PostAuthRenewResponse = PostAuthRenewResponses[keyof PostAuthRenewResponses];
 
 export type GetUserProfileData = {
     body?: never;
@@ -57,8 +105,10 @@ export type GetUserProfileResponses = {
     /**
      * OK
      */
-    200: unknown;
+    200: UserTable;
 };
+
+export type GetUserProfileResponse = GetUserProfileResponses[keyof GetUserProfileResponses];
 
 export type PostUserProfileData = {
     body: UpdateProfileModel;
@@ -67,12 +117,23 @@ export type PostUserProfileData = {
     url: '/User/profile';
 };
 
+export type PostUserProfileErrors = {
+    /**
+     * Bad Request
+     */
+    400: MessageResponse;
+};
+
+export type PostUserProfileError = PostUserProfileErrors[keyof PostUserProfileErrors];
+
 export type PostUserProfileResponses = {
     /**
      * OK
      */
-    200: unknown;
+    200: MessageResponse;
 };
+
+export type PostUserProfileResponse = PostUserProfileResponses[keyof PostUserProfileResponses];
 
 export type PostUserAvatarData = {
     body: {
@@ -87,5 +148,7 @@ export type PostUserAvatarResponses = {
     /**
      * OK
      */
-    200: unknown;
+    200: MessageResponse;
 };
+
+export type PostUserAvatarResponse = PostUserAvatarResponses[keyof PostUserAvatarResponses];
