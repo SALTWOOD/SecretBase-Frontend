@@ -136,11 +136,4 @@ const userMenu = [
 .brand-area { @apply p-6 text-center font-black tracking-tighter text-xl italic text-white border-b border-slate-900; }
 .content-wrapper { @apply flex-1 flex flex-col min-w-0; }
 .top-nav { @apply h-16 border-b border-slate-900 px-8 flex items-center justify-between bg-slate-950/50 backdrop-blur-md sticky top-0 z-10; }
-
-/* 页面切换动画 */
-.view-content { animation: slideUp 0.3s ease-out; }
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
-}
 </style>
