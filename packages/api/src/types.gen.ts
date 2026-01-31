@@ -16,10 +16,32 @@ export type AuthResponse = {
     expires?: Date;
 };
 
+export type CreateInvitationRequest = {
+    uses: number | string;
+    daysValid: number | string;
+};
+
 export type IFormFile = Blob | File;
+
+export type InviteTable = {
+    id?: number | string;
+    code?: string;
+    issuedBy?: number | string;
+    timeIssued?: Date;
+    remainingUses?: number | string;
+    issuer?: null | UserTable;
+};
 
 export type MessageResponse = {
     message?: string;
+};
+
+export type ProblemDetails = {
+    type?: null | string;
+    title?: null | string;
+    status?: null | number | string;
+    detail?: null | string;
+    instance?: null | string;
 };
 
 export type UpdateProfileModel = {
@@ -38,6 +60,113 @@ export type UserTable = {
     isBanned?: boolean;
     registerTime?: Date;
     avatar?: null | string;
+};
+
+export type PostAdminInvitationsData = {
+    body: CreateInvitationRequest;
+    path?: never;
+    query?: never;
+    url: '/Admin/invitations';
+};
+
+export type PostAdminInvitationsErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+};
+
+export type PostAdminInvitationsError = PostAdminInvitationsErrors[keyof PostAdminInvitationsErrors];
+
+export type PostAdminInvitationsResponses = {
+    /**
+     * Created
+     */
+    201: InviteTable;
+};
+
+export type PostAdminInvitationsResponse = PostAdminInvitationsResponses[keyof PostAdminInvitationsResponses];
+
+export type GetAdminUsersData = {
+    body?: never;
+    path?: never;
+    query?: {
+        page?: number | string;
+        size?: number | string;
+    };
+    url: '/Admin/users';
+};
+
+export type GetAdminUsersErrors = {
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+};
+
+export type GetAdminUsersError = GetAdminUsersErrors[keyof GetAdminUsersErrors];
+
+export type GetAdminUsersResponses = {
+    /**
+     * OK
+     */
+    200: Array<UserTable>;
+};
+
+export type GetAdminUsersResponse = GetAdminUsersResponses[keyof GetAdminUsersResponses];
+
+export type PutAdminUsersByIdStatusData = {
+    body: boolean;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/Admin/users/{id}/status';
+};
+
+export type PutAdminUsersByIdStatusErrors = {
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+};
+
+export type PutAdminUsersByIdStatusError = PutAdminUsersByIdStatusErrors[keyof PutAdminUsersByIdStatusErrors];
+
+export type PutAdminUsersByIdStatusResponses = {
+    /**
+     * No Content
+     */
+    204: unknown;
+};
+
+export type DeleteAdminInvitationsByCodeData = {
+    body?: never;
+    path: {
+        code: string;
+    };
+    query?: never;
+    url: '/Admin/invitations/{code}';
+};
+
+export type DeleteAdminInvitationsByCodeErrors = {
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+};
+
+export type DeleteAdminInvitationsByCodeError = DeleteAdminInvitationsByCodeErrors[keyof DeleteAdminInvitationsByCodeErrors];
+
+export type DeleteAdminInvitationsByCodeResponses = {
+    /**
+     * No Content
+     */
+    204: unknown;
 };
 
 export type PostAuthLoginData = {

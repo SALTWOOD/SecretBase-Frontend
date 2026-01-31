@@ -38,9 +38,82 @@ export const AuthResponseSchema = {
     }
 } as const;
 
+export const CreateInvitationRequestSchema = {
+    required: [
+        'uses',
+        'daysValid'
+    ],
+    type: 'object',
+    properties: {
+        uses: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        daysValid: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        }
+    }
+} as const;
+
 export const IFormFileSchema = {
     type: 'string',
     format: 'binary'
+} as const;
+
+export const InviteTableSchema = {
+    type: 'object',
+    properties: {
+        id: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        code: {
+            type: 'string'
+        },
+        issuedBy: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        timeIssued: {
+            type: 'string',
+            format: 'date-time'
+        },
+        remainingUses: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        issuer: {
+            oneOf: [
+                {
+                    type: 'null'
+                },
+                {
+                    $ref: '#/components/schemas/UserTable'
+                }
+            ]
+        }
+    }
 } as const;
 
 export const MessageResponseSchema = {
@@ -48,6 +121,45 @@ export const MessageResponseSchema = {
     properties: {
         message: {
             type: 'string'
+        }
+    }
+} as const;
+
+export const ProblemDetailsSchema = {
+    type: 'object',
+    properties: {
+        type: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        title: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        status: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'null',
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        detail: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        instance: {
+            type: [
+                'null',
+                'string'
+            ]
         }
     }
 } as const;
