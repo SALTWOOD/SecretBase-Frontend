@@ -6,110 +6,143 @@
         <p class="text-slate-400 text-sm mt-1">查看系统中的所有注册用户并管理其权限</p>
       </div>
       <div class="flex gap-2">
-        <UButton color="neutral" variant="subtle" icon="i-heroicons-arrow-path" @click="refresh">刷新</UButton>
+        <UButton color="neutral" variant="subtle" icon="i-heroicons-arrow-path" :loading="loading" @click="refresh">刷新
+        </UButton>
         <UButton color="primary" icon="i-heroicons-user-plus">新增用户</UButton>
       </div>
     </div>
 
     <UCard class="mb-6 bg-slate-900/20 border-slate-800">
       <div class="flex flex-wrap items-center gap-4">
-        <UInput 
-          v-model="search" 
-          placeholder="搜索用户名、邮箱..." 
-          icon="i-heroicons-magnifying-glass" 
-          class="w-full max-w-xs"
-        />
-        <USelectMenu 
-          v-model="selectedStatus" 
-          :options="['全部状态', 'Active', 'Inactive', 'Banned']" 
-          class="w-40" 
-        />
+        <UInput v-model="search" placeholder="搜索用户名、邮箱..." icon="i-heroicons-magnifying-glass"
+          class="w-full max-w-xs" />
+        <USelectMenu v-model="selectedStatus" :options="['全部状态', '正常', '已封禁']" class="w-40" />
       </div>
     </UCard>
 
-    <UCard class="glass-card overflow-hidden" :ui="{ body: { padding: 'p-0' } }">
-      <UTable :rows="filteredUsers" :columns="columns">
-        <template #name-cell="{ row }">
+    <UCard class="glass-card overflow-hidden">
+      <UTable :data="filteredUsers" :columns="columns" :loading="loading">
+
+        <template #username-cell="{ row }">
           <div class="flex items-center gap-3">
-            <UAvatar :src="row.getValue('avatar')" size="sm" />
+            <UAvatar :src="row.original.avatar ?? undefined" size="sm" />
             <div class="flex flex-col">
-              <span class="text-white font-medium">{{ row.getValue('name') }}</span>
+              <span class="text-white font-medium">{{ row.original.username }}</span>
               <span class="text-xs text-slate-500">{{ row.original.email }}</span>
             </div>
           </div>
         </template>
 
-        <template #status-cell="{ row }">
-          <UBadge 
-            :color="getStatusColor(row.getValue('status'))" 
-            variant="subtle" 
-            size="sm"
-            class="capitalize"
-          >
-            {{ row.getValue('status') }}
+        <template #role-cell="{ row }">
+          <UBadge variant="subtle" color="neutral" size="md">
+            {{ getRoleText(row.original.role) }}
+          </UBadge>
+        </template>
+
+        <template #isBanned-cell="{ row }">
+          <UBadge :color="row.original.isBanned ? 'error' : 'success'" variant="subtle" size="sm">
+            {{ row.original.isBanned ? '已封禁' : '正常' }}
           </UBadge>
         </template>
 
         <template #actions-cell="{ row }">
-          <UDropdown :items="getActionItems(row.original)">
+          <UDropdownMenu :items="getActionItems(row)" :content="{ align: 'end', sideOffset: 8 }">
             <UButton color="neutral" variant="ghost" icon="i-heroicons-ellipsis-horizontal" />
-          </UDropdown>
+          </UDropdownMenu>
         </template>
       </UTable>
     </UCard>
   </div>
 </template>
 
-<script setup>
-// 定义表格列 (符合 Nuxt UI v3 / TanStack 规范)
+<script lang="ts" setup>
+import type { User } from '~/types/user'
+import { getAdminUsers } from '~~/packages/api/src/sdk.gen'
+
+const toast = useToast()
+const loading = ref(false)
+const search = ref('')
+const selectedStatus = ref('全部状态')
+const users = ref<User[]>([])
+
 const columns = [
-  { accessorKey: 'name', header: '用户信息' },
-  { accessorKey: 'role', header: '角色' },
-  { accessorKey: 'status', header: '状态' },
-  { accessorKey: 'lastLogin', header: '最后登录' },
+  { accessorKey: 'username', header: '用户信息' },
+  { accessorKey: 'role', header: '权限' },
+  { accessorKey: 'isBanned', header: '状态' },
   { accessorKey: 'actions', header: '' }
 ]
 
-// 模拟数据
-const search = ref('')
-const selectedStatus = ref('全部状态')
-const users = ref([
-  { id: 1, name: 'Gemini', email: 'ai@google.com', role: 'Admin', status: 'Active', lastLogin: '2026-01-15', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Gemini' },
-  { id: 2, name: 'SaltWood', email: 'user@example.com', role: 'User', status: 'Active', lastLogin: '2026-01-14', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Salt' },
-  { id: 3, name: 'OldRobot', email: 'bot@legacy.com', role: 'User', status: 'Banned', lastLogin: '2025-12-01', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Robot' }
-])
-
-// 过滤逻辑
+// 核心修复：筛选逻辑 (字符串选项 -> 匹配布尔值)
 const filteredUsers = computed(() => {
   return users.value.filter(u => {
-    const matchesSearch = u.name.toLowerCase().includes(search.value.toLowerCase()) || u.email.includes(search.value)
-    const matchesStatus = selectedStatus.value === '全部状态' || u.status === selectedStatus.value
+    const searchStr = search.value.toLowerCase()
+    const matchesSearch = u.username.toLowerCase().includes(searchStr) ||
+      u.email.toLowerCase().includes(searchStr)
+
+    let matchesStatus = true
+    if (selectedStatus.value === '已封禁') matchesStatus = u.isBanned === true
+    if (selectedStatus.value === '正常') matchesStatus = u.isBanned === false
+
     return matchesSearch && matchesStatus
   })
 })
 
-// 状态颜色映射
-const getStatusColor = (status) => {
-  switch (status) {
-    case 'Active': return 'success'
-    case 'Banned': return 'error'
-    case 'Inactive': return 'neutral'
-    default: return 'primary'
+const getRoleText = (role: number) => {
+  const roles: Record<number, string> = { 2: '管理', 1: '用户', 0: '访客' }
+  return roles[role] || '未知'
+}
+
+// 菜单项定义
+const getActionItems = (row: any) => [
+  {
+    type: 'label' as const,
+    label: '操作菜单'
+  },
+  {
+    label: '编辑资料',
+    icon: 'i-heroicons-pencil-square',
+    onSelect: () => console.log('编辑', row.original)
+  },
+  {
+    label: '重置密码',
+    icon: 'i-heroicons-key',
+    onSelect: () => console.log('重置密码', row.original)
+  },
+  {
+    type: 'separator' as const
+  },
+  {
+    label: row.original.isBanned ? '解除封禁' : '封禁账户',
+    icon: 'i-heroicons-no-symbol',
+    color: 'error' as const,
+    onSelect: () => handleToggleBan(row.original)
+  }
+]
+
+const handleToggleBan = async (user: User) => {
+  // 这里调用你之前的 API 逻辑
+  console.log('Toggle Ban for:', user.username)
+  toast.add({ title: '操作发送成功', color: 'primary' })
+}
+
+const refresh = async () => {
+  loading.value = true
+  try {
+    const response = await getAdminUsers()
+    if (!response.error) {
+      // 适配 SDK 返回结构，如果是直接返回数组则 users.value = response.data
+      users.value = (response.data as any).users || response.data
+    }
+  } catch (e) {
+    toast.add({ title: '刷新失败', color: 'error' })
+  } finally {
+    loading.value = false
   }
 }
 
-// 操作菜单定义
-const getActionItems = (user) => [[
-  { label: '编辑资料', icon: 'i-heroicons-pencil-square' },
-  { label: '重置密码', icon: 'i-heroicons-key' }
-], [
-  { label: user.status === 'Banned' ? '解除封禁' : '封禁账户', icon: 'i-heroicons-no-symbol', color: 'error' }
-]]
-
-const refresh = () => {
-  // 这里以后可以写你的 API 调用逻辑
-  console.log('Refreshing user list...')
-}
+onMounted(() => {
+  refresh()
+})
 </script>
 
 <style scoped>
@@ -119,7 +152,6 @@ const refresh = () => {
   @apply bg-slate-900/40 backdrop-blur-xl border-slate-800 shadow-xl;
 }
 
-/* 即使使用了 Nuxt UI，一些细节仍可微调 */
 :deep(table) {
   @apply text-sm;
 }

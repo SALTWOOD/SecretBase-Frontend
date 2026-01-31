@@ -1,20 +1,5 @@
 import { defineStore } from "pinia";
-
-export enum UserRole {
-  GUEST = 0,
-  USER = 1,
-  ADMIN = 2
-}
-
-export interface User {
-  id: number | string;
-  username: string;
-  email: string;
-  role: UserRole;
-  isBanned: boolean;
-  registerTime: string | Date;
-  avatar?: string | null;
-}
+import type { User } from "~/types/user";
 
 const initialState = {
   user: null as User | null,
