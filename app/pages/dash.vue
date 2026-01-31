@@ -13,6 +13,7 @@
               :to="group.path"
               class="admin-sidebar-item"
               :[getMatchMode(group)]="'admin-sidebar-item-active'"
+              :hidden="group.hidden ?? false"
             >
               <UIcon :name="group.icon" class="w-5 h-5" />
               <span class="font-medium">{{ group.label }}</span>
@@ -105,7 +106,15 @@ const navigationGroups = computed(() => [
       { label: '邀请码管理', icon: 'i-heroicons-ticket', path: '/dash/admin/invites' },
       { label: '站点设置', icon: 'i-heroicons-cog-6-tooth', path: '/dash/admin/settings' }
     ]
-  }] : [])
+  }] : []),
+  {
+    type: 'single',
+    label: '控制台',
+    icon: 'i-heroicons-command-line',
+    path: '/dash/console',
+    exact: true,
+    hidden: true
+  },
 ])
 
 const getMatchMode = (item: any) => {
