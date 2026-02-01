@@ -41,7 +41,7 @@ export const AuthResponseSchema = {
 export const CreateInvitationRequestSchema = {
     required: [
         'uses',
-        'daysValid'
+        'hoursValid'
     ],
     type: 'object',
     properties: {
@@ -53,7 +53,7 @@ export const CreateInvitationRequestSchema = {
             ],
             format: 'int32'
         },
-        daysValid: {
+        hoursValid: {
             pattern: '^-?(?:0|[1-9]\\d*)$',
             type: [
                 'integer',
@@ -83,7 +83,7 @@ export const InviteTableSchema = {
         code: {
             type: 'string'
         },
-        issuedBy: {
+        creatorId: {
             pattern: '^-?(?:0|[1-9]\\d*)$',
             type: [
                 'integer',
@@ -91,11 +91,18 @@ export const InviteTableSchema = {
             ],
             format: 'int32'
         },
-        timeIssued: {
+        createdAt: {
             type: 'string',
             format: 'date-time'
         },
-        remainingUses: {
+        expireAt: {
+            type: [
+                'null',
+                'string'
+            ],
+            format: 'date-time'
+        },
+        maxUses: {
             pattern: '^-?(?:0|[1-9]\\d*)$',
             type: [
                 'integer',
@@ -103,7 +110,18 @@ export const InviteTableSchema = {
             ],
             format: 'int32'
         },
-        issuer: {
+        usedCount: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        isDisabled: {
+            type: 'boolean'
+        },
+        creator: {
             oneOf: [
                 {
                     type: 'null'
@@ -160,6 +178,34 @@ export const ProblemDetailsSchema = {
                 'null',
                 'string'
             ]
+        }
+    }
+} as const;
+
+export const UpdateInvitationRequestSchema = {
+    required: [
+        'uses',
+        'hoursValid'
+    ],
+    type: 'object',
+    properties: {
+        uses: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'null',
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        hoursValid: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'null',
+                'integer',
+                'string'
+            ],
+            format: 'int32'
         }
     }
 } as const;

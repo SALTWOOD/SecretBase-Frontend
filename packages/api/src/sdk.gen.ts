@@ -2,8 +2,8 @@
 
 import { type Client, formDataBodySerializer, type Options as Options2, type TDataShape } from './client';
 import { client } from './client.gen';
-import { getAdminInvitationsResponseTransformer, getAdminUsersResponseTransformer, getUserProfileResponseTransformer, postAdminInvitationsResponseTransformer, postAuthLoginResponseTransformer, postAuthRenewResponseTransformer } from './transformers.gen';
-import type { DeleteAdminInvitationsByCodeData, DeleteAdminInvitationsByCodeErrors, DeleteAdminInvitationsByCodeResponses, GetAdminInvitationsData, GetAdminInvitationsResponses, GetAdminUsersData, GetAdminUsersErrors, GetAdminUsersResponses, GetUserProfileData, GetUserProfileResponses, PostAdminInvitationsData, PostAdminInvitationsErrors, PostAdminInvitationsResponses, PostAuthLoginData, PostAuthLoginErrors, PostAuthLoginResponses, PostAuthRenewData, PostAuthRenewErrors, PostAuthRenewResponses, PostUserAvatarData, PostUserAvatarResponses, PostUserProfileData, PostUserProfileErrors, PostUserProfileResponses, PutAdminUsersByIdStatusData, PutAdminUsersByIdStatusErrors, PutAdminUsersByIdStatusResponses } from './types.gen';
+import { getAdminInvitationsByIdResponseTransformer, getAdminInvitationsResponseTransformer, getAdminUsersResponseTransformer, getUserProfileResponseTransformer, postAdminInvitationsResponseTransformer, postAuthLoginResponseTransformer, postAuthRenewResponseTransformer } from './transformers.gen';
+import type { DeleteAdminInvitationsByIdData, DeleteAdminInvitationsByIdErrors, DeleteAdminInvitationsByIdResponses, GetAdminInvitationsByIdData, GetAdminInvitationsByIdResponses, GetAdminInvitationsData, GetAdminInvitationsResponses, GetAdminUsersData, GetAdminUsersResponses, GetUserProfileData, GetUserProfileResponses, PostAdminInvitationsData, PostAdminInvitationsResponses, PostAuthLoginData, PostAuthLoginErrors, PostAuthLoginResponses, PostAuthRenewData, PostAuthRenewErrors, PostAuthRenewResponses, PostUserAvatarData, PostUserAvatarResponses, PostUserProfileData, PostUserProfileErrors, PostUserProfileResponses, PutAdminInvitationsByIdData, PutAdminInvitationsByIdErrors, PutAdminInvitationsByIdResponses, PutAdminUsersByIdStatusData, PutAdminUsersByIdStatusErrors, PutAdminUsersByIdStatusResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -25,7 +25,7 @@ export const getAdminInvitations = <ThrowOnError extends boolean = false>(option
     ...options
 });
 
-export const postAdminInvitations = <ThrowOnError extends boolean = false>(options: Options<PostAdminInvitationsData, ThrowOnError>) => (options.client ?? client).post<PostAdminInvitationsResponses, PostAdminInvitationsErrors, ThrowOnError>({
+export const postAdminInvitations = <ThrowOnError extends boolean = false>(options: Options<PostAdminInvitationsData, ThrowOnError>) => (options.client ?? client).post<PostAdminInvitationsResponses, unknown, ThrowOnError>({
     responseTransformer: postAdminInvitationsResponseTransformer,
     url: '/Admin/invitations',
     ...options,
@@ -35,7 +35,24 @@ export const postAdminInvitations = <ThrowOnError extends boolean = false>(optio
     }
 });
 
-export const getAdminUsers = <ThrowOnError extends boolean = false>(options?: Options<GetAdminUsersData, ThrowOnError>) => (options?.client ?? client).get<GetAdminUsersResponses, GetAdminUsersErrors, ThrowOnError>({
+export const deleteAdminInvitationsById = <ThrowOnError extends boolean = false>(options: Options<DeleteAdminInvitationsByIdData, ThrowOnError>) => (options.client ?? client).delete<DeleteAdminInvitationsByIdResponses, DeleteAdminInvitationsByIdErrors, ThrowOnError>({ url: '/Admin/invitations/{id}', ...options });
+
+export const getAdminInvitationsById = <ThrowOnError extends boolean = false>(options: Options<GetAdminInvitationsByIdData, ThrowOnError>) => (options.client ?? client).get<GetAdminInvitationsByIdResponses, unknown, ThrowOnError>({
+    responseTransformer: getAdminInvitationsByIdResponseTransformer,
+    url: '/Admin/invitations/{id}',
+    ...options
+});
+
+export const putAdminInvitationsById = <ThrowOnError extends boolean = false>(options: Options<PutAdminInvitationsByIdData, ThrowOnError>) => (options.client ?? client).put<PutAdminInvitationsByIdResponses, PutAdminInvitationsByIdErrors, ThrowOnError>({
+    url: '/Admin/invitations/{id}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+export const getAdminUsers = <ThrowOnError extends boolean = false>(options?: Options<GetAdminUsersData, ThrowOnError>) => (options?.client ?? client).get<GetAdminUsersResponses, unknown, ThrowOnError>({
     responseTransformer: getAdminUsersResponseTransformer,
     url: '/Admin/users',
     ...options
@@ -49,8 +66,6 @@ export const putAdminUsersByIdStatus = <ThrowOnError extends boolean = false>(op
         ...options.headers
     }
 });
-
-export const deleteAdminInvitationsByCode = <ThrowOnError extends boolean = false>(options: Options<DeleteAdminInvitationsByCodeData, ThrowOnError>) => (options.client ?? client).delete<DeleteAdminInvitationsByCodeResponses, DeleteAdminInvitationsByCodeErrors, ThrowOnError>({ url: '/Admin/invitations/{code}', ...options });
 
 export const postAuthLogin = <ThrowOnError extends boolean = false>(options: Options<PostAuthLoginData, ThrowOnError>) => (options.client ?? client).post<PostAuthLoginResponses, PostAuthLoginErrors, ThrowOnError>({
     responseTransformer: postAuthLoginResponseTransformer,

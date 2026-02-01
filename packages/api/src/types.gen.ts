@@ -18,7 +18,7 @@ export type AuthResponse = {
 
 export type CreateInvitationRequest = {
     uses: number | string;
-    daysValid: number | string;
+    hoursValid: number | string;
 };
 
 export type IFormFile = Blob | File;
@@ -26,10 +26,13 @@ export type IFormFile = Blob | File;
 export type InviteTable = {
     id?: number | string;
     code?: string;
-    issuedBy?: number | string;
-    timeIssued?: Date;
-    remainingUses?: number | string;
-    issuer?: null | UserTable;
+    creatorId?: number | string;
+    createdAt?: Date;
+    expireAt?: null | Date;
+    maxUses?: number | string;
+    usedCount?: number | string;
+    isDisabled?: boolean;
+    creator?: null | UserTable;
 };
 
 export type MessageResponse = {
@@ -42,6 +45,11 @@ export type ProblemDetails = {
     status?: null | number | string;
     detail?: null | string;
     instance?: null | string;
+};
+
+export type UpdateInvitationRequest = {
+    uses: null | number | string;
+    hoursValid: null | number | string;
 };
 
 export type UpdateProfileModel = {
@@ -88,19 +96,6 @@ export type PostAdminInvitationsData = {
     url: '/Admin/invitations';
 };
 
-export type PostAdminInvitationsErrors = {
-    /**
-     * Unauthorized
-     */
-    401: ProblemDetails;
-    /**
-     * Forbidden
-     */
-    403: ProblemDetails;
-};
-
-export type PostAdminInvitationsError = PostAdminInvitationsErrors[keyof PostAdminInvitationsErrors];
-
 export type PostAdminInvitationsResponses = {
     /**
      * Created
@@ -109,6 +104,74 @@ export type PostAdminInvitationsResponses = {
 };
 
 export type PostAdminInvitationsResponse = PostAdminInvitationsResponses[keyof PostAdminInvitationsResponses];
+
+export type DeleteAdminInvitationsByIdData = {
+    body?: never;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/Admin/invitations/{id}';
+};
+
+export type DeleteAdminInvitationsByIdErrors = {
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+};
+
+export type DeleteAdminInvitationsByIdError = DeleteAdminInvitationsByIdErrors[keyof DeleteAdminInvitationsByIdErrors];
+
+export type DeleteAdminInvitationsByIdResponses = {
+    /**
+     * No Content
+     */
+    204: unknown;
+};
+
+export type GetAdminInvitationsByIdData = {
+    body?: never;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/Admin/invitations/{id}';
+};
+
+export type GetAdminInvitationsByIdResponses = {
+    /**
+     * OK
+     */
+    200: InviteTable;
+};
+
+export type GetAdminInvitationsByIdResponse = GetAdminInvitationsByIdResponses[keyof GetAdminInvitationsByIdResponses];
+
+export type PutAdminInvitationsByIdData = {
+    body: UpdateInvitationRequest;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/Admin/invitations/{id}';
+};
+
+export type PutAdminInvitationsByIdErrors = {
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+};
+
+export type PutAdminInvitationsByIdError = PutAdminInvitationsByIdErrors[keyof PutAdminInvitationsByIdErrors];
+
+export type PutAdminInvitationsByIdResponses = {
+    /**
+     * No Content
+     */
+    204: unknown;
+};
 
 export type GetAdminUsersData = {
     body?: never;
@@ -119,15 +182,6 @@ export type GetAdminUsersData = {
     };
     url: '/Admin/users';
 };
-
-export type GetAdminUsersErrors = {
-    /**
-     * Forbidden
-     */
-    403: ProblemDetails;
-};
-
-export type GetAdminUsersError = GetAdminUsersErrors[keyof GetAdminUsersErrors];
 
 export type GetAdminUsersResponses = {
     /**
@@ -157,31 +211,6 @@ export type PutAdminUsersByIdStatusErrors = {
 export type PutAdminUsersByIdStatusError = PutAdminUsersByIdStatusErrors[keyof PutAdminUsersByIdStatusErrors];
 
 export type PutAdminUsersByIdStatusResponses = {
-    /**
-     * No Content
-     */
-    204: unknown;
-};
-
-export type DeleteAdminInvitationsByCodeData = {
-    body?: never;
-    path: {
-        code: string;
-    };
-    query?: never;
-    url: '/Admin/invitations/{code}';
-};
-
-export type DeleteAdminInvitationsByCodeErrors = {
-    /**
-     * Not Found
-     */
-    404: ProblemDetails;
-};
-
-export type DeleteAdminInvitationsByCodeError = DeleteAdminInvitationsByCodeErrors[keyof DeleteAdminInvitationsByCodeErrors];
-
-export type DeleteAdminInvitationsByCodeResponses = {
     /**
      * No Content
      */
