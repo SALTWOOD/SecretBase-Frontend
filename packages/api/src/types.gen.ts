@@ -62,6 +62,25 @@ export type UserTable = {
     avatar?: null | string;
 };
 
+export type GetAdminInvitationsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        page?: number | string;
+        size?: number | string;
+    };
+    url: '/Admin/invitations';
+};
+
+export type GetAdminInvitationsResponses = {
+    /**
+     * OK
+     */
+    200: Array<InviteTable>;
+};
+
+export type GetAdminInvitationsResponse = GetAdminInvitationsResponses[keyof GetAdminInvitationsResponses];
+
 export type PostAdminInvitationsData = {
     body: CreateInvitationRequest;
     path?: never;

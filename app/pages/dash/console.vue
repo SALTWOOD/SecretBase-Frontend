@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col h-[600px] bg-slate-950 rounded-xl border border-slate-800 font-mono shadow-2xl overflow-hidden">
+  <div class="flex flex-col h-150 bg-slate-950 rounded-xl border border-slate-800 font-mono shadow-2xl overflow-hidden">
 
     <div ref="outputRef" class="flex-1 overflow-y-auto p-4 space-y-2 custom-scrollbar">
       <div v-if="logs.length === 0" class="text-slate-600 italic text-sm">

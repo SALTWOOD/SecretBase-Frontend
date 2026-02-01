@@ -24,13 +24,7 @@
       <UTable :data="filteredUsers" :columns="columns" :loading="loading">
 
         <template #username-cell="{ row }">
-          <div class="flex items-center gap-3">
-            <UAvatar :src="row.original.avatar ?? undefined" size="sm" />
-            <div class="flex flex-col">
-              <span class="text-white font-medium">{{ row.original.username }}</span>
-              <span class="text-xs text-slate-500">{{ row.original.email }}</span>
-            </div>
-          </div>
+          <UserCell :username="row.original.username" :email="row.original.email" :avatar="row.original.avatar" />
         </template>
 
         <template #role-cell="{ row }">
@@ -130,8 +124,7 @@ const refresh = async () => {
   try {
     const response = await getAdminUsers()
     if (!response.error) {
-      // 适配 SDK 返回结构，如果是直接返回数组则 users.value = response.data
-      users.value = (response.data as any).users || response.data
+      users.value = response.data as User[]
     }
   } catch (e) {
     toast.add({ title: '刷新失败', color: 'error' })
