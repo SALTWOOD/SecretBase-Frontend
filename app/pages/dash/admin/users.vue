@@ -77,6 +77,14 @@
           </UDropdownMenu>
         </template>
       </UTable>
+
+      <div class="mt-4 flex justify-center">
+        <UPagination
+          v-model:page="page.page"
+          :total="page.total"
+          :items-per-page="page.size"
+        />
+      </div>
     </UCard>
   </div>
 </template>
@@ -90,6 +98,12 @@ const loading = ref(false);
 const search = ref("");
 const selectedStatus = ref("全部状态");
 const users = ref<User[]>([]);
+
+const page = ref({
+  page: 1,
+  size: 20,
+  total: 0,
+});
 
 const columns = [
   { accessorKey: "username", header: "用户信息" },
@@ -155,9 +169,18 @@ const handleToggleBan = async (user: User) => {
 const refresh = async () => {
   loading.value = true;
   try {
-    const response = await getAdminUsers();
+    const response = await getAdminUsers({
+      query: {
+        page: page.value.page,
+        size: page.value.size,
+      },
+    });
     if (!response.error) {
       users.value = response.data as User[];
+      page.value.total = parseInt(
+        response.response.headers.get("x-total-count") || "0",
+        10,
+      );
     }
   } catch (e) {
     toast.add({ title: "刷新失败", color: "error" });
