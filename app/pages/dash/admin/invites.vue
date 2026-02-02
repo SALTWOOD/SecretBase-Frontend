@@ -30,13 +30,13 @@
         </template>
 
         <template #issuer-cell="{ row }">
-          <UserCell :username="row.original.issuer?.username!" :email="row.original.issuer?.email"
-            :avatar="row.original.issuer?.avatar" />
+          <UserCell :username="row.original.creator?.username!" :email="row.original.creator?.email"
+            :avatar="row.original.creator?.avatar" />
         </template>
 
-        <template #timeIssued-cell="{ row }">
+        <template #createdAt-cell="{ row }">
           <span class="text-slate-500 text-sm">
-            {{ new Date(row.original.timeIssued!).toLocaleString('zh-CN', { hour12: false }) }}
+            {{ row.original.createdAt?.toLocaleString() }}
           </span>
         </template>
       </UTable>
@@ -56,7 +56,7 @@ const toast = useToast();
 const columns = [
   { accessorKey: 'code', header: '邀请码' },
   { accessorKey: 'issuer', header: '创建者' },
-  { accessorKey: 'timeIssued', header: '创建时间' }
+  { accessorKey: 'createdAt', header: '创建时间' }
 ]
 
 const inviteCodes = ref<InviteTable[]>([])

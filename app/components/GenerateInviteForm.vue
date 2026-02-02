@@ -87,7 +87,7 @@ async function onSubmit() {
     const response = await postAdminInvitations({
       body: {
         uses: formData.usageLimit,
-        daysValid: formData.expiresIn
+        hoursValid: formData.expiresIn
       }
     })
     if (!response.error) {
