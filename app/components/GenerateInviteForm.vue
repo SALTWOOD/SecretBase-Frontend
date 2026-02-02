@@ -1,15 +1,15 @@
 <template>
-  <UModal v-model:open="open" @update:open="(val) => emit('update:open', val)">
+  <UModal v-model:open="open" @update:open="(val) => (open = val)">
     <template #content>
       <div
         class="p-4 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center"
       >
-        <span class="font-bold">邀请码</span>
+        <span class="font-bold">{{ title }}</span>
         <UButton
           color="primary"
           variant="ghost"
           icon="i-heroicons-x-mark"
-          @click="emit('update:open', false)"
+          @click="open = false"
         />
       </div>
 
@@ -19,7 +19,7 @@
           description="该邀请码可以被激活的总次数"
         >
           <UInput
-            v-model="formData.usageLimit"
+            v-model="formData.uses"
             type="number"
             min="1"
             class="w-full"
@@ -27,10 +27,13 @@
           />
         </UFormField>
 
-        <UFormField label="有效时间 (小时)" description="过期后邀请码将失效">
+        <UFormField
+          label="有效时间 (小时)"
+          description="表示该邀请码在创建时间后多久过期"
+        >
           <div class="space-y-3">
             <UInput
-              v-model="formData.expiresIn"
+              v-model="formData.hoursValid"
               type="number"
               min="1"
               class="w-full"
@@ -44,7 +47,7 @@
                 size="xs"
                 variant="outline"
                 color="primary"
-                @click="formData.expiresIn = p.value"
+                @click="formData.hoursValid = p.value"
               />
             </div>
           </div>
@@ -54,11 +57,7 @@
       <div
         class="p-4 border-t border-gray-200 dark:border-gray-800 flex justify-end gap-2"
       >
-        <UButton
-          color="primary"
-          variant="ghost"
-          @click="emit('update:open', false)"
-        >
+        <UButton color="primary" variant="ghost" @click="open = false">
           取消
         </UButton>
         <UButton :loading="loading" @click="onSubmit"> 保存 </UButton>
@@ -68,20 +67,24 @@
 </template>
 
 <script setup lang="ts">
-const open = ref(false);
-const loading = ref(false);
+const open = defineModel<boolean>("open");
+const loading = defineModel<boolean>("loading");
+const title = defineModel<string>("title", {
+  default: "生成邀请码",
+});
+const formData = defineModel<{
+  uses: number;
+  hoursValid: number;
+}>("formData", {
+  default: () => ({
+    uses: 1,
+    hoursValid: 24,
+  }),
+});
 
 const emit = defineEmits<{
-  "update:open": [value: boolean];
-  "update:loading": [value: boolean];
-  success: [data: any];
+  success: [data: { uses: number; hoursValid: number }];
 }>();
-
-// Form state
-const formData = reactive({
-  usageLimit: 1,
-  expiresIn: 24,
-});
 
 // Quick time presets (Hours)
 const timePresets = [
@@ -96,9 +99,7 @@ const timePresets = [
 
 async function onSubmit() {
   emit("success", {
-    uses: formData.usageLimit,
-    hoursValid: formData.expiresIn,
+    ...formData.value,
   });
-  emit("update:open", false);
 }
 </script>

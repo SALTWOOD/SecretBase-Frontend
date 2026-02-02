@@ -5,21 +5,12 @@
         <h1 class="text-2xl font-bold text-white tracking-tight">邀请码管理</h1>
         <p class="text-slate-400 text-sm">生成并分发注册邀请码</p>
       </div>
-      <UButton
-        color="primary"
-        icon="i-heroicons-plus"
-        @click="openGenerateForm = true"
-      >
+      <UButton color="primary" icon="i-heroicons-plus" @click="openForm(false)">
         生成新邀请码
       </UButton>
     </div>
 
     <UCard class="glass-card">
-      <UPagination
-        v-model:page="page.page"
-        :total="page.total"
-        :items-per-page="page.size"
-      />
       <UTable :data="inviteCodes" :columns="columns">
         <template #code-cell="{ row }">
           <div class="flex items-center gap-2 group">
@@ -55,32 +46,8 @@
         </template>
 
         <template #expireAt-cell="{ row }">
-          <UBadge
-            v-if="!row.original.expireAt"
-            color="success"
-            variant="soft"
-            size="lg"
-          >
-            永久有效
-          </UBadge>
-
-          <UBadge
-            v-else-if="new Date(row.original.expireAt) < new Date()"
-            color="error"
-            variant="solid"
-            size="lg"
-          >
-            已过期 ({{ new Date(row.original.expireAt).toLocaleDateString() }})
-          </UBadge>
-
-          <UBadge
-            v-else
-            color="info"
-            variant="outline"
-            size="lg"
-            class="font-mono"
-          >
-            {{ new Date(row.original.expireAt).toLocaleString() }}
+          <UBadge v-bind="getExpireBadgeProps(row.original.expireAt)" size="lg">
+            {{ getExpireLabel(row.original.expireAt) }}
           </UBadge>
         </template>
 
@@ -103,17 +70,22 @@
           </UDropdownMenu>
         </template>
       </UTable>
+
+      <div class="mt-4 flex justify-center">
+        <UPagination
+          v-model:page="page.page"
+          :total="page.total"
+          :items-per-page="page.size"
+        />
+      </div>
     </UCard>
 
     <GenerateInviteForm
-      v-model:loading="loadingGenerateForm"
-      v-model:open="openGenerateForm"
-      @success="handleGenerate"
-    />
-    <GenerateInviteForm
-      v-model:loading="loadingEditForm"
-      v-model:open="openEditForm"
-      @success="handleEdit"
+      v-model:open="isModalOpen"
+      v-model:form-data="formState"
+      :loading="isSubmitting"
+      :title="isEditMode ? '编辑邀请码' : '生成邀请码'"
+      @success="handleFormSubmit"
     />
   </div>
 </template>
@@ -130,6 +102,23 @@ import type { InviteTable } from "~~/packages/api/src/types.gen";
 
 const toast = useToast();
 
+const inviteCodes = ref<InviteTable[]>([]);
+const isModalOpen = ref(false);
+const isEditMode = ref(false);
+const isSubmitting = ref(false);
+const currentEditId = ref<number | null>(null);
+
+const page = ref({
+  page: 1,
+  size: 20,
+  total: 0,
+});
+
+const formState = ref({
+  uses: 1,
+  hoursValid: 24,
+});
+
 const columns = [
   { accessorKey: "code", header: "邀请码" },
   { accessorKey: "creator", header: "创建者" },
@@ -137,107 +126,6 @@ const columns = [
   { accessorKey: "expireAt", header: "失效时间" },
   { accessorKey: "usedCount", header: "使用次数" },
   { accessorKey: "actions", header: "操作" },
-];
-
-const page = ref({
-  page: 1,
-  size: 20,
-  total: 20,
-});
-const inviteCodes = ref<InviteTable[]>([]);
-const openGenerateForm = ref(false);
-const openEditForm = ref(false);
-const loadingGenerateForm = ref(false);
-const loadingEditForm = ref(false);
-const currentEditId = ref<number | null>(null);
-
-const handleGenerate = async (data: { uses: number; hoursValid: number }) => {
-  loadingGenerateForm.value = true;
-  try {
-    const response = await postAdminInvitations({
-      body: {
-        uses: data.uses,
-        hoursValid: data.hoursValid,
-      },
-    });
-    openGenerateForm.value = false;
-    toast.add({
-      title: "邀请码生成成功",
-      description: response.data?.code,
-      color: "success",
-      icon: "i-heroicons-check-circle",
-    });
-  } finally {
-    loadingGenerateForm.value = false;
-    refresh();
-  }
-};
-
-const handleEdit = async (data: { uses: number; hoursValid: number }) => {
-  loadingEditForm.value = true;
-  try {
-    if (currentEditId.value === null) throw new Error("Invalid ID");
-    const response = await putAdminInvitationsById({
-      path: { id: currentEditId.value },
-      body: {
-        uses: data.uses,
-        hoursValid: data.hoursValid,
-      },
-    });
-    if (!response.error) {
-      openEditForm.value = false;
-      toast.add({
-        title: "修改成功",
-        color: "success",
-        icon: "i-heroicons-check-circle",
-      });
-    }
-  } finally {
-    loadingGenerateForm.value = false;
-    refresh();
-  }
-};
-
-const copyToClipboard = async (text: string) => {
-  try {
-    await navigator.clipboard.writeText(text);
-    toast.add({
-      title: "复制成功",
-      description: `邀请码 ${text} 已存入剪贴板`,
-      color: "success",
-      icon: "i-heroicons-check-circle",
-    });
-  } catch (err) {
-    toast.add({
-      title: "复制失败",
-      color: "error",
-      icon: "i-heroicons-x-circle",
-    });
-  }
-};
-
-const getActionItems = (row: any) => [
-  {
-    type: "label" as const,
-    label: "操作菜单",
-  },
-  {
-    label: "编辑",
-    icon: "i-heroicons-pencil-square",
-    onSelect: () => {
-      currentEditId.value = row.original.id;
-      openEditForm.value = true;
-    },
-  },
-  {
-    type: "separator" as const,
-  },
-  {
-    label: "删除",
-    icon: "i-heroicons-trash",
-    color: "error" as const,
-    onSelect: () => deleteInvite(row.original.id),
-  },
 ];
 
 const refresh = async () => {
@@ -256,39 +144,110 @@ const refresh = async () => {
   }
 };
 
-const updateInvite = async (id: number, uses?: number, hoursValid?: number) => {
-  const response = await putAdminInvitationsById({
-    path: { id },
-    body: {
-      uses: uses ?? null,
-      hoursValid: hoursValid ?? null,
-    },
-  });
-  if (!response.error) {
+const openForm = (editMode: boolean, row?: any) => {
+  isEditMode.value = editMode;
+  if (editMode && row) {
+    currentEditId.value = row.original.id;
+    formState.value = {
+      uses: row.original.maxUses,
+      hoursValid: row.original.expireAt
+        ? Math.ceil(
+            (new Date(row.original.expireAt).getTime() -
+              new Date(row.original.createdAt).getTime()) /
+              (1000 * 60 * 60),
+          )
+        : 0,
+    };
+  } else {
+    currentEditId.value = null;
+    formState.value = { uses: 1, hoursValid: 24 };
+  }
+  isModalOpen.value = true;
+};
+
+const handleFormSubmit = async (data: { uses: number; hoursValid: number }) => {
+  isSubmitting.value = true;
+  try {
+    const apiCall =
+      isEditMode.value && currentEditId.value
+        ? putAdminInvitationsById({
+            path: { id: currentEditId.value },
+            body: data,
+          })
+        : postAdminInvitations({ body: data });
+
+    const response = await apiCall;
+
+    if (!response.error) {
+      toast.add({
+        title: isEditMode.value ? "修改成功" : "生成成功",
+        color: "success",
+        icon: "i-heroicons-check-circle",
+      });
+      isModalOpen.value = false;
+      refresh();
+    }
+  } catch (err) {
     toast.add({
-      title: "更新成功",
-      color: "success",
-      icon: "i-heroicons-check-circle",
+      title: "操作失败",
+      color: "error",
+      icon: "i-heroicons-x-circle",
     });
-    refresh();
+  } finally {
+    isSubmitting.value = false;
   }
 };
 
 const deleteInvite = async (id: number) => {
-  const response = await deleteAdminInvitationsById({
-    path: { id },
-  });
+  const response = await deleteAdminInvitationsById({ path: { id } });
   if (!response.error) {
-    toast.add({
-      title: "删除成功",
-      color: "success",
-      icon: "i-heroicons-check-circle",
-    });
+    toast.add({ title: "删除成功", color: "success" });
     refresh();
   }
 };
 
-onMounted(() => {
-  refresh();
-});
+const getExpireLabel = (expireAt: Date | null | undefined) => {
+  if (!expireAt) return "永久有效";
+  return expireAt < new Date()
+    ? `已过期 (${expireAt.toLocaleDateString()})`
+    : expireAt.toLocaleString();
+};
+
+const getExpireBadgeProps = (expireAt: Date | null | undefined) => {
+  if (!expireAt) return { color: "success" as const, variant: "soft" as const };
+  return expireAt < new Date()
+    ? { color: "error" as const, variant: "solid" as const }
+    : { color: "info" as const, variant: "outline" as const };
+};
+
+const copyToClipboard = async (text: string) => {
+  await navigator.clipboard.writeText(text);
+  toast.add({
+    title: "复制成功",
+    color: "success",
+    icon: "i-heroicons-clipboard",
+  });
+};
+
+const getActionItems = (row: any) => [
+  { label: "操作菜单", type: "label" as const },
+  {
+    label: "编辑",
+    icon: "i-heroicons-pencil-square",
+    onSelect: () => openForm(true, row),
+  },
+  { type: "separator" as const },
+  {
+    label: "删除",
+    icon: "i-heroicons-trash",
+    color: "error" as const,
+    onSelect: () => deleteInvite(row.original.id),
+  },
+];
+
+watch(
+  () => page.value.page,
+  () => refresh(),
+);
+onMounted(() => refresh());
 </script>
