@@ -1,0 +1,15 @@
+.*/
+.*
+node_modules/
+public/
+packages/api/
+app/app.config.ts
+app/auto-imports.d.ts
+app/components.d.ts
+
+eslint.config.mjs
+
+package.json
+tsconfig.json
+
+README.md

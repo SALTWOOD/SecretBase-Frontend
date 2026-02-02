@@ -13,12 +13,18 @@
       <form @submit.prevent="updateProfile" class="space-y-4">
         <div class="flex items-center gap-6 mb-6">
           <UAvatar src="https://github.com/nuxt.png" size="xl" />
-          <UButton color="neutral" variant="ghost" icon="i-heroicons-camera">更换头像</UButton>
+          <UButton color="neutral" variant="ghost" icon="i-heroicons-camera"
+            >更换头像</UButton
+          >
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <UFormField label="用户名">
-            <UInput v-model="user.name" :disabled="loading" placeholder="你的名字" />
+            <UInput
+              v-model="user.name"
+              :disabled="loading"
+              placeholder="你的名字"
+            />
           </UFormField>
           <UFormField label="电子邮箱">
             <UInput v-model="user.email" disabled />
@@ -26,7 +32,9 @@
         </div>
 
         <div class="flex justify-end">
-          <UButton type="submit" color="primary" :loading="loading">保存更改</UButton>
+          <UButton type="submit" color="primary" :loading="loading"
+            >保存更改</UButton
+          >
         </div>
       </form>
     </UCard>
@@ -34,48 +42,48 @@
 </template>
 
 <script setup lang="ts">
-import { getUserProfile, postUserProfile } from '~~/packages/api/src/sdk.gen'
+import { getUserProfile, postUserProfile } from "~~/packages/api/src/sdk.gen";
 
-const loading = ref(true)
+const loading = ref(true);
 const user = reactive({
-  name: 'Akarin',
-  email: 'akarin@secret.base'
-})
+  name: "Akarin",
+  email: "akarin@secret.base",
+});
 const userStore = useUserStore();
 const toast = useToast();
 
 const updateProfile = async () => {
-  loading.value = true
-  console.log('Update profile:', user)
+  loading.value = true;
+  console.log("Update profile:", user);
   const response = await postUserProfile({
     body: {
-      username: user.name
-    }
+      username: user.name,
+    },
   });
-  loading.value = false
+  loading.value = false;
   if (response.error) {
     console.error(response.error);
-    toast.add({ title: 'Failed to update profile', color: 'error' })
-    return
+    toast.add({ title: "Failed to update profile", color: "error" });
+    return;
   }
-  toast.add({ title: response.data.message, color: 'success' })
-}
+  toast.add({ title: response.data.message, color: "success" });
+};
 
 onMounted(async () => {
   const response = await getUserProfile();
   if (!response.error && response.data) {
     userStore.$patch({
-      user: response.data
+      user: response.data,
     });
     user.name = response.data.username!;
     user.email = response.data.email!;
     loading.value = false;
-    return
+    return;
   }
   console.error(response.error);
-  toast.add({ title: 'Failed to load profile', color: 'error' })
+  toast.add({ title: "Failed to load profile", color: "error" });
   loading.value = false;
-})
+});
 </script>
 
 <style scoped>

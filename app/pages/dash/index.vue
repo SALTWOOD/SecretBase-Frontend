@@ -42,8 +42,26 @@
 
 <script setup lang="ts">
 const stats = [
-  { label: '活跃用户', value: '1,284', icon: 'i-heroicons-users', colorClass: 'bg-blue-500', textColor: 'text-blue-500' },
-  { label: '今日邀请', value: '12', icon: 'i-heroicons-ticket', colorClass: 'bg-pink-500', textColor: 'text-pink-500' },
-  { label: '系统负载', value: '14%', icon: 'i-heroicons-cpu-chip', colorClass: 'bg-emerald-500', textColor: 'text-emerald-500' },
-]
+  {
+    label: "活跃用户",
+    value: "1,284",
+    icon: "i-heroicons-users",
+    colorClass: "bg-blue-500",
+    textColor: "text-blue-500",
+  },
+  {
+    label: "今日邀请",
+    value: "12",
+    icon: "i-heroicons-ticket",
+    colorClass: "bg-pink-500",
+    textColor: "text-pink-500",
+  },
+  {
+    label: "系统负载",
+    value: "14%",
+    icon: "i-heroicons-cpu-chip",
+    colorClass: "bg-emerald-500",
+    textColor: "text-emerald-500",
+  },
+];
 </script>

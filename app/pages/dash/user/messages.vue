@@ -5,30 +5,50 @@
         <h1 class="text-2xl font-bold text-white">我的消息</h1>
         <p class="text-slate-400 text-sm">你收到的系统通知与邀请状态</p>
       </div>
-      <UButton variant="ghost" color="neutral" icon="i-heroicons-check-circle" @click="markAllAsRead">
+      <UButton
+        variant="ghost"
+        color="neutral"
+        icon="i-heroicons-check-circle"
+        @click="markAllAsRead"
+      >
         全部标记为已读
       </UButton>
     </div>
 
     <UCard class="glass-card" :ui="{ body: 'p-0' }">
       <div v-if="messages.length === 0" class="p-12 text-center text-slate-500">
-        <UIcon name="i-heroicons-inbox" class="w-12 h-12 mx-auto mb-2 opacity-20" />
+        <UIcon
+          name="i-heroicons-inbox"
+          class="w-12 h-12 mx-auto mb-2 opacity-20"
+        />
         暂无消息
       </div>
 
       <ul v-else class="divide-y divide-slate-800">
-        <li v-for="msg in messages" :key="msg.id" 
-            class="p-4 hover:bg-slate-900/30 transition-colors flex gap-4">
+        <li
+          v-for="msg in messages"
+          :key="msg.id"
+          class="p-4 hover:bg-slate-900/30 transition-colors flex gap-4"
+        >
           <div class="mt-1">
-            <span :class="['block w-2 h-2 rounded-full', msg.read ? 'bg-transparent' : 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]']"></span>
+            <span
+              :class="[
+                'block w-2 h-2 rounded-full',
+                msg.read
+                  ? 'bg-transparent'
+                  : 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]',
+              ]"
+            ></span>
           </div>
-          
+
           <div class="flex-1">
             <div class="flex justify-between mb-1">
               <h4 class="font-bold text-slate-200 text-sm">{{ msg.title }}</h4>
               <span class="text-xs text-slate-500">{{ msg.time }}</span>
             </div>
-            <p class="text-sm text-slate-400 leading-relaxed">{{ msg.content }}</p>
+            <p class="text-sm text-slate-400 leading-relaxed">
+              {{ msg.content }}
+            </p>
           </div>
         </li>
       </ul>
@@ -38,15 +58,33 @@
 
 <script setup lang="ts">
 const messages = ref([
-  { id: 1, title: '系统升级完成', content: '秘密基地已升级至 v0.1 Beta，修复了部分样式闪烁问题。', time: '10:30', read: false },
-  { id: 2, title: '邀请码被使用', content: '你生成的邀请码 [BASE-666] 已被用户 "NuxtLover" 使用。', time: '昨天', read: true },
-  { id: 3, title: '欢迎来到秘密基地', content: '账户创建成功，通过 ASP.NET Core 与 Nuxt 4 强力驱动。', time: '2026-01-20', read: true },
-])
+  {
+    id: 1,
+    title: "系统升级完成",
+    content: "秘密基地已升级至 v0.1 Beta，修复了部分样式闪烁问题。",
+    time: "10:30",
+    read: false,
+  },
+  {
+    id: 2,
+    title: "邀请码被使用",
+    content: '你生成的邀请码 [BASE-666] 已被用户 "NuxtLover" 使用。',
+    time: "昨天",
+    read: true,
+  },
+  {
+    id: 3,
+    title: "欢迎来到秘密基地",
+    content: "账户创建成功，通过 ASP.NET Core 与 Nuxt 4 强力驱动。",
+    time: "2026-01-20",
+    read: true,
+  },
+]);
 
 const markAllAsRead = () => {
-  messages.value.forEach(m => m.read = true)
-  console.log('All read')
-}
+  messages.value.forEach((m) => (m.read = true));
+  console.log("All read");
+};
 </script>
 
 <style scoped>

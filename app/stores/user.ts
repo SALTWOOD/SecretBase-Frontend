@@ -3,10 +3,10 @@ import type { User } from "~/types/user";
 
 const initialState = {
   user: null as User | null,
-  isLoggedIn: false
+  isLoggedIn: false,
 };
 
-export const useUserStore = defineStore('user', {
+export const useUserStore = defineStore("user", {
   persist: true,
   state: () => ({ ...initialState }),
   actions: {
@@ -18,6 +18,6 @@ export const useUserStore = defineStore('user', {
     reset() {
       this.user = null;
       this.isLoggedIn = false;
-    }
-  }
+    },
+  },
 });
