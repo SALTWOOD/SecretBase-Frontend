@@ -2,7 +2,7 @@
   <UModal v-model:open="open" @update:open="val => emit('update:open', val)">
     <template #content>
       <div class="p-4 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center">
-        <span class="font-bold">生成邀请码</span>
+        <span class="font-bold">邀请码</span>
         <UButton color="primary" variant="ghost" icon="i-heroicons-x-mark" @click="emit('update:open', false)" />
       </div>
 
@@ -46,7 +46,7 @@
           取消
         </UButton>
         <UButton :loading="loading" @click="onSubmit">
-          确认生成
+          保存
         </UButton>
       </div>
     </template>
@@ -54,17 +54,16 @@
 </template>
 
 <script setup lang="ts">
-import { postAdminInvitations } from '~~/packages/api/src/sdk.gen';
-
 const open = ref(false)
+const loading = ref(false)
 
 const emit = defineEmits<{
   'update:open': [value: boolean]
+  'update:loading': [value: boolean]
   'success': [data: any]
 }>()
 
 // Form state
-const loading = ref(false)
 const formData = reactive({
   usageLimit: 1,
   expiresIn: 24
@@ -82,20 +81,10 @@ const timePresets = [
 ]
 
 async function onSubmit() {
-  loading.value = true
-  try {
-    const response = await postAdminInvitations({
-      body: {
-        uses: formData.usageLimit,
-        hoursValid: formData.expiresIn
-      }
-    })
-    if (!response.error) {
-      emit('success', response.data)
-      emit('update:open', false)
-    }
-  } finally {
-    loading.value = false
-  }
+  emit('success', {
+    uses: formData.usageLimit,
+    hoursValid: formData.expiresIn
+  })
+  emit('update:open', false)
 }
 </script>
