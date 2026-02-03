@@ -38,10 +38,7 @@
             :square="collapsed"
             class="justify-start px-2"
           >
-            <UAvatar
-              :src="user?.avatar"
-              size="sm"
-              />
+            <UAvatar :src="user?.avatar" size="sm" />
             <div v-if="!collapsed" class="text-left ml-2 overflow-hidden">
               <p class="text-sm font-bold text-highlighted truncate">
                 {{ user?.username }}
@@ -84,8 +81,8 @@
 </template>
 
 <script setup lang="ts">
-import type { User } from '~/types/user';
-import { postAuthLogout } from '~~/packages/api/src/sdk.gen';
+import type { User } from "~/types/user";
+import { postAuthLogout } from "~~/packages/api/src/sdk.gen";
 
 interface NavigationItem {
   label: string;
@@ -205,7 +202,7 @@ const userMenu = [
         await postAuthLogout();
         userStore.reset();
         toast.add({ title: "已退出登录", color: "success" });
-          navigateTo({ path: "/login", query: { redirect: route.fullPath } });
+        navigateTo({ path: "/login", query: { redirect: route.fullPath } });
       },
     },
   ],

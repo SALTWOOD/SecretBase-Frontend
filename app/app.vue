@@ -8,6 +8,6 @@
 const userStore = useUserStore();
 
 onMounted(async () => {
-  await userStore.fetch();
+  if (userStore.isLoggedIn) await userStore.fetch();
 });
 </script>

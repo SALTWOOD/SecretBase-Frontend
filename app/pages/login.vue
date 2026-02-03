@@ -112,7 +112,7 @@ const handleLogin = async () => {
         user: response.data.user,
         isLoggedIn: true,
       });
-        navigateTo((route.query.redirect as string) ?? "/dash");
+      navigateTo((route.query.redirect as string) ?? "/dash");
     }
   } finally {
     loading.value = false;

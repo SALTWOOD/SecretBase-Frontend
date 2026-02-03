@@ -23,14 +23,14 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <UFormField label="用户名">
             <UInput
-              v-model="user?.username"
+              v-model="form.username"
               :disabled="loading"
               placeholder="你的名字"
               variant="subtle"
             />
           </UFormField>
           <UFormField label="电子邮箱">
-            <UInput v-model="user?.email" disabled variant="subtle" />
+            <UInput v-model="form.email" disabled variant="subtle" />
           </UFormField>
         </div>
 
@@ -53,6 +53,11 @@ const user: Ref<User | null> = ref(null);
 const userStore = useUserStore();
 const toast = useToast();
 
+const form = reactive({
+  username: "",
+  email: "",
+});
+
 const updateProfile = async () => {
   loading.value = true;
   console.log("Update profile:", user);
@@ -73,6 +78,9 @@ const updateProfile = async () => {
 onMounted(async () => {
   await userStore.fetch();
   user.value = userStore.user;
+  form.username = user.value?.username || "";
+  form.email = user.value?.email || "";
+  loading.value = false;
 });
 </script>
 
