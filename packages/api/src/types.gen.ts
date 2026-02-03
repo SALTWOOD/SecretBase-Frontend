@@ -10,6 +10,14 @@ export type AuthLoginModel = {
     captchaToken?: null | string;
 };
 
+export type AuthRegisterModel = {
+    username: string;
+    email: string;
+    password: string;
+    inviteCode?: null | string;
+    captchaToken?: null | string;
+};
+
 export type AuthResponse = {
     message?: string;
     user?: UserTable;
@@ -245,6 +253,49 @@ export type PostAuthLoginResponses = {
 };
 
 export type PostAuthLoginResponse = PostAuthLoginResponses[keyof PostAuthLoginResponses];
+
+export type PostAuthLogoutData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/Auth/logout';
+};
+
+export type PostAuthLogoutResponses = {
+    /**
+     * No Content
+     */
+    204: unknown;
+};
+
+export type PostAuthRegisterData = {
+    body: AuthRegisterModel;
+    path?: never;
+    query?: never;
+    url: '/Auth/register';
+};
+
+export type PostAuthRegisterErrors = {
+    /**
+     * Bad Request
+     */
+    400: MessageResponse;
+    /**
+     * Forbidden
+     */
+    403: MessageResponse;
+};
+
+export type PostAuthRegisterError = PostAuthRegisterErrors[keyof PostAuthRegisterErrors];
+
+export type PostAuthRegisterResponses = {
+    /**
+     * OK
+     */
+    200: UserTable;
+};
+
+export type PostAuthRegisterResponse = PostAuthRegisterResponses[keyof PostAuthRegisterResponses];
 
 export type PostAuthRenewData = {
     body?: never;

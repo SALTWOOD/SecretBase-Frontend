@@ -2,8 +2,8 @@
 
 import { type Client, formDataBodySerializer, type Options as Options2, type TDataShape } from './client';
 import { client } from './client.gen';
-import { getAdminInvitationsByIdResponseTransformer, getAdminInvitationsResponseTransformer, getAdminUsersResponseTransformer, getUserProfileResponseTransformer, postAdminInvitationsResponseTransformer, postAuthLoginResponseTransformer, postAuthRenewResponseTransformer } from './transformers.gen';
-import type { DeleteAdminInvitationsByIdData, DeleteAdminInvitationsByIdErrors, DeleteAdminInvitationsByIdResponses, GetAdminInvitationsByIdData, GetAdminInvitationsByIdResponses, GetAdminInvitationsData, GetAdminInvitationsResponses, GetAdminUsersData, GetAdminUsersResponses, GetUserProfileData, GetUserProfileResponses, PostAdminInvitationsData, PostAdminInvitationsResponses, PostAuthLoginData, PostAuthLoginErrors, PostAuthLoginResponses, PostAuthRenewData, PostAuthRenewErrors, PostAuthRenewResponses, PostUserAvatarData, PostUserAvatarResponses, PostUserProfileData, PostUserProfileErrors, PostUserProfileResponses, PutAdminInvitationsByIdData, PutAdminInvitationsByIdErrors, PutAdminInvitationsByIdResponses, PutAdminUsersByIdStatusData, PutAdminUsersByIdStatusErrors, PutAdminUsersByIdStatusResponses } from './types.gen';
+import { getAdminInvitationsByIdResponseTransformer, getAdminInvitationsResponseTransformer, getAdminUsersResponseTransformer, getUserProfileResponseTransformer, postAdminInvitationsResponseTransformer, postAuthLoginResponseTransformer, postAuthRegisterResponseTransformer, postAuthRenewResponseTransformer } from './transformers.gen';
+import type { DeleteAdminInvitationsByIdData, DeleteAdminInvitationsByIdErrors, DeleteAdminInvitationsByIdResponses, GetAdminInvitationsByIdData, GetAdminInvitationsByIdResponses, GetAdminInvitationsData, GetAdminInvitationsResponses, GetAdminUsersData, GetAdminUsersResponses, GetUserProfileData, GetUserProfileResponses, PostAdminInvitationsData, PostAdminInvitationsResponses, PostAuthLoginData, PostAuthLoginErrors, PostAuthLoginResponses, PostAuthLogoutData, PostAuthLogoutResponses, PostAuthRegisterData, PostAuthRegisterErrors, PostAuthRegisterResponses, PostAuthRenewData, PostAuthRenewErrors, PostAuthRenewResponses, PostUserAvatarData, PostUserAvatarResponses, PostUserProfileData, PostUserProfileErrors, PostUserProfileResponses, PutAdminInvitationsByIdData, PutAdminInvitationsByIdErrors, PutAdminInvitationsByIdResponses, PutAdminUsersByIdStatusData, PutAdminUsersByIdStatusErrors, PutAdminUsersByIdStatusResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -70,6 +70,18 @@ export const putAdminUsersByIdStatus = <ThrowOnError extends boolean = false>(op
 export const postAuthLogin = <ThrowOnError extends boolean = false>(options: Options<PostAuthLoginData, ThrowOnError>) => (options.client ?? client).post<PostAuthLoginResponses, PostAuthLoginErrors, ThrowOnError>({
     responseTransformer: postAuthLoginResponseTransformer,
     url: '/Auth/login',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+export const postAuthLogout = <ThrowOnError extends boolean = false>(options?: Options<PostAuthLogoutData, ThrowOnError>) => (options?.client ?? client).post<PostAuthLogoutResponses, unknown, ThrowOnError>({ url: '/Auth/logout', ...options });
+
+export const postAuthRegister = <ThrowOnError extends boolean = false>(options: Options<PostAuthRegisterData, ThrowOnError>) => (options.client ?? client).post<PostAuthRegisterResponses, PostAuthRegisterErrors, ThrowOnError>({
+    responseTransformer: postAuthRegisterResponseTransformer,
+    url: '/Auth/register',
     ...options,
     headers: {
         'Content-Type': 'application/json',

@@ -85,6 +85,7 @@
 
 <script setup lang="ts">
 import type { User } from '~/types/user';
+import { postAuthLogout } from '~~/packages/api/src/sdk.gen';
 
 interface NavigationItem {
   label: string;
@@ -101,7 +102,7 @@ interface NavigationItem {
 
 const route = useRoute();
 const isAdmin = ref(true);
-
+const toast = useToast();
 const user: Ref<User | null> = ref(null);
 const userStore = useUserStore();
 
@@ -200,9 +201,13 @@ const userMenu = [
       label: "退出登录",
       icon: "i-heroicons-arrow-right-on-rectangle",
       color: "error" as const,
-      onSelect: () => {
+      onSelect: async () => {
+        await postAuthLogout();
         userStore.reset();
-        navigateTo({ path: "/login", query: { redirect: route.fullPath } });
+        toast.add({ title: "已退出登录", color: "success" });
+        setTimeout(() => {
+          navigateTo({ path: "/login", query: { redirect: route.fullPath } });
+        }, 5000);
       },
     },
   ],

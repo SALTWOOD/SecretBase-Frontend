@@ -22,6 +22,38 @@ export const AuthLoginModelSchema = {
     }
 } as const;
 
+export const AuthRegisterModelSchema = {
+    required: [
+        'username',
+        'email',
+        'password'
+    ],
+    type: 'object',
+    properties: {
+        username: {
+            type: 'string'
+        },
+        email: {
+            type: 'string'
+        },
+        password: {
+            type: 'string'
+        },
+        inviteCode: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        captchaToken: {
+            type: [
+                'null',
+                'string'
+            ]
+        }
+    }
+} as const;
+
 export const AuthResponseSchema = {
     type: 'object',
     properties: {
