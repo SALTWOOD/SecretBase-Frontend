@@ -67,7 +67,7 @@ export type UserTable = {
     role?: UserRole;
     isBanned?: boolean;
     registerTime?: Date;
-    avatar?: null | string;
+    avatar?: string;
 };
 
 export type GetAdminInvitationsData = {

@@ -30,7 +30,7 @@
       </template>
 
       <template #footer="{ collapsed }">
-        <UDropdown :items="userMenu" :ui="{ width: 'w-48' }">
+        <UDropdownMenu :items="userMenu">
           <UButton
             variant="ghost"
             color="neutral"
@@ -38,10 +38,13 @@
             :square="collapsed"
             class="justify-start px-2"
           >
-            <UAvatar src="https://github.com/nuxt.png" size="sm" />
+            <UAvatar
+              :src="user?.avatar"
+              size="sm"
+              />
             <div v-if="!collapsed" class="text-left ml-2 overflow-hidden">
               <p class="text-sm font-bold text-highlighted truncate">
-                {{ user?.name }}
+                {{ user?.username }}
               </p>
               <p class="text-xs text-muted truncate">{{ user?.email }}</p>
             </div>
@@ -51,7 +54,7 @@
               class="ml-auto text-muted"
             />
           </UButton>
-        </UDropdown>
+        </UDropdownMenu>
       </template>
     </UDashboardSidebar>
 
@@ -81,6 +84,8 @@
 </template>
 
 <script setup lang="ts">
+import type { User } from '~/types/user';
+
 interface NavigationItem {
   label: string;
   icon?: string;
@@ -97,10 +102,7 @@ interface NavigationItem {
 const route = useRoute();
 const isAdmin = ref(true);
 
-const user = reactive({
-  name: "Akarin",
-  email: "akarin@secret.base",
-});
+const user: Ref<User | null> = ref(null);
 const userStore = useUserStore();
 
 const allNavigationItems = computed<NavigationItem[]>(() => [
@@ -197,16 +199,18 @@ const userMenu = [
     {
       label: "退出登录",
       icon: "i-heroicons-arrow-right-on-rectangle",
-      color: "red" as const,
-      click: () => console.log("Logout"),
+      color: "error" as const,
+      onSelect: () => {
+        userStore.reset();
+        navigateTo({ path: "/login", query: { redirect: route.fullPath } });
+      },
     },
   ],
 ];
 
 onMounted(() => {
   if (userStore.user) {
-    user.name = userStore.user.username;
-    user.email = userStore.user.email;
+    user.value = userStore.user;
   }
 });
 </script>

@@ -5,7 +5,7 @@
     >
       <div>
         <h1 class="text-3xl font-bold text-foreground tracking-tight">
-          午安，Admin
+          {{ greetings() }}，{{ userStore.user?.username }}
         </h1>
         <p class="text-muted-foreground mt-1">
           欢迎回到秘密基地，今天想处理些什么？
@@ -19,11 +19,8 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <UCard v-for="stat in stats" :key="stat.label" class="overflow-hidden">
         <div class="flex items-center gap-4">
-          <div :class="['p-3', 'rounded-xl', `bg-${stat.color}-500`]">
-            <UIcon
-              :name="stat.icon"
-              :class="['w-6', 'h-6', `text-${stat.color}-foreground`]"
-            />
+          <div class="p-3 rounded-xl">
+            <UIcon :name="stat.icon" class="w-6 h-6" />
           </div>
           <div>
             <p class="text-sm text-muted-foreground font-medium">
@@ -53,6 +50,8 @@
 </template>
 
 <script setup lang="ts">
+const userStore = useUserStore();
+
 const stats = [
   {
     label: "活跃用户",

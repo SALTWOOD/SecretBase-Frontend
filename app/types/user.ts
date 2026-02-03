@@ -5,5 +5,5 @@ export interface User {
   role: UserRole;
   isBanned: boolean;
   registerTime: string | Date;
-  avatar?: string | null;
+  avatar?: string;
 }

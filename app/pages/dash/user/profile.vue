@@ -23,14 +23,14 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <UFormField label="用户名">
             <UInput
-              v-model="user.name"
+              v-model="user?.username"
               :disabled="loading"
               placeholder="你的名字"
               variant="subtle"
             />
           </UFormField>
           <UFormField label="电子邮箱">
-            <UInput v-model="user.email" disabled variant="subtle" />
+            <UInput v-model="user?.email" disabled variant="subtle" />
           </UFormField>
         </div>
 
@@ -45,13 +45,11 @@
 </template>
 
 <script setup lang="ts">
+import type { User } from "~/types/user";
 import { getUserProfile, postUserProfile } from "~~/packages/api/src/sdk.gen";
 
 const loading = ref(true);
-const user = reactive({
-  name: "Akarin",
-  email: "akarin@secret.base",
-});
+const user: Ref<User | null> = ref(null);
 const userStore = useUserStore();
 const toast = useToast();
 
@@ -60,7 +58,7 @@ const updateProfile = async () => {
   console.log("Update profile:", user);
   const response = await postUserProfile({
     body: {
-      username: user.name,
+      username: user.value?.username,
     },
   });
   loading.value = false;
@@ -73,19 +71,8 @@ const updateProfile = async () => {
 };
 
 onMounted(async () => {
-  const response = await getUserProfile();
-  if (!response.error && response.data) {
-    userStore.$patch({
-      user: response.data,
-    });
-    user.name = response.data.username!;
-    user.email = response.data.email!;
-    loading.value = false;
-    return;
-  }
-  console.error(response.error);
-  toast.add({ title: "Failed to load profile", color: "error" });
-  loading.value = false;
+  await userStore.fetch();
+  user.value = userStore.user;
 });
 </script>
 

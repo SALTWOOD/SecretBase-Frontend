@@ -80,6 +80,7 @@ const capToken = ref("");
 const api = "/api/cap/";
 const toast = useToast();
 const userStore = useUserStore();
+const route = useRoute();
 
 const handleCapSolve = (e: CustomEvent) => {
   capToken.value = e.detail.token;
@@ -111,6 +112,9 @@ const handleLogin = async () => {
         user: response.data.user,
         isLoggedIn: true,
       });
+      setTimeout(() => {
+        navigateTo((route.query.redirect as string) ?? "/dash");
+      }, 5000);
     }
   } finally {
     loading.value = false;

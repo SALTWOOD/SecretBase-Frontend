@@ -266,10 +266,7 @@ export const UserTableSchema = {
             format: 'date-time'
         },
         avatar: {
-            type: [
-                'null',
-                'string'
-            ]
+            type: 'string'
         }
     }
 } as const;
