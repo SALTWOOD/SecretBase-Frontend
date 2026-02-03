@@ -162,6 +162,15 @@ export const InviteTableSchema = {
                     $ref: '#/components/schemas/UserTable'
                 }
             ]
+        },
+        usedBy: {
+            type: [
+                'null',
+                'array'
+            ],
+            items: {
+                $ref: '#/components/schemas/UserTable'
+            }
         }
     }
 } as const;
@@ -216,11 +225,18 @@ export const ProblemDetailsSchema = {
 
 export const UpdateInvitationRequestSchema = {
     required: [
+        'isDisabled',
         'uses',
         'hoursValid'
     ],
     type: 'object',
     properties: {
+        isDisabled: {
+            type: [
+                'null',
+                'boolean'
+            ]
+        },
         uses: {
             pattern: '^-?(?:0|[1-9]\\d*)$',
             type: [
@@ -299,6 +315,25 @@ export const UserTableSchema = {
         },
         avatar: {
             type: 'string'
+        },
+        usedInviteId: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'null',
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        usedInvite: {
+            oneOf: [
+                {
+                    type: 'null'
+                },
+                {
+                    $ref: '#/components/schemas/InviteTable'
+                }
+            ]
         }
     }
 } as const;

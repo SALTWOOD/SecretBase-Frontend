@@ -58,17 +58,14 @@
         <UButton color="neutral" variant="ghost" @click="open = false">
           取消
         </UButton>
-        <UButton :loading="loading" @click="onSubmit"> 确认生成 </UButton>
+        <UButton :loading="loading" @click="onSubmit"> 提交 </UButton>
       </div>
     </template>
   </UModal>
 </template>
 
 <script setup lang="ts">
-interface InviteFormData {
-  uses: number;
-  hoursValid: number;
-}
+import type { UpdateInviteFormData } from "~/types/update-invite-form";
 
 const open = defineModel<boolean>("open");
 const loading = defineModel<boolean>("loading");
@@ -76,15 +73,16 @@ const title = defineModel<string>("title", {
   default: "生成邀请码",
 });
 
-const formData = defineModel<InviteFormData>("formData", {
+const formData = defineModel<UpdateInviteFormData>("formData", {
   default: () => ({
+    isDisabled: false,
     uses: 1,
     hoursValid: 24,
   }),
 });
 
 const emit = defineEmits<{
-  success: [data: InviteFormData];
+  success: [data: UpdateInviteFormData];
 }>();
 
 const timePresets = [
@@ -96,7 +94,7 @@ const timePresets = [
 ];
 
 function onSubmit() {
-  if (formData.value.uses < 1) return;
+  if (formData.value.uses && formData.value.uses < 1) return;
 
   emit("success", { ...formData.value });
 }

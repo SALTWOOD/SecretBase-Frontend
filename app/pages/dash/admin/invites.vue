@@ -56,9 +56,17 @@
         </template>
 
         <template #usedCount-cell="{ row }">
-          <UBadge variant="subtle" color="primary" size="lg">
-            {{ row.original.usedCount }} / {{ row.original.maxUses }}
-          </UBadge>
+          <UTooltip text="点击查看使用详情">
+            <UBadge
+              class="cursor-pointer select-none"
+              variant="subtle"
+              color="primary"
+              size="lg"
+              @click.stop="handleCountClick(row.original)"
+            >
+              {{ row.original.usedCount }} / {{ row.original.maxUses }}
+            </UBadge>
+          </UTooltip>
         </template>
 
         <template #actions-cell="{ row }">
@@ -91,18 +99,27 @@
       :title="isEditMode ? '编辑邀请码' : '生成邀请码'"
       @success="handleFormSubmit"
     />
+
+    <InformationForm
+      :loading="invitationUsers.loading"
+      v-model:open="invitationUsers.open"
+      :users="invitationUsers.users"
+    />
   </div>
 </template>
 
 <script lang="ts" setup>
 import GenerateInviteForm from "~/components/GenerateInviteForm.vue";
+import type { CreateInviteFormData } from "~/types/create-invite-form";
+import type { UpdateInviteFormData } from "~/types/update-invite-form";
 import {
   deleteAdminInvitationsById,
   getAdminInvitations,
+  getAdminInvitationsByIdUsers,
   postAdminInvitations,
   putAdminInvitationsById,
 } from "~~/packages/api/src/sdk.gen";
-import type { InviteTable } from "~~/packages/api/src/types.gen";
+import type { InviteTable, UserTable } from "~~/packages/api/src/types.gen";
 
 const toast = useToast();
 
@@ -111,6 +128,16 @@ const isModalOpen = ref(false);
 const isEditMode = ref(false);
 const isSubmitting = ref(false);
 const currentEditId = ref<number | null>(null);
+const invitationUsers = ref({
+  users: [] as UserTable[],
+  loading: true,
+  open: false,
+  page: {
+    page: 1,
+    size: 20,
+    total: 0,
+  },
+});
 
 const page = ref({
   page: 1,
@@ -118,9 +145,10 @@ const page = ref({
   total: 0,
 });
 
-const formState = ref({
+const formState: Ref<UpdateInviteFormData> = ref({
   uses: 1,
   hoursValid: 24,
+  isDisabled: false,
 });
 
 const columns = [
@@ -161,24 +189,51 @@ const openForm = (editMode: boolean, row?: any) => {
               (1000 * 60 * 60),
           )
         : 0,
+      isDisabled: row.original.isDisabled,
     };
   } else {
     currentEditId.value = null;
-    formState.value = { uses: 1, hoursValid: 24 };
+    formState.value = { uses: 1, hoursValid: 24, isDisabled: false };
   }
   isModalOpen.value = true;
 };
 
-const handleFormSubmit = async (data: { uses: number; hoursValid: number }) => {
+const handleCountClick = async (invite: InviteTable) => {
+  console.log(invite);
+  invitationUsers.value.loading = true;
+  invitationUsers.value.open = true;
+  try {
+    const response = await getAdminInvitationsByIdUsers({
+      path: { id: invite.id as number },
+      query: {
+        page: invitationUsers.value.page.page,
+        size: invitationUsers.value.page.size,
+      },
+    });
+    if (!response.error && response.data) {
+      invitationUsers.value.page.total = parseInt(
+        response.response.headers.get("x-total-count") || "0",
+        10,
+      );
+      invitationUsers.value.users = response.data;
+    }
+  } finally {
+    invitationUsers.value.loading = false;
+  }
+};
+
+const handleFormSubmit = async (
+  data: CreateInviteFormData | UpdateInviteFormData,
+) => {
   isSubmitting.value = true;
   try {
     const apiCall =
       isEditMode.value && currentEditId.value
         ? putAdminInvitationsById({
             path: { id: currentEditId.value },
-            body: data,
+            body: data as UpdateInviteFormData,
           })
-        : postAdminInvitations({ body: data });
+        : postAdminInvitations({ body: data as CreateInviteFormData });
 
     const response = await apiCall;
 

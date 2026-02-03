@@ -41,6 +41,7 @@ export type InviteTable = {
     usedCount?: number | string;
     isDisabled?: boolean;
     creator?: null | UserTable;
+    usedBy?: null | Array<UserTable>;
 };
 
 export type MessageResponse = {
@@ -56,6 +57,7 @@ export type ProblemDetails = {
 };
 
 export type UpdateInvitationRequest = {
+    isDisabled: null | boolean;
     uses: null | number | string;
     hoursValid: null | number | string;
 };
@@ -76,160 +78,15 @@ export type UserTable = {
     isBanned?: boolean;
     registerTime?: Date;
     avatar?: string;
-};
-
-export type GetAdminInvitationsData = {
-    body?: never;
-    path?: never;
-    query?: {
-        page?: number | string;
-        size?: number | string;
-    };
-    url: '/Admin/invitations';
-};
-
-export type GetAdminInvitationsResponses = {
-    /**
-     * OK
-     */
-    200: Array<InviteTable>;
-};
-
-export type GetAdminInvitationsResponse = GetAdminInvitationsResponses[keyof GetAdminInvitationsResponses];
-
-export type PostAdminInvitationsData = {
-    body: CreateInvitationRequest;
-    path?: never;
-    query?: never;
-    url: '/Admin/invitations';
-};
-
-export type PostAdminInvitationsResponses = {
-    /**
-     * Created
-     */
-    201: InviteTable;
-};
-
-export type PostAdminInvitationsResponse = PostAdminInvitationsResponses[keyof PostAdminInvitationsResponses];
-
-export type DeleteAdminInvitationsByIdData = {
-    body?: never;
-    path: {
-        id: number;
-    };
-    query?: never;
-    url: '/Admin/invitations/{id}';
-};
-
-export type DeleteAdminInvitationsByIdErrors = {
-    /**
-     * Not Found
-     */
-    404: ProblemDetails;
-};
-
-export type DeleteAdminInvitationsByIdError = DeleteAdminInvitationsByIdErrors[keyof DeleteAdminInvitationsByIdErrors];
-
-export type DeleteAdminInvitationsByIdResponses = {
-    /**
-     * No Content
-     */
-    204: unknown;
-};
-
-export type GetAdminInvitationsByIdData = {
-    body?: never;
-    path: {
-        id: number;
-    };
-    query?: never;
-    url: '/Admin/invitations/{id}';
-};
-
-export type GetAdminInvitationsByIdResponses = {
-    /**
-     * OK
-     */
-    200: InviteTable;
-};
-
-export type GetAdminInvitationsByIdResponse = GetAdminInvitationsByIdResponses[keyof GetAdminInvitationsByIdResponses];
-
-export type PutAdminInvitationsByIdData = {
-    body: UpdateInvitationRequest;
-    path: {
-        id: number;
-    };
-    query?: never;
-    url: '/Admin/invitations/{id}';
-};
-
-export type PutAdminInvitationsByIdErrors = {
-    /**
-     * Not Found
-     */
-    404: ProblemDetails;
-};
-
-export type PutAdminInvitationsByIdError = PutAdminInvitationsByIdErrors[keyof PutAdminInvitationsByIdErrors];
-
-export type PutAdminInvitationsByIdResponses = {
-    /**
-     * No Content
-     */
-    204: unknown;
-};
-
-export type GetAdminUsersData = {
-    body?: never;
-    path?: never;
-    query?: {
-        page?: number | string;
-        size?: number | string;
-    };
-    url: '/Admin/users';
-};
-
-export type GetAdminUsersResponses = {
-    /**
-     * OK
-     */
-    200: Array<UserTable>;
-};
-
-export type GetAdminUsersResponse = GetAdminUsersResponses[keyof GetAdminUsersResponses];
-
-export type PutAdminUsersByIdStatusData = {
-    body: boolean;
-    path: {
-        id: number;
-    };
-    query?: never;
-    url: '/Admin/users/{id}/status';
-};
-
-export type PutAdminUsersByIdStatusErrors = {
-    /**
-     * Not Found
-     */
-    404: ProblemDetails;
-};
-
-export type PutAdminUsersByIdStatusError = PutAdminUsersByIdStatusErrors[keyof PutAdminUsersByIdStatusErrors];
-
-export type PutAdminUsersByIdStatusResponses = {
-    /**
-     * No Content
-     */
-    204: unknown;
+    usedInviteId?: null | number | string;
+    usedInvite?: null | InviteTable;
 };
 
 export type PostAuthLoginData = {
     body: AuthLoginModel;
     path?: never;
     query?: never;
-    url: '/Auth/login';
+    url: '/auth/login';
 };
 
 export type PostAuthLoginErrors = {
@@ -258,7 +115,7 @@ export type PostAuthLogoutData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/Auth/logout';
+    url: '/auth/logout';
 };
 
 export type PostAuthLogoutResponses = {
@@ -272,7 +129,7 @@ export type PostAuthRegisterData = {
     body: AuthRegisterModel;
     path?: never;
     query?: never;
-    url: '/Auth/register';
+    url: '/auth/register';
 };
 
 export type PostAuthRegisterErrors = {
@@ -301,7 +158,7 @@ export type PostAuthRenewData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/Auth/renew';
+    url: '/auth/renew';
 };
 
 export type PostAuthRenewErrors = {
@@ -326,7 +183,7 @@ export type GetUserProfileData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/User/profile';
+    url: '/user/profile';
 };
 
 export type GetUserProfileResponses = {
@@ -342,7 +199,7 @@ export type PostUserProfileData = {
     body: UpdateProfileModel;
     path?: never;
     query?: never;
-    url: '/User/profile';
+    url: '/user/profile';
 };
 
 export type PostUserProfileErrors = {
@@ -369,7 +226,7 @@ export type PostUserAvatarData = {
     };
     path?: never;
     query?: never;
-    url: '/User/avatar';
+    url: '/user/avatar';
 };
 
 export type PostUserAvatarResponses = {
@@ -380,3 +237,171 @@ export type PostUserAvatarResponses = {
 };
 
 export type PostUserAvatarResponse = PostUserAvatarResponses[keyof PostUserAvatarResponses];
+
+export type GetAdminInvitationsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        page?: number | string;
+        size?: number | string;
+    };
+    url: '/admin/invitations';
+};
+
+export type GetAdminInvitationsResponses = {
+    /**
+     * OK
+     */
+    200: Array<InviteTable>;
+};
+
+export type GetAdminInvitationsResponse = GetAdminInvitationsResponses[keyof GetAdminInvitationsResponses];
+
+export type PostAdminInvitationsData = {
+    body: CreateInvitationRequest;
+    path?: never;
+    query?: never;
+    url: '/admin/invitations';
+};
+
+export type PostAdminInvitationsResponses = {
+    /**
+     * Created
+     */
+    201: InviteTable;
+};
+
+export type PostAdminInvitationsResponse = PostAdminInvitationsResponses[keyof PostAdminInvitationsResponses];
+
+export type DeleteAdminInvitationsByIdData = {
+    body?: never;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/admin/invitations/{id}';
+};
+
+export type DeleteAdminInvitationsByIdErrors = {
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+};
+
+export type DeleteAdminInvitationsByIdError = DeleteAdminInvitationsByIdErrors[keyof DeleteAdminInvitationsByIdErrors];
+
+export type DeleteAdminInvitationsByIdResponses = {
+    /**
+     * No Content
+     */
+    204: unknown;
+};
+
+export type GetAdminInvitationsByIdData = {
+    body?: never;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/admin/invitations/{id}';
+};
+
+export type GetAdminInvitationsByIdResponses = {
+    /**
+     * OK
+     */
+    200: InviteTable;
+};
+
+export type GetAdminInvitationsByIdResponse = GetAdminInvitationsByIdResponses[keyof GetAdminInvitationsByIdResponses];
+
+export type PutAdminInvitationsByIdData = {
+    body: UpdateInvitationRequest;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/admin/invitations/{id}';
+};
+
+export type PutAdminInvitationsByIdErrors = {
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+};
+
+export type PutAdminInvitationsByIdError = PutAdminInvitationsByIdErrors[keyof PutAdminInvitationsByIdErrors];
+
+export type PutAdminInvitationsByIdResponses = {
+    /**
+     * No Content
+     */
+    204: unknown;
+};
+
+export type GetAdminInvitationsByIdUsersData = {
+    body?: never;
+    path: {
+        id: number;
+    };
+    query?: {
+        page?: number | string;
+        size?: number | string;
+    };
+    url: '/admin/invitations/{id}/users';
+};
+
+export type GetAdminInvitationsByIdUsersResponses = {
+    /**
+     * OK
+     */
+    200: Array<UserTable>;
+};
+
+export type GetAdminInvitationsByIdUsersResponse = GetAdminInvitationsByIdUsersResponses[keyof GetAdminInvitationsByIdUsersResponses];
+
+export type GetAdminUsersData = {
+    body?: never;
+    path?: never;
+    query?: {
+        page?: number | string;
+        size?: number | string;
+    };
+    url: '/admin/users';
+};
+
+export type GetAdminUsersResponses = {
+    /**
+     * OK
+     */
+    200: Array<UserTable>;
+};
+
+export type GetAdminUsersResponse = GetAdminUsersResponses[keyof GetAdminUsersResponses];
+
+export type PutAdminUsersByIdStatusData = {
+    body: boolean;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/admin/users/{id}/status';
+};
+
+export type PutAdminUsersByIdStatusErrors = {
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+};
+
+export type PutAdminUsersByIdStatusError = PutAdminUsersByIdStatusErrors[keyof PutAdminUsersByIdStatusErrors];
+
+export type PutAdminUsersByIdStatusResponses = {
+    /**
+     * No Content
+     */
+    204: unknown;
+};
