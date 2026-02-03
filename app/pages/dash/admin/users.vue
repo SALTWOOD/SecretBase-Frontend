@@ -58,7 +58,7 @@
           <UBadge
             :color="row.original.isBanned ? 'error' : 'success'"
             variant="subtle"
-            size="sm"
+            size="md"
           >
             {{ row.original.isBanned ? "已封禁" : "正常" }}
           </UBadge>

@@ -1,62 +1,45 @@
 <template>
-  <div class="admin-layout bg-grid-slate">
-    <aside class="sidebar">
-      <div class="brand-area">
-        <span class="text-blue-500">SECRET</span>BASE
-      </div>
-
-      <nav class="flex-1 px-4 py-6 space-y-6 overflow-y-auto">
-        <div v-for="group in navigationGroups" :key="group.label || group.path">
-          <template v-if="group.type === 'single'">
-            <NuxtLink
-              :to="group.path"
-              class="admin-sidebar-item"
-              :[getMatchMode(group)]="'admin-sidebar-item-active'"
-              :hidden="group.hidden ?? false"
-            >
-              <UIcon :name="group.icon" class="w-5 h-5" />
-              <span class="font-medium">{{ group.label }}</span>
-            </NuxtLink>
-          </template>
-
-          <template v-else-if="group.type === 'group'">
-            <p
-              :class="[
-                'sidebar-group-label transition-colors duration-200',
-                isGroupActive(group)
-                  ? 'text-blue-500 font-bold'
-                  : 'text-slate-500',
-              ]"
-            >
-              {{ group.label }}
-            </p>
-
-            <div class="mt-2 space-y-1">
-              <NuxtLink
-                v-for="item in group.items"
-                :key="item.path"
-                :to="item.path"
-                class="admin-sidebar-item"
-                active-class="admin-sidebar-item-active"
-              >
-                <UIcon :name="item.icon" class="w-5 h-5" />
-                {{ item.label }}
-              </NuxtLink>
-            </div>
-          </template>
+  <UDashboardGroup class="h-screen overflow-hidden">
+    <UDashboardSidebar
+      collapsible
+      resizable
+      class="bg-slate-950/80 border-r border-slate-900 backdrop-blur-xl"
+    >
+      <template #header="{ collapsed }">
+        <div
+          class="p-4 text-center font-black tracking-tighter text-xl text-white"
+        >
+          <span class="text-blue-500" :class="collapsed ? 'block' : ''"
+            >SECRET</span
+          >
+          <span :class="collapsed ? 'hidden' : ''">BASE</span>
         </div>
-      </nav>
+      </template>
 
-      <div class="p-4 border-t border-slate-900 bg-slate-950/50">
+      <template #default="{ collapsed }">
+        <UDashboardSearchButton
+          :collapsed="collapsed"
+          class="bg-transparent mx-4 mb-4"
+        />
+        <UNavigationMenu
+          :collapsed="collapsed"
+          :items="sidebarItems"
+          orientation="vertical"
+          class="mx-2"
+        />
+      </template>
+
+      <template #footer="{ collapsed }">
         <UDropdown :items="userMenu" :ui="{ width: 'w-48' }">
           <UButton
             variant="ghost"
             color="neutral"
             block
+            :square="collapsed"
             class="justify-start px-2"
           >
             <UAvatar src="https://github.com/nuxt.png" size="sm" />
-            <div class="text-left ml-2 overflow-hidden">
+            <div v-if="!collapsed" class="text-left ml-2 overflow-hidden">
               <p class="text-sm font-bold text-white truncate">
                 {{ user?.name }}
               </p>
@@ -64,11 +47,13 @@
             </div>
           </UButton>
         </UDropdown>
-      </div>
-    </aside>
+      </template>
+    </UDashboardSidebar>
 
-    <main class="content-wrapper">
-      <header class="top-nav">
+    <main class="flex-1 flex flex-col min-w-0 bg-slate-950">
+      <header
+        class="h-16 border-b border-slate-900 px-8 flex items-center justify-between bg-slate-950/50 backdrop-blur-md shrink-0"
+      >
         <UBreadcrumb :items="breadcrumbItems" />
         <div class="flex items-center gap-3">
           <UButton icon="i-heroicons-bell" variant="ghost" color="neutral" />
@@ -80,98 +65,114 @@
         </div>
       </header>
 
-      <section class="p-8 overflow-y-auto view-content">
-        <NuxtPage />
+      <section class="flex-1 overflow-y-auto p-8 relative">
+        <div class="max-w-7xl mx-auto w-full">
+          <NuxtPage />
+        </div>
       </section>
     </main>
-  </div>
+  </UDashboardGroup>
 </template>
 
 <script setup lang="ts">
+interface NavigationItem {
+  label: string;
+  icon?: string;
+  to?: string;
+  exact?: boolean;
+  onSelect?: () => void;
+  type?: "link" | "trigger";
+  defaultOpen?: boolean;
+  children?: NavigationItem[];
+  hidden?: boolean;
+  condition?: () => boolean;
+}
+
 const route = useRoute();
 const isAdmin = ref(true);
+
 const user = reactive({
   name: "Akarin",
   email: "akarin@secret.base",
 });
 const userStore = useUserStore();
 
-const navigationGroups = computed(() => [
+const allNavigationItems = computed<NavigationItem[]>(() => [
   {
-    type: "single",
     label: "控制台概览",
     icon: "i-heroicons-home",
-    path: "/dash",
+    to: "/dash",
     exact: true,
   },
   {
-    type: "group",
     label: "个人中心",
-    items: [
+    type: "trigger",
+    defaultOpen: true,
+    children: [
       {
         label: "个人资料",
         icon: "i-heroicons-user-circle",
-        path: "/dash/user/profile",
+        to: "/dash/user/profile",
       },
       {
         label: "我的消息",
         icon: "i-heroicons-chat-bubble-left-right",
-        path: "/dash/user/messages",
+        to: "/dash/user/messages",
       },
     ],
   },
-  ...(isAdmin.value
-    ? [
-        {
-          type: "group",
-          label: "管理后台",
-          items: [
-            {
-              label: "用户管理",
-              icon: "i-heroicons-user-group",
-              path: "/dash/admin/users",
-            },
-            {
-              label: "邀请码管理",
-              icon: "i-heroicons-ticket",
-              path: "/dash/admin/invites",
-            },
-            {
-              label: "站点设置",
-              icon: "i-heroicons-cog-6-tooth",
-              path: "/dash/admin/settings",
-            },
-          ],
-        },
-      ]
-    : []),
   {
-    type: "single",
+    label: "管理后台",
+    type: "trigger",
+    condition: () => isAdmin.value,
+    defaultOpen: false,
+    children: [
+      {
+        label: "用户管理",
+        icon: "i-heroicons-user-group",
+        to: "/dash/admin/users",
+      },
+      {
+        label: "邀请码管理",
+        icon: "i-heroicons-ticket",
+        to: "/dash/admin/invites",
+      },
+      {
+        label: "站点设置",
+        icon: "i-heroicons-cog-6-tooth",
+        to: "/dash/admin/settings",
+      },
+    ],
+  },
+  {
     label: "控制台",
     icon: "i-heroicons-command-line",
-    path: "/dash/console",
+    to: "/dash/console",
     exact: true,
     hidden: true,
   },
 ]);
 
-const getMatchMode = (item: any) => {
-  return (item.exact ?? true) ? "exact-active-class" : "active-class";
-};
-
-const isGroupActive = (group: any) => {
-  if (group.type !== "group") return false;
-  return group.items.some((item: any) => route.path.startsWith(item.path));
-};
+const sidebarItems = computed(() => {
+  return allNavigationItems.value
+    .filter((item) => !item.hidden)
+    .filter((item) => !item.condition || item.condition());
+});
 
 const breadcrumbItems = computed(() => {
-  const flatItems = navigationGroups.value.flatMap((g: any) =>
-    g.type === "single"
-      ? [{ label: g.label, icon: g.icon, path: g.path }]
-      : g.items || [],
-  );
-  const current = flatItems.find((i) => i.path === route.path);
+  const flatItems: NavigationItem[] = [];
 
+  allNavigationItems.value.forEach((item) => {
+    if (item.condition && !item.condition()) return;
+
+    if (item.children) {
+      flatItems.push(...item.children);
+    } else {
+      flatItems.push(item);
+    }
+  });
+
+  const current = flatItems.find((i) => i.to === route.path);
   return [
     { label: "控制台", to: "/dash" },
     ...(current ? [{ label: current.label }] : []),
@@ -205,21 +206,22 @@ onMounted(() => {
 </script>
 
 <style scoped>
-@reference "~/assets/css/main.css";
+@reference '~/assets/css/main.css';
 
-.admin-layout {
-  @apply min-h-screen flex bg-slate-950 text-slate-300;
+.bg-grid-slate {
+  background-image: radial-gradient(
+    circle at 2px 2px,
+    rgba(51, 65, 85, 0.15) 1px,
+    transparent 0
+  );
+  background-size: 24px 24px;
 }
-.sidebar {
-  @apply w-64 border-r border-slate-900 bg-slate-950/80 backdrop-blur-xl flex flex-col sticky top-0 h-screen;
+
+:deep(.UDashboardSidebar) {
+  @apply h-full;
 }
-.brand-area {
-  @apply p-6 text-center font-black tracking-tighter text-xl text-white border-b border-slate-900;
-}
-.content-wrapper {
-  @apply flex-1 flex flex-col min-w-0;
-}
-.top-nav {
-  @apply h-16 border-b border-slate-900 px-8 flex items-center justify-between bg-slate-950/50 backdrop-blur-md sticky top-0 z-10;
+
+:deep(.UNavigationMenu) {
+  --ui-primary: theme("colors.blue.500");
 }
 </style>
