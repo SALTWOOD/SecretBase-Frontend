@@ -4,8 +4,10 @@
       class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8"
     >
       <div>
-        <h1 class="text-2xl font-bold text-white tracking-tight">用户管理</h1>
-        <p class="text-slate-400 text-sm mt-1">
+        <h1 class="text-2xl font-bold text-highlighted tracking-tight">
+          用户管理
+        </h1>
+        <p class="text-muted text-sm mt-1">
           查看系统中的所有注册用户并管理其权限
         </p>
       </div>
@@ -22,7 +24,7 @@
       </div>
     </div>
 
-    <UCard class="mb-6 bg-slate-900/20 border-slate-800">
+    <UCard class="mb-6 bg-(--ui-bg-elevated)/50 border border-default">
       <div class="flex flex-wrap items-center gap-4">
         <UInput
           v-model="search"
@@ -38,7 +40,9 @@
       </div>
     </UCard>
 
-    <UCard class="glass-card overflow-hidden">
+    <UCard
+      class="glass-card overflow-hidden bg-(--ui-bg-elevated)/40 border border-default backdrop-blur-xl shadow-xl"
+    >
       <UTable :data="filteredUsers" :columns="columns" :loading="loading">
         <template #username-cell="{ row }">
           <UserCell
@@ -202,9 +206,8 @@ onMounted(() => {
 @reference "~/assets/css/main.css";
 
 .glass-card {
-  @apply bg-slate-900/40 backdrop-blur-xl border-slate-800 shadow-xl;
+  @apply backdrop-blur-xl border border-default shadow-xl;
 }
-
 :deep(table) {
   @apply text-sm;
 }

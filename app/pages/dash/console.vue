@@ -1,22 +1,23 @@
 <template>
   <div
-    class="flex flex-col h-150 bg-slate-950 rounded-xl border border-slate-800 font-mono shadow-2xl overflow-hidden"
+    class="flex flex-col h-150 bg-elevated rounded-xl border border-default font-mono shadow-2xl overflow-hidden"
   >
     <div
       ref="outputRef"
       class="flex-1 overflow-y-auto p-4 space-y-2 custom-scrollbar"
     >
-      <div v-if="logs.length === 0" class="text-slate-600 italic text-sm">
+      <div v-if="logs.length === 0" class="text-muted italic text-sm">
         Terminal ready. Context: [api, console, ref, reactive]
       </div>
+
       <div
         v-for="(log, index) in logs"
         :key="index"
         :class="getLogClass(log.type)"
-        class="text-sm border-l-2 pl-3 bg-slate-900/30 py-1"
+        class="text-sm border-l-2 pl-3 bg-primary/5 py-1"
       >
         <div class="flex justify-between opacity-50 text-[10px] mb-1">
-          <span>{{ log.type.toUpperCase() }}</span>
+          <span class="font-bold">{{ log.type.toUpperCase() }}</span>
           <span>{{ log.time }}</span>
         </div>
         <pre class="whitespace-pre-wrap break-all leading-relaxed">{{
@@ -25,9 +26,9 @@
       </div>
     </div>
 
-    <div class="p-4 bg-slate-900/80 border-t border-slate-800 backdrop-blur-md">
+    <div class="p-4 bg-(--ui-bg)/80 border-t border-default backdrop-blur-md">
       <div class="flex gap-2 items-center">
-        <span class="text-primary-500 font-bold">$</span>
+        <span class="text-primary font-bold">$</span>
         <UInput
           v-model="input"
           class="flex-1"
@@ -139,9 +140,9 @@ const addLog = (type: Log["type"], content: string) => {
 
 const getLogClass = (type: Log["type"]) => {
   return {
-    "border-blue-500/50 text-blue-100": type === "in",
-    "border-emerald-500/50 text-emerald-100": type === "out",
-    "border-red-500/50 text-red-200": type === "err",
+    "border-primary/50 text-highlighted": type === "in",
+    "border-success/50 text-success": type === "out",
+    "border-error/50 text-error": type === "err",
   };
 };
 </script>
@@ -153,7 +154,7 @@ const getLogClass = (type: Log["type"]) => {
   width: 6px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  @apply bg-slate-800 rounded;
+  @apply bg-border rounded;
 }
 pre {
   font-family: "Fira Code", "Cascadia Code", ui-monospace, monospace;

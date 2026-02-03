@@ -1,12 +1,12 @@
 <template>
-  <UModal v-model:open="open" @update:open="(val) => (open = val)">
+  <UModal v-model:open="open">
     <template #content>
       <div
-        class="p-4 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center"
+        class="p-4 border-b border-default flex justify-between items-center"
       >
-        <span class="font-bold">{{ title }}</span>
+        <span class="font-bold text-foreground">{{ title }}</span>
         <UButton
-          color="primary"
+          color="neutral"
           variant="ghost"
           icon="i-heroicons-x-mark"
           @click="open = false"
@@ -29,23 +29,23 @@
 
         <UFormField
           label="有效时间 (小时)"
-          description="表示该邀请码在创建时间后多久过期"
+          description="表示该邀请码在创建时间后多久过期 (0 为永久)"
         >
           <div class="space-y-3">
             <UInput
               v-model="formData.hoursValid"
               type="number"
-              min="1"
+              min="0"
               class="w-full"
               icon="i-heroicons-clock"
             />
-            <div class="flex gap-2">
+            <div class="flex flex-wrap gap-1.5">
               <UButton
                 v-for="p in timePresets"
                 :key="p.value"
                 :label="p.label"
                 size="xs"
-                variant="outline"
+                variant="subtle"
                 color="primary"
                 @click="formData.hoursValid = p.value"
               />
@@ -54,28 +54,29 @@
         </UFormField>
       </div>
 
-      <div
-        class="p-4 border-t border-gray-200 dark:border-gray-800 flex justify-end gap-2"
-      >
-        <UButton color="primary" variant="ghost" @click="open = false">
+      <div class="p-4 border-t border-default flex justify-end gap-2">
+        <UButton color="neutral" variant="ghost" @click="open = false">
           取消
         </UButton>
-        <UButton :loading="loading" @click="onSubmit"> 保存 </UButton>
+        <UButton :loading="loading" @click="onSubmit"> 确认生成 </UButton>
       </div>
     </template>
   </UModal>
 </template>
 
 <script setup lang="ts">
+interface InviteFormData {
+  uses: number;
+  hoursValid: number;
+}
+
 const open = defineModel<boolean>("open");
 const loading = defineModel<boolean>("loading");
 const title = defineModel<string>("title", {
   default: "生成邀请码",
 });
-const formData = defineModel<{
-  uses: number;
-  hoursValid: number;
-}>("formData", {
+
+const formData = defineModel<InviteFormData>("formData", {
   default: () => ({
     uses: 1,
     hoursValid: 24,
@@ -83,23 +84,20 @@ const formData = defineModel<{
 });
 
 const emit = defineEmits<{
-  success: [data: { uses: number; hoursValid: number }];
+  success: [data: InviteFormData];
 }>();
 
-// Quick time presets (Hours)
 const timePresets = [
-  { label: "1 小时", value: 1 },
-  { label: "1 天", value: 24 },
-  { label: "7 天", value: 168 },
-  { label: "1 个月", value: 720 },
-  { label: "3 个月", value: 2160 },
-  { label: "1 年", value: 8760 },
-  { label: "永久有效", value: 0 },
+  { label: "1h", value: 1 },
+  { label: "1d", value: 24 },
+  { label: "7d", value: 168 },
+  { label: "30d", value: 720 },
+  { label: "永久", value: 0 },
 ];
 
-async function onSubmit() {
-  emit("success", {
-    ...formData.value,
-  });
+function onSubmit() {
+  if (formData.value.uses < 1) return;
+
+  emit("success", { ...formData.value });
 }
 </script>

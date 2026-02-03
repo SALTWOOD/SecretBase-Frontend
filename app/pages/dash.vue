@@ -3,16 +3,16 @@
     <UDashboardSidebar
       collapsible
       resizable
-      class="bg-slate-950/80 border-r border-slate-900 backdrop-blur-xl"
+      class="bg-background-elevated/80 border-r border-default backdrop-blur-xl"
     >
       <template #header="{ collapsed }">
-        <div
-          class="p-4 text-center font-black tracking-tighter text-xl text-white"
-        >
-          <span class="text-blue-500" :class="collapsed ? 'block' : ''"
+        <div class="p-4 text-center font-black tracking-tighter text-xl">
+          <span class="text-primary" :class="collapsed ? 'block' : ''"
             >SECRET</span
           >
-          <span :class="collapsed ? 'hidden' : ''">BASE</span>
+          <span class="text-highlighted" :class="collapsed ? 'hidden' : ''"
+            >BASE</span
+          >
         </div>
       </template>
 
@@ -40,22 +40,28 @@
           >
             <UAvatar src="https://github.com/nuxt.png" size="sm" />
             <div v-if="!collapsed" class="text-left ml-2 overflow-hidden">
-              <p class="text-sm font-bold text-white truncate">
+              <p class="text-sm font-bold text-highlighted truncate">
                 {{ user?.name }}
               </p>
-              <p class="text-xs text-slate-500 truncate">{{ user?.email }}</p>
+              <p class="text-xs text-muted truncate">{{ user?.email }}</p>
             </div>
+            <UIcon
+              v-if="!collapsed"
+              name="i-lucide-chevrons-up-down"
+              class="ml-auto text-muted"
+            />
           </UButton>
         </UDropdown>
       </template>
     </UDashboardSidebar>
 
-    <main class="flex-1 flex flex-col min-w-0 bg-slate-950">
+    <main class="flex-1 flex flex-col min-w-0 bg-default">
       <header
-        class="h-16 border-b border-slate-900 px-8 flex items-center justify-between bg-slate-950/50 backdrop-blur-md shrink-0"
+        class="h-16 border-b border-default px-8 flex items-center justify-between bg-(--ui-bg)/50 backdrop-blur-md shrink-0"
       >
         <UBreadcrumb :items="breadcrumbItems" />
         <div class="flex items-center gap-3">
+          <UColorModeButton />
           <UButton icon="i-heroicons-bell" variant="ghost" color="neutral" />
           <UButton
             icon="i-heroicons-magnifying-glass"
@@ -65,7 +71,7 @@
         </div>
       </header>
 
-      <section class="flex-1 overflow-y-auto p-8 relative">
+      <section class="flex-1 overflow-y-auto p-8 relative bg-grid-slate">
         <div class="max-w-7xl mx-auto w-full">
           <NuxtPage />
         </div>

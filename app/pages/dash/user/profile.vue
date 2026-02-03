@@ -1,21 +1,23 @@
 <template>
   <div class="space-y-6">
     <div>
-      <h1 class="text-2xl font-bold text-white">个人资料</h1>
-      <p class="text-slate-400 text-sm">管理你的账户信息与安全设置</p>
+      <h1 class="text-2xl font-bold text-highlighted">个人资料</h1>
+      <p class="text-muted text-sm">管理你的账户信息与安全设置</p>
     </div>
 
-    <UCard class="glass-card">
+    <UCard
+      class="glass-card bg-(--ui-bg-elevated)/40 border border-default shadow-xl"
+    >
       <template #header>
-        <h3 class="font-bold text-slate-200">基本信息</h3>
+        <h3 class="font-bold text-highlighted">基本信息</h3>
       </template>
 
       <form @submit.prevent="updateProfile" class="space-y-4">
         <div class="flex items-center gap-6 mb-6">
           <UAvatar src="https://github.com/nuxt.png" size="xl" />
-          <UButton color="neutral" variant="ghost" icon="i-heroicons-camera"
-            >更换头像</UButton
-          >
+          <UButton color="neutral" variant="ghost" icon="i-heroicons-camera">
+            更换头像
+          </UButton>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -24,17 +26,18 @@
               v-model="user.name"
               :disabled="loading"
               placeholder="你的名字"
+              variant="subtle"
             />
           </UFormField>
           <UFormField label="电子邮箱">
-            <UInput v-model="user.email" disabled />
+            <UInput v-model="user.email" disabled variant="subtle" />
           </UFormField>
         </div>
 
         <div class="flex justify-end">
-          <UButton type="submit" color="primary" :loading="loading"
-            >保存更改</UButton
-          >
+          <UButton type="submit" color="primary" :loading="loading">
+            保存更改
+          </UButton>
         </div>
       </form>
     </UCard>
@@ -88,4 +91,12 @@ onMounted(async () => {
 
 <style scoped>
 @reference "~/assets/css/main.css";
+
+.glass-card {
+  @apply backdrop-blur-xl transition-all duration-300;
+}
+
+:deep(.u-form-field-label) {
+  @apply text-highlighted font-semibold;
+}
 </style>

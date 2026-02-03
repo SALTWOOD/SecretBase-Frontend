@@ -1,12 +1,12 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-slate-950 p-4">
+  <div class="min-h-screen flex items-center justify-center bg-background p-4">
     <UCard
-      class="w-full max-w-md bg-slate-900/50 backdrop-blur-xl border-slate-800 shadow-2xl"
+      class="w-full max-w-md bg-white/5 dark:bg-black/20 backdrop-blur-xl border-default shadow-2xl"
     >
       <template #header>
         <div class="text-center">
-          <h2 class="text-2xl font-bold text-white">欢迎回来</h2>
-          <p class="text-slate-400 text-sm mt-1">进入你的秘密基地</p>
+          <h2 class="text-2xl font-bold">欢迎回来</h2>
+          <p class="text-muted-foreground text-sm mt-1">进入你的秘密基地</p>
         </div>
       </template>
 
@@ -34,7 +34,7 @@
         <client-only>
           <UFormField label="人机验证">
             <div
-              class="cap-wrapper w-full overflow-hidden rounded-lg border border-slate-800 bg-slate-900/40"
+              class="cap-wrapper w-full overflow-hidden rounded-lg border border-default bg-muted/20"
             >
               <cap-widget
                 :data-cap-api-endpoint="api"
@@ -58,9 +58,9 @@
       </form>
 
       <template #footer>
-        <p class="text-center text-sm text-slate-500">
+        <p class="text-center text-sm text-muted-foreground">
           还没有账号？
-          <NuxtLink to="/register" class="text-primary-500 hover:underline"
+          <NuxtLink to="/register" class="text-primary hover:underline"
             >立即注册</NuxtLink
           >
         </p>
@@ -83,8 +83,7 @@ const userStore = useUserStore();
 
 const handleCapSolve = (e: CustomEvent) => {
   capToken.value = e.detail.token;
-  console.log(e);
-  console.log("CAP Solved, token:", capToken.value);
+  console.log("CAP Solved");
 };
 
 const handleCapReset = () => {
@@ -94,24 +93,28 @@ const handleCapReset = () => {
 
 const handleLogin = async () => {
   loading.value = true;
-  const response = await postAuthLogin({
-    body: {
-      email: form.email,
-      password: form.password,
-      captchaToken: capToken.value,
-    },
-  });
-  if (!response.error && response.data.user) {
-    toast.add({
-      title: "Login success",
-      color: "success",
+  try {
+    const response = await postAuthLogin({
+      body: {
+        email: form.email,
+        password: form.password,
+        captchaToken: capToken.value,
+      },
     });
-    userStore.$patch({
-      user: response.data.user,
-      isLoggedIn: true,
-    });
+
+    if (!response.error && response.data?.user) {
+      toast.add({
+        title: "Login success",
+        color: "success",
+      });
+      userStore.$patch({
+        user: response.data.user,
+        isLoggedIn: true,
+      });
+    }
+  } finally {
+    loading.value = false;
   }
-  loading.value = false;
 };
 </script>
 

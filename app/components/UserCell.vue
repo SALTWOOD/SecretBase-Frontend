@@ -7,8 +7,8 @@
     />
 
     <div class="flex flex-col">
-      <span class="text-white font-medium">{{ username }}</span>
-      <span class="text-xs text-slate-500">{{ email }}</span>
+      <span class="text-default font-medium">{{ username }}</span>
+      <span class="text-xs text-muted">{{ email }}</span>
     </div>
   </div>
 </template>

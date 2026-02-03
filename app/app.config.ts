@@ -19,12 +19,12 @@ export default defineAppConfig({
     },
     card: {
       slots: {
-        root: 'bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-2xl shadow-2xl ring-0'
+        root: 'bg-(--ui-bg-elevated)/50 backdrop-blur-xl border border-(--ui-border) rounded-2xl shadow-2xl ring-0'
       }
     },
     input: {
       slots: {
-        root: 'rounded-lg bg-slate-900/50 border-slate-800 focus-within:ring-2 focus-within:ring-pink-500'
+        root: 'rounded-lg bg-(--ui-bg-elevated)/50 border-(--ui-border) focus-within:ring-2 focus-within:ring-(--ui-primary)'
       }
     }
   }

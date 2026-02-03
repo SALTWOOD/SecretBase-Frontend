@@ -2,15 +2,19 @@
   <div class="view-content">
     <div class="flex justify-between items-end mb-8">
       <div>
-        <h1 class="text-2xl font-bold text-white tracking-tight">邀请码管理</h1>
-        <p class="text-slate-400 text-sm">生成并分发注册邀请码</p>
+        <h1 class="text-2xl font-bold text-highlighted tracking-tight">
+          邀请码管理
+        </h1>
+        <p class="text-muted text-sm">生成并分发注册邀请码</p>
       </div>
       <UButton color="primary" icon="i-heroicons-plus" @click="openForm(false)">
         生成新邀请码
       </UButton>
     </div>
 
-    <UCard class="glass-card">
+    <UCard
+      class="glass-card bg-(--ui-bg-elevated)/40 border border-default shadow-xl overflow-hidden"
+    >
       <UTable :data="inviteCodes" :columns="columns">
         <template #code-cell="{ row }">
           <div class="flex items-center gap-2 group">
@@ -18,14 +22,14 @@
               variant="subtle"
               color="primary"
               size="lg"
-              class="font-mono cursor-pointer hover:ring-1 hover:ring-primary-500 transition-all"
+              class="font-mono cursor-pointer hover:ring-1 hover:ring-primary transition-all"
               @click="copyToClipboard(row.original.code!)"
             >
               {{ row.original.code }}
             </UBadge>
             <UIcon
               name="i-heroicons-clipboard-document"
-              class="w-4 h-4 text-slate-500 opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity"
+              class="w-4 h-4 text-muted opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity"
               @click="copyToClipboard(row.original.code!)"
             />
           </div>
@@ -40,7 +44,7 @@
         </template>
 
         <template #createdAt-cell="{ row }">
-          <span class="text-slate-500 text-sm">
+          <span class="text-muted text-sm">
             {{ row.original.createdAt?.toLocaleString() }}
           </span>
         </template>
@@ -251,3 +255,11 @@ watch(
 );
 onMounted(() => refresh());
 </script>
+
+<style scoped>
+@reference "~/assets/css/main.css";
+
+.glass-card {
+  @apply backdrop-blur-xl transition-all duration-300;
+}
+</style>

@@ -2,8 +2,8 @@
   <div class="space-y-6">
     <div class="flex justify-between items-end">
       <div>
-        <h1 class="text-2xl font-bold text-white">我的消息</h1>
-        <p class="text-slate-400 text-sm">你收到的系统通知与邀请状态</p>
+        <h1 class="text-2xl font-bold text-highlighted">我的消息</h1>
+        <p class="text-muted text-sm">你收到的系统通知与邀请状态</p>
       </div>
       <UButton
         variant="ghost"
@@ -15,8 +15,11 @@
       </UButton>
     </div>
 
-    <UCard class="glass-card" :ui="{ body: 'p-0' }">
-      <div v-if="messages.length === 0" class="p-12 text-center text-slate-500">
+    <UCard
+      class="glass-card bg-(--ui-bg-elevated)/40 border border-default shadow-xl"
+      :ui="{ body: 'p-0' }"
+    >
+      <div v-if="messages.length === 0" class="p-12 text-center text-muted">
         <UIcon
           name="i-heroicons-inbox"
           class="w-12 h-12 mx-auto mb-2 opacity-20"
@@ -24,11 +27,11 @@
         暂无消息
       </div>
 
-      <ul v-else class="divide-y divide-slate-800">
+      <ul v-else class="divide-y divide-default">
         <li
           v-for="msg in messages"
           :key="msg.id"
-          class="p-4 hover:bg-slate-900/30 transition-colors flex gap-4"
+          class="p-4 hover:bg-primary/5 transition-colors flex gap-4"
         >
           <div class="mt-1">
             <span
@@ -36,17 +39,19 @@
                 'block w-2 h-2 rounded-full',
                 msg.read
                   ? 'bg-transparent'
-                  : 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]',
+                  : 'bg-primary shadow-[0_0_8px_var(--ui-primary)]',
               ]"
             ></span>
           </div>
 
           <div class="flex-1">
             <div class="flex justify-between mb-1">
-              <h4 class="font-bold text-slate-200 text-sm">{{ msg.title }}</h4>
-              <span class="text-xs text-slate-500">{{ msg.time }}</span>
+              <h4 class="font-bold text-highlighted text-sm">
+                {{ msg.title }}
+              </h4>
+              <span class="text-xs text-muted">{{ msg.time }}</span>
             </div>
-            <p class="text-sm text-slate-400 leading-relaxed">
+            <p class="text-sm text-muted leading-relaxed">
               {{ msg.content }}
             </p>
           </div>
@@ -89,4 +94,8 @@ const markAllAsRead = () => {
 
 <style scoped>
 @reference "~/assets/css/main.css";
+
+.glass-card {
+  @apply backdrop-blur-xl overflow-hidden;
+}
 </style>
