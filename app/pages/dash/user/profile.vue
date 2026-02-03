@@ -14,7 +14,7 @@
 
       <form @submit.prevent="updateProfile" class="space-y-4">
         <div class="flex items-center gap-6 mb-6">
-          <UAvatar src="https://github.com/nuxt.png" size="xl" />
+          <UAvatar :src="form.avatar" size="xl" />
           <UButton color="neutral" variant="ghost" icon="i-heroicons-camera">
             更换头像
           </UButton>
@@ -56,6 +56,7 @@ const toast = useToast();
 const form = reactive({
   username: "",
   email: "",
+  avatar: "",
 });
 
 const updateProfile = async () => {
@@ -80,6 +81,7 @@ onMounted(async () => {
   user.value = userStore.user;
   form.username = user.value?.username || "";
   form.email = user.value?.email || "";
+  form.avatar = user.value?.avatar || "";
   loading.value = false;
 });
 </script>
