@@ -189,6 +189,10 @@ const refresh = async () => {
   }
 };
 
+watch(
+  () => page.value.page,
+  () => refresh(),
+);
 onMounted(() => {
   refresh();
 });
