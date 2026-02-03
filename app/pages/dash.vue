@@ -205,9 +205,7 @@ const userMenu = [
         await postAuthLogout();
         userStore.reset();
         toast.add({ title: "已退出登录", color: "success" });
-        setTimeout(() => {
           navigateTo({ path: "/login", query: { redirect: route.fullPath } });
-        }, 5000);
       },
     },
   ],
