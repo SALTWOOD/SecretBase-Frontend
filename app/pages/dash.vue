@@ -5,27 +5,27 @@
       resizable
       class="bg-background-elevated/80 border-r border-default backdrop-blur-xl"
     >
-      <template #header="{ collapsed }">
-        <div class="p-4 text-center font-black tracking-tighter text-xl">
-          <span class="text-primary" :class="collapsed ? 'block' : ''"
-            >SECRET</span
-          >
-          <span class="text-highlighted" :class="collapsed ? 'hidden' : ''"
-            >BASE</span
-          >
-        </div>
-      </template>
-
       <template #default="{ collapsed }">
+        <div
+          class="flex items-center justify-center h-16 shrink-0 overflow-hidden transition-all duration-300"
+        >
+          <div class="font-black tracking-tighter text-xl whitespace-nowrap">
+            <span class="text-primary">SECRET</span>
+            <span v-show="!collapsed" class="text-highlighted ml-1">BASE</span>
+          </div>
+        </div>
+
         <UDashboardSearchButton
           :collapsed="collapsed"
-          class="bg-transparent mx-4 mb-4"
+          class="bg-transparent ring-default"
         />
+
         <UNavigationMenu
           :collapsed="collapsed"
           :items="sidebarItems"
           orientation="vertical"
-          class="mx-2"
+          popover
+          tooltipz
         />
       </template>
 
@@ -38,8 +38,11 @@
             :square="collapsed"
             class="justify-start px-2"
           >
-            <UAvatar :src="user?.avatar" size="sm" />
-            <div v-if="!collapsed" class="text-left ml-2 overflow-hidden">
+            <UAvatar :src="user?.avatar" size="sm" class="shrink-0" />
+            <div
+              v-if="!collapsed"
+              class="text-left ml-2 overflow-hidden flex-1"
+            >
               <p class="text-sm font-bold text-highlighted truncate">
                 {{ user?.username }}
               </p>
@@ -48,7 +51,7 @@
             <UIcon
               v-if="!collapsed"
               name="i-lucide-chevrons-up-down"
-              class="ml-auto text-muted"
+              class="ml-auto text-muted shrink-0"
             />
           </UButton>
         </UDropdownMenu>
@@ -57,9 +60,13 @@
 
     <main class="flex-1 flex flex-col min-w-0 bg-default">
       <header
-        class="h-16 border-b border-default px-8 flex items-center justify-between bg-(--ui-bg)/50 backdrop-blur-md shrink-0"
+        class="h-16 border-b border-default px-4 flex items-center justify-between bg-(--ui-bg)/50 backdrop-blur-md shrink-0"
       >
-        <UBreadcrumb :items="breadcrumbItems" />
+        <div class="flex items-center gap-2">
+          <UDashboardSidebarCollapse variant="ghost" color="neutral" />
+          <UBreadcrumb :items="breadcrumbItems" />
+        </div>
+
         <div class="flex items-center gap-3">
           <UColorModeButton />
           <UButton icon="i-heroicons-bell" variant="ghost" color="neutral" />
