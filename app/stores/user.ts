@@ -5,6 +5,7 @@ import { getUserProfile } from "~~/packages/api/src/sdk.gen";
 const initialState = {
   user: null as User | null,
   isLoggedIn: false,
+  expires: null as Date | null,
 };
 
 export const useUserStore = defineStore("user", {

@@ -111,6 +111,7 @@ const handleLogin = async () => {
       userStore.$patch({
         user: response.data.user,
         isLoggedIn: true,
+        expires: response.data.expires,
       });
       navigateTo((route.query.redirect as string) ?? "/dash");
     }
