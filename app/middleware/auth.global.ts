@@ -9,7 +9,7 @@ export default defineNuxtRouteMiddleware((to) => {
 
   if (!userStore.isLoggedIn && isProtected) {
     return navigateTo({
-      path: "/login",
+      path: "/auth/login",
       query: { redirect: to.fullPath },
     });
   }

@@ -92,7 +92,7 @@
       <template #footer>
         <p class="text-center text-sm text-muted-foreground">
           已有账号？
-          <NuxtLink to="/login" class="text-primary hover:underline"
+          <NuxtLink to="/auth/login" class="text-primary hover:underline"
             >返回登录</NuxtLink
           >
         </p>
