@@ -1,13 +1,9 @@
 <template>
-  <UDashboardGroup class="h-screen overflow-hidden">
-    <UDashboardSidebar
-      collapsible
-      resizable
-      class="bg-background-elevated/80 border-r border-default backdrop-blur-xl"
-    >
+  <UDashboardGroup>
+    <UDashboardSidebar collapsible resizable>
       <template #default="{ collapsed }">
         <div
-          class="flex items-center justify-center h-16 shrink-0 overflow-hidden transition-all duration-300"
+          class="flex items-center justify-center py-4 shrink-0 overflow-hidden transition-all"
         >
           <div class="font-black tracking-tighter text-xl whitespace-nowrap">
             <span class="text-primary">SECRET</span>
@@ -15,17 +11,12 @@
           </div>
         </div>
 
-        <UDashboardSearchButton
-          :collapsed="collapsed"
-          class="bg-transparent ring-default"
-        />
+        <UDashboardSearchButton :collapsed="collapsed" />
 
         <UNavigationMenu
           :collapsed="collapsed"
           :items="sidebarItems"
           orientation="vertical"
-          popover
-          tooltipz
         />
       </template>
 
@@ -38,7 +29,7 @@
             :square="collapsed"
             class="justify-start px-2"
           >
-            <UAvatar :src="user?.avatar" size="sm" class="shrink-0" />
+            <UAvatar :src="user?.avatar" size="sm" />
             <div
               v-if="!collapsed"
               class="text-left ml-2 overflow-hidden flex-1"
@@ -58,32 +49,32 @@
       </template>
     </UDashboardSidebar>
 
-    <main class="flex-1 flex flex-col min-w-0 bg-default">
-      <header
-        class="h-16 border-b border-default px-4 flex items-center justify-between bg-(--ui-bg)/50 backdrop-blur-md shrink-0"
-      >
-        <div class="flex items-center gap-2">
-          <UDashboardSidebarCollapse variant="ghost" color="neutral" />
-          <UBreadcrumb :items="breadcrumbItems" />
-        </div>
+    <UDashboardPanel>
+      <template #header>
+        <UDashboardNavbar>
+          <template #left>
+            <UDashboardSidebarCollapse />
+            <UBreadcrumb :items="breadcrumbItems" class="ml-2" />
+          </template>
 
-        <div class="flex items-center gap-3">
-          <UColorModeButton />
-          <UButton icon="i-heroicons-bell" variant="ghost" color="neutral" />
-          <UButton
-            icon="i-heroicons-magnifying-glass"
-            variant="ghost"
-            color="neutral"
-          />
-        </div>
-      </header>
+          <template #right>
+            <UColorModeButton />
+            <UButton icon="i-heroicons-bell" variant="ghost" color="neutral" />
+            <UButton
+              icon="i-heroicons-magnifying-glass"
+              variant="ghost"
+              color="neutral"
+            />
+          </template>
+        </UDashboardNavbar>
+      </template>
 
-      <section class="flex-1 overflow-y-auto p-8 relative bg-grid-slate">
+      <template #body>
         <div class="max-w-7xl mx-auto w-full">
           <NuxtPage />
         </div>
-      </section>
-    </main>
+      </template>
+    </UDashboardPanel>
   </UDashboardGroup>
 </template>
 
