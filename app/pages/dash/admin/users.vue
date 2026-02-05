@@ -22,7 +22,7 @@
           class="w-full max-w-xs" />
         <USelectMenu v-model="selectedStatus" :items="Object.values(UserStatusFilter)" class="w-40" />
         <USelectMenu v-model="selectedRole" :items="Object.values(UserRoleFilter)" class="w-40" />
-        <UButton color="neutral" variant="ghost" icon="i-lucide-trash-2" @click="resetFilters" />
+        <UButton color="neutral" variant="ghost" icon="i-lucide-rotate-ccw" @click="resetFilters" />
       </div>
     </UCard>
 
