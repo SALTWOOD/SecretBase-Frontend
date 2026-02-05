@@ -1,8 +1,6 @@
 <template>
   <div class="view-content">
-    <div
-      class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8"
-    >
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
       <div>
         <h1 class="text-2xl font-bold text-highlighted tracking-tight">
           用户管理
@@ -12,13 +10,7 @@
         </p>
       </div>
       <div class="flex gap-2">
-        <UButton
-          color="neutral"
-          variant="subtle"
-          icon="i-heroicons-arrow-path"
-          :loading="loading"
-          @click="refresh"
-          >刷新
+        <UButton color="neutral" variant="subtle" icon="i-heroicons-arrow-path" :loading="loading" @click="refresh">刷新
         </UButton>
         <UButton color="primary" icon="i-heroicons-user-plus">新增用户</UButton>
       </div>
@@ -26,68 +18,39 @@
 
     <UCard class="mb-6 bg-(--ui-bg-elevated)/50 border border-default">
       <div class="flex flex-wrap items-center gap-4">
-        <UInput
-          v-model="search"
-          placeholder="搜索用户名、邮箱..."
-          icon="i-heroicons-magnifying-glass"
-          class="w-full max-w-xs"
-        />
-        <USelectMenu
-          v-model="selectedStatus"
-          :options="['全部状态', '正常', '已封禁']"
-          class="w-40"
-        />
+        <UInput v-model="search" placeholder="搜索用户名、邮箱..." icon="i-heroicons-magnifying-glass"
+          class="w-full max-w-xs" />
+        <USelectMenu v-model="selectedStatus" :items="Object.values(UserStatusFilter)" class="w-40" />
+        <USelectMenu v-model="selectedRole" :items="Object.values(UserRoleFilter)" class="w-40" />
+        <UButton color="neutral" variant="ghost" icon="i-heroicons-trash" @click="resetFilters" />
       </div>
     </UCard>
 
-    <UCard
-      class="glass-card overflow-hidden bg-(--ui-bg-elevated)/40 border border-default backdrop-blur-xl shadow-xl"
-    >
+    <UCard class="glass-card overflow-hidden bg-(--ui-bg-elevated)/40 border border-default backdrop-blur-xl shadow-xl">
       <UTable :data="filteredUsers" :columns="columns" :loading="loading">
         <template #username-cell="{ row }">
-          <UserCell
-            :username="row.original.username"
-            :email="row.original.email"
-            :avatar="row.original.avatar"
-          />
+          <UserCell :username="row.original.username" :email="row.original.email" :avatar="row.original.avatar" />
         </template>
 
         <template #role-cell="{ row }">
-          <UBadge variant="subtle" color="neutral" size="md">
-            {{ getRoleText(row.original.role) }}
-          </UBadge>
+          <RoleBadge :role="row.original.role" />
         </template>
 
         <template #isBanned-cell="{ row }">
-          <UBadge
-            :color="row.original.isBanned ? 'error' : 'success'"
-            variant="subtle"
-            size="md"
-          >
+          <UBadge :color="row.original.isBanned ? 'error' : 'success'" variant="subtle" size="md">
             {{ row.original.isBanned ? "已封禁" : "正常" }}
           </UBadge>
         </template>
 
         <template #actions-cell="{ row }">
-          <UDropdownMenu
-            :items="getActionItems(row)"
-            :content="{ align: 'end', sideOffset: 8 }"
-          >
-            <UButton
-              color="neutral"
-              variant="ghost"
-              icon="i-heroicons-ellipsis-horizontal"
-            />
+          <UDropdownMenu :items="getActionItems(row)" :content="{ align: 'end', sideOffset: 8 }">
+            <UButton color="neutral" variant="ghost" icon="i-heroicons-ellipsis-horizontal" />
           </UDropdownMenu>
         </template>
       </UTable>
 
       <div class="mt-4 flex justify-center">
-        <UPagination
-          v-model:page="page.page"
-          :total="page.total"
-          :items-per-page="page.size"
-        />
+        <UPagination v-model:page="page.page" :total="page.total" :items-per-page="page.size" />
       </div>
     </UCard>
   </div>
@@ -97,10 +60,24 @@
 import type { User } from "~/types/user";
 import { getAdminUsers } from "~~/packages/api/src/sdk.gen";
 
+enum UserStatusFilter {
+  All = "全部状态",
+  Active = "正常",
+  Banned = "已封禁"
+}
+
+enum UserRoleFilter {
+  All = "全部等级",
+  Admin = "管理",
+  User = "用户",
+  Guest = "访客"
+}
+
 const toast = useToast();
 const loading = ref(false);
 const search = ref("");
-const selectedStatus = ref("全部状态");
+const selectedStatus = ref(UserStatusFilter.All);
+const selectedRole = ref(UserRoleFilter.All);
 const users = ref<User[]>([]);
 
 const page = ref({
@@ -116,26 +93,40 @@ const columns = [
   { accessorKey: "actions", header: "" },
 ];
 
-// 核心修复：筛选逻辑 (字符串选项 -> 匹配布尔值)
+const resetFilters = () => {
+  search.value = "";
+  selectedStatus.value = UserStatusFilter.All;
+  selectedRole.value = UserRoleFilter.All;
+  page.value.page = 1;
+};
+
 const filteredUsers = computed(() => {
   return users.value.filter((u) => {
+    // Search keywords
     const searchStr = search.value.toLowerCase();
     const matchesSearch =
       u.username.toLowerCase().includes(searchStr) ||
       u.email.toLowerCase().includes(searchStr);
 
-    let matchesStatus = true;
-    if (selectedStatus.value === "已封禁") matchesStatus = u.isBanned === true;
-    if (selectedStatus.value === "正常") matchesStatus = u.isBanned === false;
+    // Status
+    const matchesStatus =
+      selectedStatus.value === "全部状态" ||
+      (selectedStatus.value === "已封禁" && u.isBanned) ||
+      (selectedStatus.value === "正常" && !u.isBanned);
 
-    return matchesSearch && matchesStatus;
+    // Permission (Role)
+    const roleMap: Record<string, number[]> = {
+      "管理": [2, 3],
+      "用户": [1],
+      "访客": [0]
+    };
+    const matchesRole =
+      selectedRole.value === "全部等级" ||
+      roleMap[selectedRole.value]?.includes(u.role);
+
+    return matchesSearch && matchesStatus && matchesRole;
   });
 });
-
-const getRoleText = (role: number) => {
-  const roles: Record<number, string> = { 3: "站长", 2: "管理", 1: "用户", 0: "访客" };
-  return roles[role] || "未知";
-};
 
 // 菜单项定义
 const getActionItems = (row: any) => [
@@ -208,6 +199,7 @@ onMounted(() => {
 .glass-card {
   @apply backdrop-blur-xl border border-default shadow-xl;
 }
+
 :deep(table) {
   @apply text-sm;
 }
