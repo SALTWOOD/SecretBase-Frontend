@@ -8,7 +8,7 @@
           <UButton
             v-if="step !== 'select'"
             variant="ghost"
-            icon="i-heroicons-arrow-left"
+            icon="i-lucide-arrow-left"
             class="absolute left-0 top-1/2 -translate-y-1/2"
             @click="step = 'select'"
           />
@@ -70,7 +70,7 @@
       <div v-else-if="step === 'passkey'" class="py-6 text-center space-y-6">
         <div class="flex justify-center">
           <UIcon
-            name="i-heroicons-finger-print"
+            name="i-lucide-fingerprint"
             class="w-16 h-16 text-primary"
             :class="{ 'animate-pulse': loading }"
           />
@@ -137,7 +137,7 @@ const stepDescriptions: Record<Step, string> = {
 }
 
 const availableMethods = computed(() => [
-  { id: 'totp' as Step, label: '动态口令 (TOTP)', icon: 'i-heroicons-clock' },
+  { id: 'totp' as Step, label: '动态口令 (TOTP)', icon: 'i-lucide-clock' },
   { id: 'passkey' as Step, label: '通行密钥 (Passkey)', icon: 'i-heroicons-key' }
 ])
 

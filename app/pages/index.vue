@@ -4,7 +4,7 @@
       <UContainer class="flex items-center justify-between h-16">
         <div class="flex items-center gap-2">
           <UIcon
-            name="i-heroicons-bolt-20-solid"
+            name="i-lucide-zap"
             class="text-(--ui-primary) w-6 h-6"
           />
           <span
@@ -25,7 +25,7 @@
           <UButton
             color="primary"
             to="/dashboard"
-            trailing-icon="i-heroicons-arrow-right-20-solid"
+            trailing-icon="i-lucide-arrow-right"
           >
             控制台
           </UButton>
@@ -68,7 +68,7 @@
             size="xl"
             class="px-8"
             to="/register"
-            trailing-icon="i-heroicons-paper-airplane"
+            trailing-icon="i-lucide-send"
           >
             开始使用
           </UButton>
@@ -78,7 +78,7 @@
             variant="ghost"
             class="px-8 border border-(--ui-border)"
             to="/docs"
-            trailing-icon="i-heroicons-book-open"
+            trailing-icon="i-lucide-book-open"
           >
             查看文档
           </UButton>

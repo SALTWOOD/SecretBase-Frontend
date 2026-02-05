@@ -8,7 +8,7 @@
         <UButton
           color="neutral"
           variant="ghost"
-          icon="i-heroicons-x-mark"
+          icon="i-lucide-x"
           @click="open = false"
         />
       </div>
@@ -23,7 +23,7 @@
             type="number"
             min="1"
             class="w-full"
-            icon="i-heroicons-user-group"
+            icon="i-lucide-users"
           />
         </UFormField>
 
@@ -37,7 +37,7 @@
               type="number"
               min="0"
               class="w-full"
-              icon="i-heroicons-clock"
+              icon="i-lucide-clock"
             />
             <div class="flex flex-wrap gap-1.5">
               <UButton

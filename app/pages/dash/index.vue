@@ -11,7 +11,7 @@
           欢迎回到秘密基地，今天想处理些什么？
         </p>
       </div>
-      <UButton color="success" variant="subtle" icon="i-heroicons-check-circle">
+      <UButton color="success" variant="subtle" icon="i-lucide-circle-check">
         系统状态正常
       </UButton>
     </div>
@@ -35,14 +35,14 @@
     <UCard>
       <template #header>
         <div class="flex items-center gap-2">
-          <UIcon name="i-heroicons-clock" class="text-primary w-5 h-5" />
+          <UIcon name="i-lucide-clock" class="text-primary w-5 h-5" />
           <span class="font-bold text-foreground">最近动态</span>
         </div>
       </template>
       <div
         class="text-muted-foreground text-sm py-12 text-center flex flex-col items-center gap-2"
       >
-        <UIcon name="i-heroicons-arrow-path" class="animate-spin w-5 h-5" />
+        <UIcon name="i-lucide-refresh-cw" class="animate-spin w-5 h-5" />
         正在同步云端数据...
       </div>
     </UCard>
@@ -56,19 +56,19 @@ const stats = [
   {
     label: "活跃用户",
     value: "1,284",
-    icon: "i-heroicons-users",
+    icon: "i-lucide-users",
     color: "blue",
   },
   {
     label: "今日邀请",
     value: "12",
-    icon: "i-heroicons-ticket",
+    icon: "i-lucide-ticket",
     color: "pink",
   },
   {
     label: "系统负载",
     value: "14%",
-    icon: "i-heroicons-cpu-chip",
+    icon: "i-lucide-cpu",
     color: "emerald",
   },
 ];

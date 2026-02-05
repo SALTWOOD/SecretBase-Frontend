@@ -11,7 +11,7 @@
       <UCard class="glass-card bg-(--ui-bg-elevated)/40 border border-default">
         <template #header>
           <div class="flex items-center gap-2">
-            <UIcon name="i-heroicons-globe-alt" class="text-primary w-5 h-5" />
+            <UIcon name="i-lucide-globe" class="text-primary w-5 h-5" />
             <span class="font-bold text-highlighted">常规信息</span>
           </div>
         </template>
@@ -42,7 +42,7 @@
         <template #header>
           <div class="flex items-center gap-2">
             <UIcon
-              name="i-heroicons-shield-check"
+              name="i-lucide-shield-check"
               class="text-primary w-5 h-5"
             />
             <span class="font-bold text-highlighted">人机验证配置</span>
@@ -63,7 +63,7 @@
           <UFormField label="Cap API Endpoint">
             <UInput
               v-model="settings.capEndpoint"
-              icon="i-heroicons-link"
+              icon="i-lucide-link"
               variant="subtle"
             />
           </UFormField>
@@ -79,7 +79,7 @@
       <UCard class="glass-card bg-(--ui-bg-elevated)/40 border border-error/20">
         <template #header>
           <div class="flex items-center gap-2">
-            <UIcon name="i-heroicons-lock-closed" class="text-error w-5 h-5" />
+            <UIcon name="i-lucide-lock" class="text-error w-5 h-5" />
             <span class="font-bold text-highlighted">安全与维护</span>
           </div>
         </template>
@@ -102,7 +102,7 @@
         <UButton
           color="primary"
           :loading="saving"
-          icon="i-heroicons-check"
+          icon="i-lucide-check"
           @click="saveSettings"
         >
           保存更改

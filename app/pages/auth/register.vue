@@ -17,7 +17,7 @@
           <UInput
             v-model="form.username"
             placeholder="如何称呼你？"
-            icon="i-heroicons-user"
+            icon="i-lucide-user"
             class="w-full"
           />
         </UFormField>
@@ -27,7 +27,7 @@
             v-model="form.email"
             type="email"
             placeholder="name@example.com"
-            icon="i-heroicons-envelope"
+            icon="i-lucide-mail"
             class="w-full"
           />
         </UFormField>
@@ -38,7 +38,7 @@
               v-model="form.password"
               type="password"
               placeholder="••••••••"
-              icon="i-heroicons-lock-closed"
+              icon="i-lucide-lock"
               class="w-full"
             />
           </UFormField>
@@ -48,7 +48,7 @@
               v-model="form.confirmPassword"
               type="password"
               placeholder="••••••••"
-              icon="i-heroicons-shield-check"
+              icon="i-lucide-shield-check"
               class="w-full"
             />
           </UFormField>
@@ -58,7 +58,7 @@
           <UInput
             v-model="form.invitationCode"
             placeholder="如果你有邀请码..."
-            icon="i-heroicons-ticket"
+            icon="i-lucide-ticket"
             class="w-full"
           />
         </UFormField>

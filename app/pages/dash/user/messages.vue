@@ -8,7 +8,7 @@
       <UButton
         variant="ghost"
         color="neutral"
-        icon="i-heroicons-check-circle"
+        icon="i-lucide-circle-check"
         @click="markAllAsRead"
       >
         全部标记为已读
@@ -21,7 +21,7 @@
     >
       <div v-if="messages.length === 0" class="p-12 text-center text-muted">
         <UIcon
-          name="i-heroicons-inbox"
+          name="i-lucide-inbox"
           class="w-12 h-12 mx-auto mb-2 opacity-20"
         />
         暂无消息

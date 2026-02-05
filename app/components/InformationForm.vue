@@ -1,5 +1,5 @@
 <template>
-  <UModal v-model:open="open" :close-button="{ icon: 'i-heroicons-x-mark' }">
+  <UModal v-model:open="open" :close-button="{ icon: 'i-lucide-x' }">
     <template #content>
       <div
         class="p-4 border-b border-default flex justify-between items-center"
@@ -8,7 +8,7 @@
         <UButton
           color="neutral"
           variant="ghost"
-          icon="i-heroicons-x-mark"
+          icon="i-lucide-x"
           @click="open = false"
         />
       </div>

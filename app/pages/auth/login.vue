@@ -16,7 +16,7 @@
             v-model="form.email"
             type="email"
             placeholder="name@example.com"
-            icon="i-heroicons-envelope"
+            icon="i-lucide-mail"
             class="w-full"
           />
         </UFormField>
@@ -26,7 +26,7 @@
             v-model="form.password"
             type="password"
             placeholder="••••••••"
-            icon="i-heroicons-lock-closed"
+            icon="i-lucide-lock"
             class="w-full"
           />
         </UFormField>

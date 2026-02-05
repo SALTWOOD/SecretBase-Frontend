@@ -7,7 +7,7 @@
         </h1>
         <p class="text-muted text-sm">生成并分发注册邀请码</p>
       </div>
-      <UButton color="primary" icon="i-heroicons-plus" @click="openForm(false)">
+      <UButton color="primary" icon="i-lucide-plus" @click="openForm(false)">
         生成新邀请码
       </UButton>
     </div>
@@ -28,7 +28,7 @@
               {{ row.original.code }}
             </UBadge>
             <UIcon
-              name="i-heroicons-clipboard-document"
+              name="i-lucide-clipboard-document"
               class="w-4 h-4 text-muted opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity"
               @click="copyToClipboard(row.original.code!)"
             />
@@ -77,7 +77,7 @@
             <UButton
               color="neutral"
               variant="ghost"
-              icon="i-heroicons-ellipsis-horizontal"
+              icon="i-lucide-ellipsis"
             />
           </UDropdownMenu>
         </template>
@@ -241,7 +241,7 @@ const handleFormSubmit = async (
       toast.add({
         title: isEditMode.value ? "修改成功" : "生成成功",
         color: "success",
-        icon: "i-heroicons-check-circle",
+        icon: "i-lucide-circle-check",
       });
       isModalOpen.value = false;
       refresh();
@@ -250,7 +250,7 @@ const handleFormSubmit = async (
     toast.add({
       title: "操作失败",
       color: "error",
-      icon: "i-heroicons-x-circle",
+      icon: "i-lucide-circle-x",
     });
   } finally {
     isSubmitting.value = false;
@@ -284,7 +284,7 @@ const copyToClipboard = async (text: string) => {
   toast.add({
     title: "复制成功",
     color: "success",
-    icon: "i-heroicons-clipboard",
+    icon: "i-lucide-clipboard",
   });
 };
 
@@ -292,13 +292,13 @@ const getActionItems = (row: any) => [
   { label: "操作菜单", type: "label" as const },
   {
     label: "编辑",
-    icon: "i-heroicons-pencil-square",
+    icon: "i-lucide-pencil",
     onSelect: () => openForm(true, row),
   },
   { type: "separator" as const },
   {
     label: "删除",
-    icon: "i-heroicons-trash",
+    icon: "i-lucide-trash-2",
     color: "error" as const,
     onSelect: () => deleteInvite(row.original.id),
   },

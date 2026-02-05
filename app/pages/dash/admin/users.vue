@@ -10,19 +10,19 @@
         </p>
       </div>
       <div class="flex gap-2">
-        <UButton color="neutral" variant="subtle" icon="i-heroicons-arrow-path" :loading="loading" @click="refresh">刷新
+        <UButton color="neutral" variant="subtle" icon="i-lucide-refresh-cw" :loading="loading" @click="refresh">刷新
         </UButton>
-        <UButton color="primary" icon="i-heroicons-user-plus">新增用户</UButton>
+        <UButton color="primary" icon="i-lucide-user-plus">新增用户</UButton>
       </div>
     </div>
 
     <UCard class="mb-6 bg-(--ui-bg-elevated)/50 border border-default">
       <div class="flex flex-wrap items-center gap-4">
-        <UInput v-model="search" placeholder="搜索用户名、邮箱..." icon="i-heroicons-magnifying-glass"
+        <UInput v-model="search" placeholder="搜索用户名、邮箱..." icon="i-lucide-search"
           class="w-full max-w-xs" />
         <USelectMenu v-model="selectedStatus" :items="Object.values(UserStatusFilter)" class="w-40" />
         <USelectMenu v-model="selectedRole" :items="Object.values(UserRoleFilter)" class="w-40" />
-        <UButton color="neutral" variant="ghost" icon="i-heroicons-trash" @click="resetFilters" />
+        <UButton color="neutral" variant="ghost" icon="i-lucide-trash-2" @click="resetFilters" />
       </div>
     </UCard>
 
@@ -44,7 +44,7 @@
 
         <template #actions-cell="{ row }">
           <UDropdownMenu :items="getActionItems(row)" :content="{ align: 'end', sideOffset: 8 }">
-            <UButton color="neutral" variant="ghost" icon="i-heroicons-ellipsis-horizontal" />
+            <UButton color="neutral" variant="ghost" icon="i-lucide-ellipsis" />
           </UDropdownMenu>
         </template>
       </UTable>
@@ -136,7 +136,7 @@ const getActionItems = (row: any) => [
   },
   {
     label: "编辑资料",
-    icon: "i-heroicons-pencil-square",
+    icon: "i-lucide-pencil",
     onSelect: () => console.log("编辑", row.original),
   },
   {
@@ -149,7 +149,7 @@ const getActionItems = (row: any) => [
   },
   {
     label: row.original.isBanned ? "解除封禁" : "封禁账户",
-    icon: "i-heroicons-no-symbol",
+    icon: "i-lucide-ban",
     color: "error" as const,
     onSelect: () => handleToggleBan(row.original),
   },

@@ -15,7 +15,7 @@
       <form @submit.prevent="updateProfile" class="space-y-4">
         <div class="flex items-center gap-6 mb-6">
           <UAvatar :src="form.avatar" size="xl" />
-          <UButton color="neutral" variant="ghost" icon="i-heroicons-camera">
+          <UButton color="neutral" variant="ghost" icon="i-lucide-camera">
             更换头像
           </UButton>
         </div>

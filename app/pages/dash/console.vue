@@ -43,7 +43,7 @@
           <UButton
             color="neutral"
             variant="ghost"
-            icon="i-heroicons-trash"
+            icon="i-lucide-trash-2"
             @click="logs = []"
           />
           <UButton color="primary" variant="subtle" @click="executeCode"

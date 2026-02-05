@@ -59,9 +59,9 @@
 
           <template #right>
             <UColorModeButton />
-            <UButton icon="i-heroicons-bell" variant="ghost" color="neutral" />
+            <UButton icon="i-lucide-bell" variant="ghost" color="neutral" />
             <UButton
-              icon="i-heroicons-magnifying-glass"
+              icon="i-lucide-search"
               variant="ghost"
               color="neutral"
             />
@@ -104,55 +104,55 @@ const userStore = useUserStore();
 const allNavigationItems = computed<NavigationItem[]>(() => [
   {
     label: "控制台概览",
-    icon: "i-heroicons-home",
+    icon: "i-lucide-house",
     to: "/dash",
     exact: true,
   },
   {
     label: "我的",
-    icon: "i-heroicons-user",
+    icon: "i-lucide-user",
     type: "trigger",
     defaultOpen: true,
     children: [
       {
         label: "个人资料",
-        icon: "i-heroicons-user-circle",
+        icon: "i-lucide-user-circle",
         to: "/dash/user/profile",
       },
       {
         label: "我的消息",
-        icon: "i-heroicons-chat-bubble-left-right",
+        icon: "i-lucide-messages-square",
         to: "/dash/user/messages",
       },
     ],
   },
   {
     label: "管理后台",
-    icon: "i-heroicons-shield-check",
+    icon: "i-lucide-shield-check",
     type: "trigger",
     condition: () => isAdmin.value,
     defaultOpen: false,
     children: [
       {
         label: "用户管理",
-        icon: "i-heroicons-user-group",
+        icon: "i-lucide-users",
         to: "/dash/admin/users",
       },
       {
         label: "邀请码管理",
-        icon: "i-heroicons-ticket",
+        icon: "i-lucide-ticket",
         to: "/dash/admin/invites",
       },
       {
         label: "站点设置",
-        icon: "i-heroicons-cog-6-tooth",
+        icon: "i-lucide-settings",
         to: "/dash/admin/settings",
       },
     ],
   },
   {
     label: "控制台",
-    icon: "i-heroicons-command-line",
+    icon: "i-lucide-terminal",
     to: "/dash/console",
     exact: true,
     hidden: true,
@@ -189,14 +189,14 @@ const userMenu = [
   [
     {
       label: "个人设置",
-      icon: "i-heroicons-cog-8-tooth",
+      icon: "i-lucide-settings",
       to: "/dash/user/profile",
     },
   ],
   [
     {
       label: "退出登录",
-      icon: "i-heroicons-arrow-right-on-rectangle",
+      icon: "i-lucide-log-out",
       color: "error" as const,
       onSelect: async () => {
         await postAuthLogout();
