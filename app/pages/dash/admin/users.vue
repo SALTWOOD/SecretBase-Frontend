@@ -133,7 +133,7 @@ const filteredUsers = computed(() => {
 });
 
 const getRoleText = (role: number) => {
-  const roles: Record<number, string> = { 2: "管理", 1: "用户", 0: "访客" };
+  const roles: Record<number, string> = { 3: "站长", 2: "管理", 1: "用户", 0: "访客" };
   return roles[role] || "未知";
 };
 
