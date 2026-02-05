@@ -7,28 +7,11 @@
     站长
   </UBadge>
 
-  <UBadge
-    v-else-if="role === 2"
-    color="info"
-    variant="subtle"
-  >
-    管理
-  </UBadge>
+  <UBadge v-else-if="role === 2" color="info" variant="subtle"> 管理 </UBadge>
 
-  <UBadge
-    v-else-if="role === 1"
-    color="success"
-    variant="soft"
-  >
-    用户
-  </UBadge>
+  <UBadge v-else-if="role === 1" color="success" variant="soft"> 用户 </UBadge>
 
-  <UBadge
-    v-else
-    color="neutral"
-    variant="outline"
-    class="opacity-60"
-  >
+  <UBadge v-else color="neutral" variant="outline" class="opacity-60">
     访客
   </UBadge>
 </template>
@@ -42,6 +25,6 @@
  * 0: Guest (访客)
  */
 defineProps<{
-  role: number
-}>()
+  role: number;
+}>();
 </script>

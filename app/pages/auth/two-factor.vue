@@ -12,7 +12,9 @@
             class="absolute left-0 top-1/2 -translate-y-1/2"
             @click="step = 'select'"
           />
-          <h2 class="text-2xl font-bold text-gray-900 dark:text-white">安全验证</h2>
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+            安全验证
+          </h2>
           <p class="text-muted-foreground text-sm mt-1">
             {{ stepDescriptions[step] }}
           </p>
@@ -38,7 +40,7 @@
           <input
             v-for="(_, index) in 6"
             :key="index"
-            :ref="el => (inputRefs[index] = el as HTMLInputElement)"
+            :ref="(el) => (inputRefs[index] = el as HTMLInputElement)"
             v-model="digits[index]"
             type="text"
             maxlength="1"
@@ -47,7 +49,7 @@
             :class="[
               isSuccess
                 ? 'animate-jump border-green-500 text-green-500'
-                : 'border-default text-gray-900 dark:text-white'
+                : 'border-default text-gray-900 dark:text-white',
             ]"
             :style="isSuccess ? { animationDelay: `${index * 100}ms` } : {}"
             @input="handleInput(index, $event)"
@@ -60,7 +62,7 @@
           block
           size="lg"
           :loading="loading"
-          :disabled="digits.some(d => !d) || isSuccess"
+          :disabled="digits.some((d) => !d) || isSuccess"
           @click="handleTotpSubmit"
         >
           验证
@@ -90,12 +92,14 @@
 </template>
 
 <script setup lang="ts">
-import { startAuthentication } from '@simplewebauthn/browser';
+import { startAuthentication } from "@simplewebauthn/browser";
 
 const handleLogin = async () => {
   try {
     // 1. 从后端获取登录选项 (AssertionOptions)
-    const optionsRes = await fetch('/api/v1/auth/webauthn/options', { method: 'POST' });
+    const optionsRes = await fetch("/api/v1/auth/webauthn/options", {
+      method: "POST",
+    });
     const options = await optionsRes.json();
 
     // 2. 调用浏览器生物识别 UI (TouchID/FaceID/Windows Hello)
@@ -103,103 +107,112 @@ const handleLogin = async () => {
     const assertionResponse = await startAuthentication(options);
 
     // 3. 将结果发送给后端校验
-    const verifyRes = await fetch('/api/auth/login/verify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const verifyRes = await fetch("/api/auth/login/verify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(assertionResponse),
     });
 
     if (verifyRes.ok) {
       const { token } = await verifyRes.json();
-      localStorage.setItem('auth_token', token);
-      alert('Login Success! 🎉');
+      localStorage.setItem("auth_token", token);
+      alert("Login Success! 🎉");
     } else {
-      alert('Verification failed');
+      alert("Verification failed");
     }
   } catch (err) {
     console.error(err);
-    alert('Login failed or cancelled');
+    alert("Login failed or cancelled");
   }
 };
 
-type Step = 'select' | 'totp' | 'passkey'
+type Step = "select" | "totp" | "passkey";
 
-const step = ref<Step>('select')
-const loading = ref(false)
-const isSuccess = ref(false)
-const digits = ref(Array(6).fill(''))
-const inputRefs = ref<HTMLInputElement[]>([])
+const step = ref<Step>("select");
+const loading = ref(false);
+const isSuccess = ref(false);
+const digits = ref(Array(6).fill(""));
+const inputRefs = ref<HTMLInputElement[]>([]);
 
 const stepDescriptions: Record<Step, string> = {
-  select: '选择二次验证方式以保障账户安全',
-  totp: '输入身份验证器中的 6 位动态代码',
-  passkey: '通过生物识别或硬件密钥进行验证'
-}
+  select: "选择二次验证方式以保障账户安全",
+  totp: "输入身份验证器中的 6 位动态代码",
+  passkey: "通过生物识别或硬件密钥进行验证",
+};
 
 const availableMethods = computed(() => [
-  { id: 'totp' as Step, label: '动态口令 (TOTP)', icon: 'i-lucide-clock' },
-  { id: 'passkey' as Step, label: '通行密钥 (Passkey)', icon: 'i-heroicons-key' }
-])
+  { id: "totp" as Step, label: "动态口令 (TOTP)", icon: "i-lucide-clock" },
+  {
+    id: "passkey" as Step,
+    label: "通行密钥 (Passkey)",
+    icon: "i-heroicons-key",
+  },
+]);
 
 const handleInput = (index: number, event: Event) => {
-  const val = (event.target as HTMLInputElement).value.replace(/\D/g, '')
-  digits.value[index] = val
+  const val = (event.target as HTMLInputElement).value.replace(/\D/g, "");
+  digits.value[index] = val;
 
   if (val && index < 5) {
-    inputRefs.value[index + 1]?.focus()
+    inputRefs.value[index + 1]?.focus();
   }
 
-  if (digits.value.every(d => d)) {
-    handleTotpSubmit()
+  if (digits.value.every((d) => d)) {
+    handleTotpSubmit();
   }
-}
+};
 
 const handleDelete = (index: number) => {
   if (!digits.value[index] && index > 0) {
-    inputRefs.value[index - 1]?.focus()
+    inputRefs.value[index - 1]?.focus();
   }
-}
+};
 
 const handleTotpSubmit = async () => {
-  if (loading.value || isSuccess.value) return
-  loading.value = true
+  if (loading.value || isSuccess.value) return;
+  loading.value = true;
 
   try {
-    await new Promise(resolve => setTimeout(resolve, 600))
-    isSuccess.value = true
+    await new Promise((resolve) => setTimeout(resolve, 600));
+    isSuccess.value = true;
 
     setTimeout(() => {
-      navigateTo('/dash')
-    }, 1200)
+      navigateTo("/dash");
+    }, 1200);
   } catch (err) {
-    digits.value = Array(6).fill('')
-    inputRefs.value[0]?.focus()
+    digits.value = Array(6).fill("");
+    inputRefs.value[0]?.focus();
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 const handlePasskeyAuth = async () => {
-  loading.value = true
+  loading.value = true;
   try {
-    await handleLogin()
+    await handleLogin();
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 watch(step, async (newStep) => {
-  if (newStep === 'totp') {
-    await nextTick()
-    inputRefs.value[0]?.focus()
+  if (newStep === "totp") {
+    await nextTick();
+    inputRefs.value[0]?.focus();
   }
-})
+});
 </script>
 
 <style scoped>
 @keyframes jump {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-12px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
 }
 
 .animate-jump {

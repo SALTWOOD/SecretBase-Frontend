@@ -74,11 +74,7 @@
             :items="getActionItems(row)"
             :content="{ align: 'end', sideOffset: 8 }"
           >
-            <UButton
-              color="neutral"
-              variant="ghost"
-              icon="i-lucide-ellipsis"
-            />
+            <UButton color="neutral" variant="ghost" icon="i-lucide-ellipsis" />
           </UDropdownMenu>
         </template>
       </UTable>

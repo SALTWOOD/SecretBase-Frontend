@@ -41,10 +41,7 @@
       <UCard class="glass-card bg-(--ui-bg-elevated)/40 border border-default">
         <template #header>
           <div class="flex items-center gap-2">
-            <UIcon
-              name="i-lucide-shield-check"
-              class="text-primary w-5 h-5"
-            />
+            <UIcon name="i-lucide-shield-check" class="text-primary w-5 h-5" />
             <span class="font-bold text-highlighted">人机验证配置</span>
           </div>
         </template>

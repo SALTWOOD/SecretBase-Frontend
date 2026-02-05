@@ -3,10 +3,7 @@
     <nav class="nav-bar">
       <UContainer class="flex items-center justify-between h-16">
         <div class="flex items-center gap-2">
-          <UIcon
-            name="i-lucide-zap"
-            class="text-(--ui-primary) w-6 h-6"
-          />
+          <UIcon name="i-lucide-zap" class="text-(--ui-primary) w-6 h-6" />
           <span
             class="text-lg font-bold tracking-tight text-(--ui-text-highlighted)"
             >Secret Base</span

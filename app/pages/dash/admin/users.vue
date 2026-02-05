@@ -1,6 +1,8 @@
 <template>
   <div class="view-content">
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+    <div
+      class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8"
+    >
       <div>
         <h1 class="text-2xl font-bold text-highlighted tracking-tight">
           用户管理
@@ -10,7 +12,13 @@
         </p>
       </div>
       <div class="flex gap-2">
-        <UButton color="neutral" variant="subtle" icon="i-lucide-refresh-cw" :loading="loading" @click="refresh">刷新
+        <UButton
+          color="neutral"
+          variant="subtle"
+          icon="i-lucide-refresh-cw"
+          :loading="loading"
+          @click="refresh"
+          >刷新
         </UButton>
         <UButton color="primary" icon="i-lucide-user-plus">新增用户</UButton>
       </div>
@@ -18,18 +26,41 @@
 
     <UCard class="mb-6 bg-(--ui-bg-elevated)/50 border border-default">
       <div class="flex flex-wrap items-center gap-4">
-        <UInput v-model="search" placeholder="搜索用户名、邮箱..." icon="i-lucide-search"
-          class="w-full max-w-xs" />
-        <USelectMenu v-model="selectedStatus" :items="Object.values(UserStatusFilter)" class="w-40" />
-        <USelectMenu v-model="selectedRole" :items="Object.values(UserRoleFilter)" class="w-40" />
-        <UButton color="neutral" variant="ghost" icon="i-lucide-rotate-ccw" @click="resetFilters" />
+        <UInput
+          v-model="search"
+          placeholder="搜索用户名、邮箱..."
+          icon="i-lucide-search"
+          class="w-full max-w-xs"
+        />
+        <USelectMenu
+          v-model="selectedStatus"
+          :items="Object.values(UserStatusFilter)"
+          class="w-40"
+        />
+        <USelectMenu
+          v-model="selectedRole"
+          :items="Object.values(UserRoleFilter)"
+          class="w-40"
+        />
+        <UButton
+          color="neutral"
+          variant="ghost"
+          icon="i-lucide-rotate-ccw"
+          @click="resetFilters"
+        />
       </div>
     </UCard>
 
-    <UCard class="glass-card overflow-hidden bg-(--ui-bg-elevated)/40 border border-default backdrop-blur-xl shadow-xl">
+    <UCard
+      class="glass-card overflow-hidden bg-(--ui-bg-elevated)/40 border border-default backdrop-blur-xl shadow-xl"
+    >
       <UTable :data="filteredUsers" :columns="columns" :loading="loading">
         <template #username-cell="{ row }">
-          <UserCell :username="row.original.username" :email="row.original.email" :avatar="row.original.avatar" />
+          <UserCell
+            :username="row.original.username"
+            :email="row.original.email"
+            :avatar="row.original.avatar"
+          />
         </template>
 
         <template #role-cell="{ row }">
@@ -37,20 +68,31 @@
         </template>
 
         <template #isBanned-cell="{ row }">
-          <UBadge :color="row.original.isBanned ? 'error' : 'success'" variant="subtle" size="md">
+          <UBadge
+            :color="row.original.isBanned ? 'error' : 'success'"
+            variant="subtle"
+            size="md"
+          >
             {{ row.original.isBanned ? "已封禁" : "正常" }}
           </UBadge>
         </template>
 
         <template #actions-cell="{ row }">
-          <UDropdownMenu :items="getActionItems(row)" :content="{ align: 'end', sideOffset: 8 }">
+          <UDropdownMenu
+            :items="getActionItems(row)"
+            :content="{ align: 'end', sideOffset: 8 }"
+          >
             <UButton color="neutral" variant="ghost" icon="i-lucide-ellipsis" />
           </UDropdownMenu>
         </template>
       </UTable>
 
       <div class="mt-4 flex justify-center">
-        <UPagination v-model:page="page.page" :total="page.total" :items-per-page="page.size" />
+        <UPagination
+          v-model:page="page.page"
+          :total="page.total"
+          :items-per-page="page.size"
+        />
       </div>
     </UCard>
   </div>
@@ -63,14 +105,14 @@ import { getAdminUsers } from "~~/packages/api/src/sdk.gen";
 enum UserStatusFilter {
   All = "全部状态",
   Active = "正常",
-  Banned = "已封禁"
+  Banned = "已封禁",
 }
 
 enum UserRoleFilter {
   All = "全部等级",
   Admin = "管理",
   User = "用户",
-  Guest = "访客"
+  Guest = "访客",
 }
 
 const toast = useToast();
@@ -116,9 +158,9 @@ const filteredUsers = computed(() => {
 
     // Permission (Role)
     const roleMap: Record<string, number[]> = {
-      "管理": [2, 3],
-      "用户": [1],
-      "访客": [0]
+      管理: [2, 3],
+      用户: [1],
+      访客: [0],
     };
     const matchesRole =
       selectedRole.value === "全部等级" ||

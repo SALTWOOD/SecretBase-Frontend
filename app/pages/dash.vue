@@ -60,11 +60,7 @@
           <template #right>
             <UColorModeButton />
             <UButton icon="i-lucide-bell" variant="ghost" color="neutral" />
-            <UButton
-              icon="i-lucide-search"
-              variant="ghost"
-              color="neutral"
-            />
+            <UButton icon="i-lucide-search" variant="ghost" color="neutral" />
           </template>
         </UDashboardNavbar>
       </template>
