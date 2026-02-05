@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { postAuthRenew } from '~~/packages/api/src/sdk.gen';
+import { postAuthRenew } from "~~/packages/api/src/sdk.gen";
 
 const userStore = useUserStore();
 

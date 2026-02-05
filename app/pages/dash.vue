@@ -109,7 +109,8 @@ const allNavigationItems = computed<NavigationItem[]>(() => [
     exact: true,
   },
   {
-    label: "个人中心",
+    label: "我的",
+    icon: "i-heroicons-user",
     type: "trigger",
     defaultOpen: true,
     children: [
@@ -127,6 +128,7 @@ const allNavigationItems = computed<NavigationItem[]>(() => [
   },
   {
     label: "管理后台",
+    icon: "i-heroicons-shield-check",
     type: "trigger",
     condition: () => isAdmin.value,
     defaultOpen: false,

@@ -60,7 +60,7 @@
       <template #footer>
         <p class="text-center text-sm text-muted-foreground">
           还没有账号？
-          <NuxtLink to="/register" class="text-primary hover:underline"
+          <NuxtLink to="/dash/register" class="text-primary hover:underline"
             >立即注册</NuxtLink
           >
         </p>
