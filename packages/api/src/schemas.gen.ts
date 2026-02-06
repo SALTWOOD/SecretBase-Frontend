@@ -862,6 +862,18 @@ export const CredentialPropertiesOutputSchema = {
 
 export const CredentialProtectionPolicySchema = {} as const;
 
+export const CredentialUpdateModelSchema = {
+    type: 'object',
+    properties: {
+        nickname: {
+            type: [
+                'null',
+                'string'
+            ]
+        }
+    }
+} as const;
+
 export const Fido2UserSchema = {
     type: 'object',
     properties: {
@@ -1633,6 +1645,27 @@ export const TotpVerifyRequestSchema = {
     properties: {
         code: {
             type: 'string'
+        }
+    }
+} as const;
+
+export const TwoFactorPolicyResponseSchema = {
+    type: 'object',
+    properties: {
+        totp: {
+            $ref: '#/components/schemas/TwoFactorStatus'
+        },
+        forceTwoFactor: {
+            type: 'boolean'
+        }
+    }
+} as const;
+
+export const TwoFactorStatusSchema = {
+    type: 'object',
+    properties: {
+        enabled: {
+            type: 'boolean'
         }
     }
 } as const;

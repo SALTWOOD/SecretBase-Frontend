@@ -38,12 +38,20 @@
               </div>
             </div>
           </div>
-          <UButton
-            icon="i-heroicons-trash"
-            color="error"
-            variant="ghost"
-            @click="removeKey(key.id as number)"
-          />
+          <div class="flex items-center gap-1">
+            <UButton
+              icon="i-lucide-pencil"
+              color="neutral"
+              variant="ghost"
+              @click="editPasskey(key.id as number)"
+            />
+            <UButton
+              icon="i-lucide-trash"
+              color="error"
+              variant="ghost"
+              @click="removeKey(key.id as number)"
+            />
+          </div>
         </div>
       </div>
     </UCard>
@@ -99,7 +107,7 @@
           />
           <span class="text-sm">验证器已激活</span>
         </div>
-        <UButton color="error" variant="ghost" @click="isTotpEnabled = false"
+        <UButton color="error" variant="ghost" @click="disableTotp"
           >禁用</UButton
         >
       </div>
@@ -116,23 +124,36 @@
         </div>
         <USwitch
           v-model="forceTwoFactor"
+          @update:model-value="onForceTwoFactorChange"
         />
       </div>
     </UCard>
   </UContainer>
+
+  <CustomForm
+    v-model:config="form"
+    v-model:form-data="formState"
+    v-model:open="open"
+    @success="handleFormSuccess"
+  />
 </template>
 
 <script setup lang="ts">
 import { startRegistration } from "@simplewebauthn/browser";
+import CustomForm from "~/components/CustomForm.vue";
+import type { FieldConfig } from "~/types/field-config";
 import {
   deleteAuthWebauthnCredentialsById,
+  getAuthTwoFactorPolicy,
   getAuthWebauthnCredentials,
   postAuthTwoFactorPolicyDisable,
   postAuthTwoFactorPolicyEnable,
+  postAuthTwoFactorTotpDisable,
   postAuthTwoFactorTotpEnable,
   postAuthTwoFactorTotpSetup,
   postAuthWebauthnRegisterOptions,
   postAuthWebauthnRegisterVerify,
+  putAuthWebauthnCredentialsById,
 } from "~~/packages/api/src/sdk.gen";
 import type { UserCredentialTable } from "~~/packages/api/src/types.gen";
 
@@ -149,11 +170,30 @@ const totpCode = ref("");
 
 // Settings States
 const forceTwoFactor = ref(false);
+const open = ref(false);
+const form = ref<FieldConfig[]>([
+  {
+    key: "nickname",
+    label: "设备名称",
+    description: "Passkey 设备的名称",
+    type: "text",
+    icon: "i-lucide-smartphone",
+  },
+]);
+const formState = ref({
+  id: 0,
+  nickname: "",
+});
 
 const refresh = async () => {
   const response = await getAuthWebauthnCredentials();
   if (!response.error && response.data) {
     credentials.value = response.data;
+  }
+  const policy = await getAuthTwoFactorPolicy();
+  if (!policy.error && policy.data) {
+    isTotpEnabled.value = policy.data.totp?.enabled ?? false;
+    forceTwoFactor.value = policy.data.forceTwoFactor ?? false;
   }
 };
 
@@ -179,6 +219,15 @@ const verifyTotp = async () => {
       showTotpSetup.value = false;
       toast.add({ title: "TOTP enabled successfully." });
     }
+  } finally {
+    loading.value = false;
+  }
+};
+
+const disableTotp = async () => {
+  loading.value = true;
+  try {
+    const response = await postAuthTwoFactorTotpDisable();
   } finally {
     loading.value = false;
   }
@@ -219,6 +268,17 @@ const removeKey = async (id: number) => {
   await refresh();
 };
 
+const editPasskey = (id: number) => {
+  open.value = true;
+  formState.value.id = id;
+};
+
+const handleFormSuccess = async (data: Record<string, any>) => {
+  const response = await putAuthWebauthnCredentialsById({
+    path: { id: data["id"] },
+    body: formState.value,
+  });
+};
+
 onMounted(() => refresh());
-watch(forceTwoFactor, onForceTwoFactorChange);
 </script>

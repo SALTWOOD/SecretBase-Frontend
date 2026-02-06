@@ -120,6 +120,11 @@ const allNavigationItems = computed<NavigationItem[]>(() => [
         icon: "i-lucide-messages-square",
         to: "/dash/user/messages",
       },
+      {
+        label: "2FA",
+        icon: "i-lucide-shield",
+        to: "/dash/user/two-factor",
+      },
     ],
   },
   {

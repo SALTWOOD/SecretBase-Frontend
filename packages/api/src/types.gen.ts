@@ -212,6 +212,10 @@ export type CredentialPropertiesOutput = {
 
 export type CredentialProtectionPolicy = unknown;
 
+export type CredentialUpdateModel = {
+    nickname?: null | string;
+};
+
 export type Fido2User = {
     name?: null | string;
     id?: unknown;
@@ -434,6 +438,15 @@ export type TotpSetupResponse = {
 
 export type TotpVerifyRequest = {
     code?: string;
+};
+
+export type TwoFactorPolicyResponse = {
+    totp?: TwoFactorStatus;
+    forceTwoFactor?: boolean;
+};
+
+export type TwoFactorStatus = {
+    enabled?: boolean;
 };
 
 export type Type = unknown;
@@ -773,7 +786,7 @@ export type GetAuthWebauthnCredentialsResponse = GetAuthWebauthnCredentialsRespo
 export type DeleteAuthWebauthnCredentialsByIdData = {
     body?: never;
     path: {
-        id: number | string;
+        id: number;
     };
     query?: never;
     url: '/auth/webauthn/credentials/{id}';
@@ -784,6 +797,22 @@ export type DeleteAuthWebauthnCredentialsByIdResponses = {
      * OK
      */
     200: unknown;
+};
+
+export type PutAuthWebauthnCredentialsByIdData = {
+    body: CredentialUpdateModel;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/auth/webauthn/credentials/{id}';
+};
+
+export type PutAuthWebauthnCredentialsByIdResponses = {
+    /**
+     * No Content
+     */
+    204: unknown;
 };
 
 export type PostAuthTwoFactorTotpSetupData = {
@@ -827,6 +856,29 @@ export type PostAuthTwoFactorTotpEnableResponses = {
 
 export type PostAuthTwoFactorTotpEnableResponse = PostAuthTwoFactorTotpEnableResponses[keyof PostAuthTwoFactorTotpEnableResponses];
 
+export type PostAuthTwoFactorTotpDisableData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/auth/two-factor/totp/disable';
+};
+
+export type PostAuthTwoFactorTotpDisableErrors = {
+    /**
+     * Bad Request
+     */
+    400: MessageResponse;
+};
+
+export type PostAuthTwoFactorTotpDisableError = PostAuthTwoFactorTotpDisableErrors[keyof PostAuthTwoFactorTotpDisableErrors];
+
+export type PostAuthTwoFactorTotpDisableResponses = {
+    /**
+     * No Content
+     */
+    204: unknown;
+};
+
 export type PostAuthTwoFactorTotpVerifyData = {
     body: TotpVerifyRequest;
     path?: never;
@@ -851,6 +903,22 @@ export type PostAuthTwoFactorTotpVerifyResponses = {
 };
 
 export type PostAuthTwoFactorTotpVerifyResponse = PostAuthTwoFactorTotpVerifyResponses[keyof PostAuthTwoFactorTotpVerifyResponses];
+
+export type GetAuthTwoFactorPolicyData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/auth/two-factor/policy';
+};
+
+export type GetAuthTwoFactorPolicyResponses = {
+    /**
+     * OK
+     */
+    200: TwoFactorPolicyResponse;
+};
+
+export type GetAuthTwoFactorPolicyResponse = GetAuthTwoFactorPolicyResponses[keyof GetAuthTwoFactorPolicyResponses];
 
 export type PostAuthTwoFactorPolicyEnableData = {
     body?: never;

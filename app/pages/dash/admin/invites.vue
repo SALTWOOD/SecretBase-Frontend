@@ -88,8 +88,9 @@
       </div>
     </UCard>
 
-    <GenerateInviteForm
+    <CustomForm
       v-model:open="isModalOpen"
+      v-model:config="form"
       v-model:form-data="formState"
       :loading="isSubmitting"
       :title="isEditMode ? '编辑邀请码' : '生成邀请码'"
@@ -105,8 +106,9 @@
 </template>
 
 <script lang="ts" setup>
-import GenerateInviteForm from "~/components/GenerateInviteForm.vue";
+import CustomForm from "~/components/CustomForm.vue";
 import type { CreateInviteFormData } from "~/types/create-invite-form";
+import type { FieldConfig } from "~/types/field-config";
 import type { UpdateInviteFormData } from "~/types/update-invite-form";
 import {
   deleteAdminInvitationsById,
@@ -141,6 +143,31 @@ const page = ref({
   total: 0,
 });
 
+const form: Ref<FieldConfig[]> = ref([
+  {
+    key: "uses",
+    label: "使用次数限制",
+    description: "该邀请码可以被激活的总次数",
+    type: "number",
+    min: 1,
+    icon: "i-lucide-users",
+  },
+  {
+    key: "hoursValid",
+    label: "有效时间 (小时)",
+    description: "表示该邀请码在创建时间后多久过期 (0 为永久)",
+    type: "number",
+    min: 0,
+    icon: "i-lucide-clock",
+    presets: [
+      { label: "1h", value: 1 },
+      { label: "1d", value: 24 },
+      { label: "7d", value: 168 },
+      { label: "30d", value: 720 },
+      { label: "永久", value: 0 },
+    ],
+  },
+]);
 const formState: Ref<UpdateInviteFormData> = ref({
   uses: 1,
   hoursValid: 24,
@@ -218,9 +245,7 @@ const handleCountClick = async (invite: InviteTable) => {
   }
 };
 
-const handleFormSubmit = async (
-  data: CreateInviteFormData | UpdateInviteFormData,
-) => {
+const handleFormSubmit = async (data: Record<string, any>) => {
   isSubmitting.value = true;
   try {
     const apiCall =
