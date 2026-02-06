@@ -228,6 +228,7 @@ const disableTotp = async () => {
   loading.value = true;
   try {
     const response = await postAuthTwoFactorTotpDisable();
+    isTotpEnabled.value = false;
   } finally {
     loading.value = false;
   }
