@@ -93,37 +93,30 @@
 
 <script setup lang="ts">
 import { startAuthentication } from "@simplewebauthn/browser";
+import {
+  postAuthWebauthnLoginOptions,
+  postAuthWebauthnLoginVerify,
+} from "~~/packages/api/src/sdk.gen";
+
+const toast = useToast();
 
 const handleLogin = async () => {
-  try {
-    // 1. 从后端获取登录选项 (AssertionOptions)
-    const optionsRes = await fetch("/api/v1/auth/webauthn/options", {
-      method: "POST",
-    });
-    const options = await optionsRes.json();
+  const optionsResponse = await postAuthWebauthnLoginOptions();
+  if (optionsResponse.error || !optionsResponse.data)
+    throw new Error("Unable to fetch WebAuthn login options.");
 
-    // 2. 调用浏览器生物识别 UI (TouchID/FaceID/Windows Hello)
-    // 这个函数会自动处理 options 里的 Base64Url 到字节流的转换
-    const assertionResponse = await startAuthentication(options);
+  const assertionResponse = await startAuthentication({
+    optionsJSON: optionsResponse.data as any,
+  });
 
-    // 3. 将结果发送给后端校验
-    const verifyRes = await fetch("/api/auth/login/verify", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(assertionResponse),
-    });
+  await postAuthWebauthnLoginVerify({
+    body: assertionResponse,
+  });
 
-    if (verifyRes.ok) {
-      const { token } = await verifyRes.json();
-      localStorage.setItem("auth_token", token);
-      alert("Login Success! 🎉");
-    } else {
-      alert("Verification failed");
-    }
-  } catch (err) {
-    console.error(err);
-    alert("Login failed or cancelled");
-  }
+  toast.add({
+    title: "Login success",
+    color: "success",
+  });
 };
 
 type Step = "select" | "totp" | "passkey";
@@ -210,6 +203,7 @@ watch(step, async (newStep) => {
   100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-12px);
   }

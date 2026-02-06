@@ -2,7 +2,12 @@
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
-  modules: ["@nuxt/ui", "@pinia/nuxt", "pinia-plugin-persistedstate"],
+  modules: [
+    "@nuxt/ui",
+    "@pinia/nuxt",
+    "pinia-plugin-persistedstate",
+    "nuxt-qrcode",
+  ],
   css: ["~/assets/css/main.css"],
   runtimeConfig: {
     capSecretKey: "",
@@ -15,6 +20,18 @@ export default defineNuxtConfig({
   vue: {
     compilerOptions: {
       isCustomElement: (tag) => tag.startsWith("cap-"),
+    },
+  },
+  qrcode: {
+    options: {
+      variant: {
+        inner: "circle",
+        marker: "rounded",
+        pixel: "rounded",
+      },
+      radius: 1,
+      blackColor: "currentColor",
+      whiteColor: "transparent",
     },
   },
 });

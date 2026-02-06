@@ -2,8 +2,8 @@
 
 import { type Client, formDataBodySerializer, type Options as Options2, type TDataShape } from './client';
 import { client } from './client.gen';
-import { getAdminInvitationsByIdResponseTransformer, getAdminInvitationsByIdUsersResponseTransformer, getAdminInvitationsResponseTransformer, getAdminUsersResponseTransformer, getUserProfileResponseTransformer, postAdminInvitationsResponseTransformer, postAuthLoginResponseTransformer, postAuthRegisterResponseTransformer, postAuthRenewResponseTransformer } from './transformers.gen';
-import type { DeleteAdminInvitationsByIdData, DeleteAdminInvitationsByIdErrors, DeleteAdminInvitationsByIdResponses, GetAdminInvitationsByIdData, GetAdminInvitationsByIdResponses, GetAdminInvitationsByIdUsersData, GetAdminInvitationsByIdUsersResponses, GetAdminInvitationsData, GetAdminInvitationsResponses, GetAdminUsersData, GetAdminUsersResponses, GetUserProfileData, GetUserProfileResponses, PostAdminInvitationsData, PostAdminInvitationsResponses, PostAuthLoginData, PostAuthLoginErrors, PostAuthLoginResponses, PostAuthLogoutData, PostAuthLogoutResponses, PostAuthRegisterData, PostAuthRegisterErrors, PostAuthRegisterResponses, PostAuthRenewData, PostAuthRenewErrors, PostAuthRenewResponses, PostUserAvatarData, PostUserAvatarResponses, PostUserProfileData, PostUserProfileErrors, PostUserProfileResponses, PutAdminInvitationsByIdData, PutAdminInvitationsByIdErrors, PutAdminInvitationsByIdResponses, PutAdminUsersByIdStatusData, PutAdminUsersByIdStatusErrors, PutAdminUsersByIdStatusResponses } from './types.gen';
+import { getAdminInvitationsByIdResponseTransformer, getAdminInvitationsByIdUsersResponseTransformer, getAdminInvitationsResponseTransformer, getAdminUsersResponseTransformer, getAuthWebauthnCredentialsResponseTransformer, getUserProfileResponseTransformer, postAdminInvitationsResponseTransformer, postAuthLoginResponseTransformer, postAuthRegisterResponseTransformer, postAuthRenewResponseTransformer } from './transformers.gen';
+import type { DeleteAdminInvitationsByIdData, DeleteAdminInvitationsByIdErrors, DeleteAdminInvitationsByIdResponses, DeleteAuthWebauthnCredentialsByIdData, DeleteAuthWebauthnCredentialsByIdResponses, GetAdminInvitationsByIdData, GetAdminInvitationsByIdResponses, GetAdminInvitationsByIdUsersData, GetAdminInvitationsByIdUsersResponses, GetAdminInvitationsData, GetAdminInvitationsResponses, GetAdminUsersData, GetAdminUsersResponses, GetAuthWebauthnCredentialsData, GetAuthWebauthnCredentialsResponses, GetUserProfileData, GetUserProfileResponses, PostAdminInvitationsData, PostAdminInvitationsResponses, PostAuthLoginData, PostAuthLoginErrors, PostAuthLoginResponses, PostAuthLogoutData, PostAuthLogoutResponses, PostAuthRegisterData, PostAuthRegisterErrors, PostAuthRegisterResponses, PostAuthRenewData, PostAuthRenewErrors, PostAuthRenewResponses, PostAuthTwoFactorPolicyDisableData, PostAuthTwoFactorPolicyDisableResponses, PostAuthTwoFactorPolicyEnableData, PostAuthTwoFactorPolicyEnableErrors, PostAuthTwoFactorPolicyEnableResponses, PostAuthTwoFactorTotpEnableData, PostAuthTwoFactorTotpEnableErrors, PostAuthTwoFactorTotpEnableResponses, PostAuthTwoFactorTotpSetupData, PostAuthTwoFactorTotpSetupResponses, PostAuthTwoFactorTotpVerifyData, PostAuthTwoFactorTotpVerifyErrors, PostAuthTwoFactorTotpVerifyResponses, PostAuthWebauthnLoginOptionsData, PostAuthWebauthnLoginOptionsResponses, PostAuthWebauthnLoginVerifyData, PostAuthWebauthnLoginVerifyErrors, PostAuthWebauthnLoginVerifyResponses, PostAuthWebauthnRegisterOptionsData, PostAuthWebauthnRegisterOptionsResponses, PostAuthWebauthnRegisterVerifyData, PostAuthWebauthnRegisterVerifyErrors, PostAuthWebauthnRegisterVerifyResponses, PostUserAvatarData, PostUserAvatarResponses, PostUserProfileData, PostUserProfileErrors, PostUserProfileResponses, PutAdminInvitationsByIdData, PutAdminInvitationsByIdErrors, PutAdminInvitationsByIdResponses, PutAdminUsersByIdStatusData, PutAdminUsersByIdStatusErrors, PutAdminUsersByIdStatusResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -71,6 +71,60 @@ export const postUserAvatar = <ThrowOnError extends boolean = false>(options: Op
         ...options.headers
     }
 });
+
+export const postAuthWebauthnRegisterOptions = <ThrowOnError extends boolean = false>(options?: Options<PostAuthWebauthnRegisterOptionsData, ThrowOnError>) => (options?.client ?? client).post<PostAuthWebauthnRegisterOptionsResponses, unknown, ThrowOnError>({ url: '/auth/webauthn/register/options', ...options });
+
+export const postAuthWebauthnRegisterVerify = <ThrowOnError extends boolean = false>(options: Options<PostAuthWebauthnRegisterVerifyData, ThrowOnError>) => (options.client ?? client).post<PostAuthWebauthnRegisterVerifyResponses, PostAuthWebauthnRegisterVerifyErrors, ThrowOnError>({
+    url: '/auth/webauthn/register/verify',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+export const postAuthWebauthnLoginVerify = <ThrowOnError extends boolean = false>(options: Options<PostAuthWebauthnLoginVerifyData, ThrowOnError>) => (options.client ?? client).post<PostAuthWebauthnLoginVerifyResponses, PostAuthWebauthnLoginVerifyErrors, ThrowOnError>({
+    url: '/auth/webauthn/login/verify',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+export const postAuthWebauthnLoginOptions = <ThrowOnError extends boolean = false>(options?: Options<PostAuthWebauthnLoginOptionsData, ThrowOnError>) => (options?.client ?? client).post<PostAuthWebauthnLoginOptionsResponses, unknown, ThrowOnError>({ url: '/auth/webauthn/login/options', ...options });
+
+export const getAuthWebauthnCredentials = <ThrowOnError extends boolean = false>(options?: Options<GetAuthWebauthnCredentialsData, ThrowOnError>) => (options?.client ?? client).get<GetAuthWebauthnCredentialsResponses, unknown, ThrowOnError>({
+    responseTransformer: getAuthWebauthnCredentialsResponseTransformer,
+    url: '/auth/webauthn/credentials',
+    ...options
+});
+
+export const deleteAuthWebauthnCredentialsById = <ThrowOnError extends boolean = false>(options: Options<DeleteAuthWebauthnCredentialsByIdData, ThrowOnError>) => (options.client ?? client).delete<DeleteAuthWebauthnCredentialsByIdResponses, unknown, ThrowOnError>({ url: '/auth/webauthn/credentials/{id}', ...options });
+
+export const postAuthTwoFactorTotpSetup = <ThrowOnError extends boolean = false>(options?: Options<PostAuthTwoFactorTotpSetupData, ThrowOnError>) => (options?.client ?? client).post<PostAuthTwoFactorTotpSetupResponses, unknown, ThrowOnError>({ url: '/auth/two-factor/totp/setup', ...options });
+
+export const postAuthTwoFactorTotpEnable = <ThrowOnError extends boolean = false>(options: Options<PostAuthTwoFactorTotpEnableData, ThrowOnError>) => (options.client ?? client).post<PostAuthTwoFactorTotpEnableResponses, PostAuthTwoFactorTotpEnableErrors, ThrowOnError>({
+    url: '/auth/two-factor/totp/enable',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+export const postAuthTwoFactorTotpVerify = <ThrowOnError extends boolean = false>(options: Options<PostAuthTwoFactorTotpVerifyData, ThrowOnError>) => (options.client ?? client).post<PostAuthTwoFactorTotpVerifyResponses, PostAuthTwoFactorTotpVerifyErrors, ThrowOnError>({
+    url: '/auth/two-factor/totp/verify',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+export const postAuthTwoFactorPolicyEnable = <ThrowOnError extends boolean = false>(options?: Options<PostAuthTwoFactorPolicyEnableData, ThrowOnError>) => (options?.client ?? client).post<PostAuthTwoFactorPolicyEnableResponses, PostAuthTwoFactorPolicyEnableErrors, ThrowOnError>({ url: '/auth/two-factor/policy/enable', ...options });
+
+export const postAuthTwoFactorPolicyDisable = <ThrowOnError extends boolean = false>(options?: Options<PostAuthTwoFactorPolicyDisableData, ThrowOnError>) => (options?.client ?? client).post<PostAuthTwoFactorPolicyDisableResponses, unknown, ThrowOnError>({ url: '/auth/two-factor/policy/disable', ...options });
 
 export const getAdminInvitations = <ThrowOnError extends boolean = false>(options?: Options<GetAdminInvitationsData, ThrowOnError>) => (options?.client ?? client).get<GetAdminInvitationsResponses, unknown, ThrowOnError>({
     responseTransformer: getAdminInvitationsResponseTransformer,

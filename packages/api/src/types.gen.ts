@@ -4,6 +4,123 @@ export type ClientOptions = {
     baseUrl: 'http://localhost:5170/' | (string & {});
 };
 
+export type AddressFamily = number;
+
+export type Algorithm = number;
+
+export type AsnEncodedData = {
+    oid?: null | Oid;
+    rawData?: string;
+};
+
+export type AssertionOptions = {
+    challenge?: unknown;
+    timeout?: number | string;
+    rpId?: null | string;
+    allowCredentials?: Array<PublicKeyCredentialDescriptor>;
+    userVerification?: null | UserVerificationRequirement;
+    hints?: Array<unknown>;
+    extensions?: null | AuthenticationExtensionsClientInputs;
+};
+
+export type AssertionResponse = {
+    authenticatorData: unknown;
+    signature: unknown;
+    clientDataJSON: unknown;
+    userHandle?: unknown;
+};
+
+export type AsymmetricAlgorithm = {
+    keySize?: number | string;
+    legalKeySizes?: null | Array<KeySizes>;
+    signatureAlgorithm?: null | string;
+    keyExchangeAlgorithm?: null | string;
+};
+
+export type AttestationConveyancePreference = unknown;
+
+export type AttestationResponse = {
+    attestationObject: unknown;
+    clientDataJSON: unknown;
+    transports: null | Array<unknown>;
+};
+
+export type AuthenticationExtensionsClientInputs = {
+    'example.extension.bool'?: null | boolean;
+    exts?: null | boolean;
+    uvm?: null | boolean;
+    credProps?: null | boolean;
+    prf?: null | AuthenticationExtensionsPrfInputs;
+    largeBlob?: null | AuthenticationExtensionsLargeBlobInputs;
+    credentialProtectionPolicy?: null | CredentialProtectionPolicy;
+    enforceCredentialProtectionPolicy?: null | boolean;
+};
+
+export type AuthenticationExtensionsClientOutputs = {
+    'example.extension.bool'?: null | boolean;
+    appid?: boolean;
+    exts?: null | Array<string>;
+    uvm?: null | Array<Array<number | string>>;
+    credProps?: null | CredentialPropertiesOutput;
+    prf?: null | AuthenticationExtensionsPrfOutputs;
+    largeBlob?: null | AuthenticationExtensionsLargeBlobOutputs;
+    credProtect?: null | CredentialProtectionPolicy;
+};
+
+export type AuthenticationExtensionsLargeBlobInputs = {
+    support?: null | LargeBlobSupport;
+    read?: boolean;
+    write?: unknown;
+};
+
+export type AuthenticationExtensionsLargeBlobOutputs = {
+    supported?: boolean;
+    blob?: unknown;
+    written?: boolean;
+};
+
+export type AuthenticationExtensionsPrfInputs = {
+    eval?: AuthenticationExtensionsPrfValues;
+    evalByCredential?: null | KeyValuePairOfstringAndAuthenticationExtensionsPrfValues;
+};
+
+export type AuthenticationExtensionsPrfOutputs = {
+    enabled?: boolean;
+    results?: AuthenticationExtensionsPrfValues;
+};
+
+export type AuthenticationExtensionsPrfValues = {
+    first: unknown;
+    second?: unknown;
+};
+
+export type AuthenticatorAssertionRawResponse = {
+    id: null | string;
+    rawId: unknown;
+    response?: AssertionResponse;
+    type: PublicKeyCredentialType;
+    extensions?: AuthenticationExtensionsClientOutputs;
+    clientExtensionResults: AuthenticationExtensionsClientOutputs;
+};
+
+export type AuthenticatorAttachment = unknown;
+
+export type AuthenticatorAttestationRawResponse = {
+    id: null | string;
+    rawId: unknown;
+    type: PublicKeyCredentialType;
+    response: AttestationResponse;
+    extensions?: AuthenticationExtensionsClientOutputs;
+    clientExtensionResults: AuthenticationExtensionsClientOutputs;
+};
+
+export type AuthenticatorSelection = {
+    authenticatorAttachment?: null | AuthenticatorAttachment;
+    residentKey?: ResidentKeyRequirement;
+    requireResidentKey?: boolean;
+    userVerification?: UserVerificationRequirement;
+};
+
 export type AuthLoginModel = {
     email: string;
     password: string;
@@ -21,7 +138,52 @@ export type AuthRegisterModel = {
 export type AuthResponse = {
     message?: string;
     user?: UserTable;
-    expires?: Date;
+    expires?: null | Date;
+};
+
+export type CancellationToken = {
+    isCancellationRequested?: boolean;
+    canBeCanceled?: boolean;
+    waitHandle?: WaitHandle;
+};
+
+export type Claim = {
+    issuer?: null | string;
+    originalIssuer?: null | string;
+    properties?: null | {
+        [key: string]: string;
+    };
+    subject?: ClaimsIdentity;
+    type?: null | string;
+    value?: null | string;
+    valueType?: null | string;
+};
+
+export type ClaimsIdentity = {
+    authenticationType?: null | string;
+    isAuthenticated?: boolean;
+    actor?: null | ClaimsIdentity;
+    bootstrapContext?: unknown;
+    claims?: unknown;
+    label?: null | string;
+    name?: null | string;
+    nameClaimType?: null | string;
+    roleClaimType?: null | string;
+};
+
+export type ClaimsPrincipal = {
+    claims?: null | Array<Claim>;
+    identities?: null | Array<ClaimsIdentity>;
+    identity?: IIdentity;
+};
+
+export type ConnectionInfo = {
+    id?: string;
+    remoteIpAddress?: null | IpAddress;
+    remotePort?: number | string;
+    localIpAddress?: null | IpAddress;
+    localPort?: number | string;
+    clientCertificate?: null | X509Certificate2;
 };
 
 export type CreateInvitationRequest = {
@@ -29,7 +191,103 @@ export type CreateInvitationRequest = {
     hoursValid: number | string;
 };
 
+export type CredentialCreateOptions = {
+    rp: PublicKeyCredentialRpEntity;
+    user: Fido2User;
+    challenge: unknown;
+    pubKeyCredParams: Array<PubKeyCredParam>;
+    timeout?: number | string;
+    attestation?: AttestationConveyancePreference;
+    attestationFormats?: Array<unknown>;
+    authenticatorSelection?: AuthenticatorSelection;
+    hints?: Array<unknown>;
+    excludeCredentials?: Array<PublicKeyCredentialDescriptor>;
+    extensions?: null | AuthenticationExtensionsClientInputs;
+};
+
+export type CredentialPropertiesOutput = {
+    rk?: boolean;
+    authenticatorDisplayName?: null | string;
+};
+
+export type CredentialProtectionPolicy = unknown;
+
+export type Fido2User = {
+    name?: null | string;
+    id?: unknown;
+    displayName?: null | string;
+};
+
+export type HostString = {
+    value?: null | string;
+    hasValue?: boolean;
+    host?: null | string;
+    port?: null | number | string;
+};
+
+export type HttpContext = {
+    features?: null | Array<KeyValuePairOfTypeAndObject>;
+    request?: HttpRequest;
+    response?: HttpResponse;
+    connection?: ConnectionInfo;
+    webSockets?: WebSocketManager;
+    user?: ClaimsPrincipal;
+    items?: {
+        [key: string]: unknown;
+    };
+    requestServices?: IServiceProvider;
+    requestAborted?: CancellationToken;
+    traceIdentifier?: string;
+    session?: ISession;
+};
+
+export type HttpRequest = {
+    httpContext?: HttpContext;
+    method?: string;
+    scheme?: string;
+    isHttps?: boolean;
+    host?: HostString;
+    pathBase?: PathString;
+    path?: PathString;
+    queryString?: QueryString;
+    query?: Array<KeyValuePairOfstringAndStringValues>;
+    protocol?: string;
+    headers?: null | {
+        [key: string]: Array<string>;
+    };
+    cookies?: Array<KeyValuePairOfstringAndstring>;
+    contentLength?: null | bigint | string;
+    contentType?: null | string;
+    body?: Stream;
+    bodyReader?: PipeReader;
+    hasFormContentType?: boolean;
+    form?: Array<KeyValuePairOfstringAndStringValues>;
+    routeValues?: {
+        [key: string]: unknown;
+    };
+};
+
+export type HttpResponse = {
+    httpContext?: HttpContext;
+    statusCode?: number | string;
+    headers?: null | {
+        [key: string]: Array<string>;
+    };
+    body?: Stream;
+    bodyWriter?: PipeWriter;
+    contentLength?: null | bigint | string;
+    contentType?: null | string;
+    cookies?: IResponseCookies;
+    hasStarted?: boolean;
+};
+
 export type IFormFile = Blob | File;
+
+export type IIdentity = {
+    name?: null | string;
+    authenticationType?: null | string;
+    isAuthenticated?: boolean;
+};
 
 export type InviteTable = {
     id?: number | string;
@@ -44,8 +302,79 @@ export type InviteTable = {
     usedBy?: null | Array<UserTable>;
 };
 
+export type IpAddress = {
+    addressFamily?: AddressFamily;
+    scopeId?: bigint | string;
+    isIPv6Multicast?: boolean;
+    isIPv6LinkLocal?: boolean;
+    isIPv6SiteLocal?: boolean;
+    isIPv6Teredo?: boolean;
+    isIPv6UniqueLocal?: boolean;
+    isIPv4MappedToIPv6?: boolean;
+    address?: bigint | string;
+};
+
+export type IResponseCookies = {
+    [key: string]: unknown;
+};
+
+export type IServiceProvider = {
+    [key: string]: unknown;
+};
+
+export type ISession = {
+    isAvailable?: boolean;
+    id?: null | string;
+    keys?: null | Array<string>;
+};
+
+export type KeySizes = {
+    minSize: number | string;
+    maxSize: number | string;
+    skipSize: number | string;
+};
+
+export type KeyValuePairOfstringAndAuthenticationExtensionsPrfValues = {
+    key: null | string;
+    value: AuthenticationExtensionsPrfValues;
+};
+
+export type KeyValuePairOfstringAndstring = {
+    key: null | string;
+    value: null | string;
+};
+
+export type KeyValuePairOfstringAndStringValues = {
+    key: null | string;
+    value: Array<string>;
+};
+
+export type KeyValuePairOfTypeAndObject = {
+    key: Type;
+    value: unknown;
+};
+
+export type LargeBlobSupport = unknown;
+
 export type MessageResponse = {
     message?: string;
+};
+
+export type Oid = {
+    value?: null | string;
+    friendlyName?: null | string;
+};
+
+export type PathString = {
+    value?: null | string;
+    hasValue?: boolean;
+};
+
+export type PipeReader = null | Blob | File;
+
+export type PipeWriter = {
+    canGetUnflushedBytes?: boolean;
+    unflushedBytes?: bigint | string;
 };
 
 export type ProblemDetails = {
@@ -55,6 +384,59 @@ export type ProblemDetails = {
     detail?: null | string;
     instance?: null | string;
 };
+
+export type PubKeyCredParam = {
+    type?: unknown;
+    alg: Algorithm;
+};
+
+export type PublicKey = {
+    encodedKeyValue?: AsnEncodedData;
+    encodedParameters?: AsnEncodedData;
+    key?: AsymmetricAlgorithm;
+    oid?: Oid;
+};
+
+export type PublicKeyCredentialDescriptor = {
+    type: PublicKeyCredentialType;
+    id: unknown;
+    transports?: null | Array<unknown>;
+};
+
+export type PublicKeyCredentialRpEntity = {
+    id: string;
+    name: string;
+    icon?: null | string;
+};
+
+export type PublicKeyCredentialType = unknown;
+
+export type QueryString = {
+    value?: null | string;
+    hasValue?: boolean;
+};
+
+export type ReadOnlyMemoryOfbyte = string;
+
+export type ResidentKeyRequirement = unknown;
+
+export type SafeWaitHandle = {
+    isInvalid?: boolean;
+    isClosed?: boolean;
+};
+
+export type Stream = Blob | File;
+
+export type TotpSetupResponse = {
+    secret?: string;
+    url?: string;
+};
+
+export type TotpVerifyRequest = {
+    code?: string;
+};
+
+export type Type = unknown;
 
 export type UpdateInvitationRequest = {
     isDisabled: null | boolean;
@@ -68,6 +450,16 @@ export type UpdateProfileModel = {
     oldPassword?: null | string;
 };
 
+export type UserCredentialTable = {
+    id?: number | string;
+    credentialId?: string;
+    publicKey?: string;
+    createdAt?: Date;
+    signatureCounter?: number | string;
+    nickname?: string;
+    userId?: number | string;
+};
+
 export type UserRole = number;
 
 export type UserTable = {
@@ -79,7 +471,53 @@ export type UserTable = {
     registerTime?: Date;
     avatar?: string;
     usedInviteId?: null | number | string;
-    usedInvite?: null | InviteTable;
+};
+
+export type UserVerificationRequirement = unknown;
+
+export type WaitHandle = {
+    handle?: unknown;
+    safeWaitHandle?: null | SafeWaitHandle;
+};
+
+export type WebSocketManager = {
+    isWebSocketRequest?: boolean;
+    webSocketRequestedProtocols?: null | Array<string>;
+};
+
+export type X500DistinguishedName = {
+    name?: null | string;
+    oid?: null | Oid;
+    rawData?: string;
+};
+
+export type X509Certificate2 = {
+    archived?: boolean;
+    extensions?: null | Array<X509Extension>;
+    friendlyName?: string;
+    hasPrivateKey?: boolean;
+    privateKey?: null | AsymmetricAlgorithm;
+    issuerName?: X500DistinguishedName;
+    notAfter?: Date;
+    notBefore?: Date;
+    publicKey?: PublicKey;
+    rawData?: null | string;
+    rawDataMemory?: ReadOnlyMemoryOfbyte;
+    serialNumber?: null | string;
+    signatureAlgorithm?: Oid;
+    subjectName?: X500DistinguishedName;
+    thumbprint?: null | string;
+    version?: number | string;
+    handle?: unknown;
+    issuer?: null | string;
+    subject?: null | string;
+    serialNumberBytes?: ReadOnlyMemoryOfbyte;
+};
+
+export type X509Extension = {
+    critical?: boolean;
+    oid?: null | Oid;
+    rawData?: string;
 };
 
 export type PostAuthLoginData = {
@@ -237,6 +675,219 @@ export type PostUserAvatarResponses = {
 };
 
 export type PostUserAvatarResponse = PostUserAvatarResponses[keyof PostUserAvatarResponses];
+
+export type PostAuthWebauthnRegisterOptionsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/auth/webauthn/register/options';
+};
+
+export type PostAuthWebauthnRegisterOptionsResponses = {
+    /**
+     * OK
+     */
+    200: CredentialCreateOptions;
+};
+
+export type PostAuthWebauthnRegisterOptionsResponse = PostAuthWebauthnRegisterOptionsResponses[keyof PostAuthWebauthnRegisterOptionsResponses];
+
+export type PostAuthWebauthnRegisterVerifyData = {
+    body: AuthenticatorAttestationRawResponse;
+    path?: never;
+    query?: never;
+    url: '/auth/webauthn/register/verify';
+};
+
+export type PostAuthWebauthnRegisterVerifyErrors = {
+    /**
+     * Bad Request
+     */
+    400: MessageResponse;
+};
+
+export type PostAuthWebauthnRegisterVerifyError = PostAuthWebauthnRegisterVerifyErrors[keyof PostAuthWebauthnRegisterVerifyErrors];
+
+export type PostAuthWebauthnRegisterVerifyResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type PostAuthWebauthnLoginVerifyData = {
+    body: AuthenticatorAssertionRawResponse;
+    path?: never;
+    query?: never;
+    url: '/auth/webauthn/login/verify';
+};
+
+export type PostAuthWebauthnLoginVerifyErrors = {
+    /**
+     * Bad Request
+     */
+    400: MessageResponse;
+};
+
+export type PostAuthWebauthnLoginVerifyError = PostAuthWebauthnLoginVerifyErrors[keyof PostAuthWebauthnLoginVerifyErrors];
+
+export type PostAuthWebauthnLoginVerifyResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type PostAuthWebauthnLoginOptionsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/auth/webauthn/login/options';
+};
+
+export type PostAuthWebauthnLoginOptionsResponses = {
+    /**
+     * OK
+     */
+    200: AssertionOptions;
+};
+
+export type PostAuthWebauthnLoginOptionsResponse = PostAuthWebauthnLoginOptionsResponses[keyof PostAuthWebauthnLoginOptionsResponses];
+
+export type GetAuthWebauthnCredentialsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/auth/webauthn/credentials';
+};
+
+export type GetAuthWebauthnCredentialsResponses = {
+    /**
+     * OK
+     */
+    200: Array<UserCredentialTable>;
+};
+
+export type GetAuthWebauthnCredentialsResponse = GetAuthWebauthnCredentialsResponses[keyof GetAuthWebauthnCredentialsResponses];
+
+export type DeleteAuthWebauthnCredentialsByIdData = {
+    body?: never;
+    path: {
+        id: number | string;
+    };
+    query?: never;
+    url: '/auth/webauthn/credentials/{id}';
+};
+
+export type DeleteAuthWebauthnCredentialsByIdResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type PostAuthTwoFactorTotpSetupData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/auth/two-factor/totp/setup';
+};
+
+export type PostAuthTwoFactorTotpSetupResponses = {
+    /**
+     * OK
+     */
+    200: TotpSetupResponse;
+};
+
+export type PostAuthTwoFactorTotpSetupResponse = PostAuthTwoFactorTotpSetupResponses[keyof PostAuthTwoFactorTotpSetupResponses];
+
+export type PostAuthTwoFactorTotpEnableData = {
+    body: TotpVerifyRequest;
+    path?: never;
+    query?: never;
+    url: '/auth/two-factor/totp/enable';
+};
+
+export type PostAuthTwoFactorTotpEnableErrors = {
+    /**
+     * Bad Request
+     */
+    400: MessageResponse;
+};
+
+export type PostAuthTwoFactorTotpEnableError = PostAuthTwoFactorTotpEnableErrors[keyof PostAuthTwoFactorTotpEnableErrors];
+
+export type PostAuthTwoFactorTotpEnableResponses = {
+    /**
+     * OK
+     */
+    200: MessageResponse;
+};
+
+export type PostAuthTwoFactorTotpEnableResponse = PostAuthTwoFactorTotpEnableResponses[keyof PostAuthTwoFactorTotpEnableResponses];
+
+export type PostAuthTwoFactorTotpVerifyData = {
+    body: TotpVerifyRequest;
+    path?: never;
+    query?: never;
+    url: '/auth/two-factor/totp/verify';
+};
+
+export type PostAuthTwoFactorTotpVerifyErrors = {
+    /**
+     * Bad Request
+     */
+    400: MessageResponse;
+};
+
+export type PostAuthTwoFactorTotpVerifyError = PostAuthTwoFactorTotpVerifyErrors[keyof PostAuthTwoFactorTotpVerifyErrors];
+
+export type PostAuthTwoFactorTotpVerifyResponses = {
+    /**
+     * OK
+     */
+    200: MessageResponse;
+};
+
+export type PostAuthTwoFactorTotpVerifyResponse = PostAuthTwoFactorTotpVerifyResponses[keyof PostAuthTwoFactorTotpVerifyResponses];
+
+export type PostAuthTwoFactorPolicyEnableData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/auth/two-factor/policy/enable';
+};
+
+export type PostAuthTwoFactorPolicyEnableErrors = {
+    /**
+     * Bad Request
+     */
+    400: ProblemDetails;
+};
+
+export type PostAuthTwoFactorPolicyEnableError = PostAuthTwoFactorPolicyEnableErrors[keyof PostAuthTwoFactorPolicyEnableErrors];
+
+export type PostAuthTwoFactorPolicyEnableResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type PostAuthTwoFactorPolicyDisableData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/auth/two-factor/policy/disable';
+};
+
+export type PostAuthTwoFactorPolicyDisableResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
 
 export type GetAdminInvitationsData = {
     body?: never;
