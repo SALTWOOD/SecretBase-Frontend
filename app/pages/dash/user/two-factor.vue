@@ -217,6 +217,7 @@ const verifyTotp = async () => {
     if (!response.error && response.response.status === 200) {
       isTotpEnabled.value = true;
       showTotpSetup.value = false;
+      totpCode.value = "";
       toast.add({ title: "TOTP enabled successfully." });
     }
   } finally {
@@ -227,7 +228,7 @@ const verifyTotp = async () => {
 const disableTotp = async () => {
   loading.value = true;
   try {
-    const response = await postAuthTwoFactorTotpDisable();
+    await postAuthTwoFactorTotpDisable();
     isTotpEnabled.value = false;
   } finally {
     loading.value = false;
@@ -279,6 +280,14 @@ const handleFormSuccess = async (data: Record<string, any>) => {
     path: { id: data["id"] },
     body: formState.value,
   });
+  if (!response.error) {
+    refresh();
+    open.value = false;
+    toast.add({
+      title: "Passkey information updated successfully.",
+      color: "success"
+    });
+  }
 };
 
 onMounted(() => refresh());
