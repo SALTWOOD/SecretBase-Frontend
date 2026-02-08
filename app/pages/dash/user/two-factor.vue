@@ -285,7 +285,7 @@ const handleFormSuccess = async (data: Record<string, any>) => {
     open.value = false;
     toast.add({
       title: "Passkey information updated successfully.",
-      color: "success"
+      color: "success",
     });
   }
 };

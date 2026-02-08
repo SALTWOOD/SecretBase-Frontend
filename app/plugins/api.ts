@@ -5,9 +5,30 @@ export default defineNuxtPlugin(() => {
     baseUrl: "/api/v1",
   });
 
-  client.interceptors.response.use((response) => {
+  client.interceptors.response.use(async (response, request) => {
     if (!response.ok) {
-      console.error("Request Error:", response.status);
+      if (response.status === 428) {
+        const data = await response.clone().json().catch(() => ({}));
+        if (data.type !== "2fa_challenge") return response;
+
+        if (request.body) return response;
+
+        const { openChallengeModal } = useChallenge();
+
+        if (openChallengeModal.value) {
+          const result = await openChallengeModal.value();
+
+          if (result) {
+            return await fetch(request.url, {
+              method: request.method,
+              headers: request.headers,
+            });
+          }
+        }
+        return response;
+      }
+
+      console.error(`[API Error] Status: ${response.status}`);
       useToast().add({
         title: "API Error",
         description: `Status: ${response.status}`,

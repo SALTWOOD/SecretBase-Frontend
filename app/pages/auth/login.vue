@@ -1,8 +1,6 @@
 <template>
   <div class="min-h-screen flex items-center justify-center bg-background p-4">
-    <UCard
-      class="w-full max-w-md bg-white/5 dark:bg-black/20 backdrop-blur-xl border-default shadow-2xl"
-    >
+    <UCard class="w-full max-w-md bg-white/5 dark:bg-black/20 backdrop-blur-xl border-default shadow-2xl">
       <template #header>
         <div class="text-center">
           <h2 class="text-2xl font-bold">欢迎回来</h2>
@@ -12,47 +10,23 @@
 
       <form @submit.prevent="handleLogin" class="space-y-6">
         <UFormField label="电子邮箱">
-          <UInput
-            v-model="form.email"
-            type="email"
-            placeholder="name@example.com"
-            icon="i-lucide-mail"
-            class="w-full"
-          />
+          <UInput v-model="form.email" type="email" placeholder="name@example.com" icon="i-lucide-mail"
+            class="w-full" />
         </UFormField>
 
         <UFormField label="密码">
-          <UInput
-            v-model="form.password"
-            type="password"
-            placeholder="••••••••"
-            icon="i-lucide-lock"
-            class="w-full"
-          />
+          <UInput v-model="form.password" type="password" placeholder="••••••••" icon="i-lucide-lock" class="w-full" />
         </UFormField>
 
         <client-only>
           <UFormField label="人机验证">
-            <div
-              class="cap-wrapper w-full overflow-hidden rounded-lg border border-default bg-muted/20"
-            >
-              <cap-widget
-                :data-cap-api-endpoint="api"
-                @solve="handleCapSolve"
-                @reset="handleCapReset"
-              />
+            <div class="cap-wrapper w-full overflow-hidden rounded-lg border border-default bg-muted/20">
+              <cap-widget :data-cap-api-endpoint="api" @solve="handleCapSolve" @reset="handleCapReset" />
             </div>
           </UFormField>
         </client-only>
 
-        <UButton
-          type="submit"
-          block
-          color="primary"
-          size="lg"
-          :loading="loading"
-          :disabled="!capToken || loading"
-        >
+        <UButton type="submit" block color="primary" size="lg" :loading="loading" :disabled="!capToken || loading">
           立即登录
         </UButton>
       </form>
@@ -60,9 +34,7 @@
       <template #footer>
         <p class="text-center text-sm text-muted-foreground">
           还没有账号？
-          <NuxtLink to="/dash/register" class="text-primary hover:underline"
-            >立即注册</NuxtLink
-          >
+          <NuxtLink to="/auth/register" class="text-primary hover:underline">立即注册</NuxtLink>
         </p>
       </template>
     </UCard>
