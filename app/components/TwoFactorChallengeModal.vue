@@ -51,7 +51,7 @@
               :class="[
                 isSuccess
                   ? 'animate-jump border-green-500 text-green-500'
-                  : 'border-default'
+                  : 'border-default',
               ]"
               :disabled="loading || isSuccess"
               @input="handleInput(index, $event)"
@@ -65,7 +65,7 @@
             :color="isSuccess ? 'success' : 'primary'"
             @click="handleTotpSubmit"
           >
-            {{ isSuccess ? '验证成功' : '验证' }}
+            {{ isSuccess ? "验证成功" : "验证" }}
           </UButton>
         </div>
 
@@ -75,7 +75,7 @@
             class="size-16 transition-colors duration-500"
             :class="[
               isSuccess ? 'text-green-500' : 'text-primary',
-              loading ? 'animate-pulse' : ''
+              loading ? 'animate-pulse' : '',
             ]"
           />
           <UButton
@@ -85,7 +85,7 @@
             :color="isSuccess ? 'success' : 'primary'"
             @click="handlePasskeyAuth"
           >
-            {{ isSuccess ? '验证成功' : '使用 Passkey' }}
+            {{ isSuccess ? "验证成功" : "使用 Passkey" }}
           </UButton>
         </div>
       </UCard>
@@ -121,12 +121,17 @@ const stepDescriptions: Record<Step, string> = {
 
 const availableMethods = [
   { id: "totp" as const, label: "动态口令 (TOTP)", icon: "i-lucide-clock" },
-  { id: "passkey" as const, label: "通行密钥 (Passkey)", icon: "i-lucide-fingerprint" },
+  {
+    id: "passkey" as const,
+    label: "通行密钥 (Passkey)",
+    icon: "i-lucide-fingerprint",
+  },
 ];
 
 const performWebAuthn = async () => {
   const options = await postAuthWebauthnLoginOptions();
-  if (options.error || !options.data) throw new Error("Fetch WebAuthn options failed");
+  if (options.error || !options.data)
+    throw new Error("Fetch WebAuthn options failed");
 
   const assertion = await startAuthentication({
     optionsJSON: options.data as any,

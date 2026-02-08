@@ -8,7 +8,10 @@ export default defineNuxtPlugin(() => {
   client.interceptors.response.use(async (response, request) => {
     if (!response.ok) {
       if (response.status === 428) {
-        const data = await response.clone().json().catch(() => ({}));
+        const data = await response
+          .clone()
+          .json()
+          .catch(() => ({}));
         if (data.type !== "2fa_challenge") return response;
 
         if (request.body) return response;

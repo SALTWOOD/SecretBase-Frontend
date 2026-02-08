@@ -122,7 +122,7 @@ const executeCode = async () => {
     );
   } catch (err: any) {
     addLog("err", err.message || String(err));
-    console.error(err)
+    console.error(err);
   }
 
   nextTick(() => {

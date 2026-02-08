@@ -731,7 +731,9 @@ export type PostAuthWebauthnRegisterVerifyResponses = {
 export type PostAuthWebauthnLoginVerifyData = {
     body: AuthenticatorAssertionRawResponse;
     path?: never;
-    query?: never;
+    query?: {
+        isLogin?: boolean;
+    };
     url: '/auth/webauthn/login/verify';
 };
 
@@ -748,8 +750,10 @@ export type PostAuthWebauthnLoginVerifyResponses = {
     /**
      * OK
      */
-    200: unknown;
+    200: AuthResponse;
 };
+
+export type PostAuthWebauthnLoginVerifyResponse = PostAuthWebauthnLoginVerifyResponses[keyof PostAuthWebauthnLoginVerifyResponses];
 
 export type PostAuthWebauthnLoginOptionsData = {
     body?: never;
