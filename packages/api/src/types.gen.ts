@@ -375,6 +375,7 @@ export type OAuthAppResponse = {
     id?: string;
     clientId?: string;
     displayName?: string;
+    userId?: null | string;
 };
 
 export type Oid = {
@@ -488,6 +489,10 @@ export type UpdateProfileModel = {
     newPassword?: null | string;
     username?: null | string;
     oldPassword?: null | string;
+};
+
+export type UpdateUserStatusBody = {
+    isBanned?: boolean;
 };
 
 export type User = {
@@ -825,6 +830,10 @@ export type DeleteOauthAppsByIdData = {
 
 export type DeleteOauthAppsByIdErrors = {
     /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
      * Not Found
      */
     404: ProblemDetails;
@@ -1112,7 +1121,7 @@ export type PostAuthTwoFactorPolicyEnableErrors = {
     /**
      * Bad Request
      */
-    400: ProblemDetails;
+    400: MessageResponse;
 };
 
 export type PostAuthTwoFactorPolicyEnableError = PostAuthTwoFactorPolicyEnableErrors[keyof PostAuthTwoFactorPolicyEnableErrors];
@@ -1131,12 +1140,23 @@ export type PostAuthTwoFactorPolicyDisableData = {
     url: '/auth/two-factor/policy/disable';
 };
 
+export type PostAuthTwoFactorPolicyDisableErrors = {
+    /**
+     * Bad Request
+     */
+    400: MessageResponse;
+};
+
+export type PostAuthTwoFactorPolicyDisableError = PostAuthTwoFactorPolicyDisableErrors[keyof PostAuthTwoFactorPolicyDisableErrors];
+
 export type PostAuthTwoFactorPolicyDisableResponses = {
     /**
      * OK
      */
-    200: unknown;
+    200: MessageResponse;
 };
+
+export type PostAuthTwoFactorPolicyDisableResponse = PostAuthTwoFactorPolicyDisableResponses[keyof PostAuthTwoFactorPolicyDisableResponses];
 
 export type GetAdminInvitationsData = {
     body?: never;
@@ -1184,6 +1204,10 @@ export type DeleteAdminInvitationsByIdData = {
 
 export type DeleteAdminInvitationsByIdErrors = {
     /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
      * Not Found
      */
     404: ProblemDetails;
@@ -1226,6 +1250,10 @@ export type PutAdminInvitationsByIdData = {
 };
 
 export type PutAdminInvitationsByIdErrors = {
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
     /**
      * Not Found
      */
@@ -1282,7 +1310,7 @@ export type GetAdminUsersResponses = {
 export type GetAdminUsersResponse = GetAdminUsersResponses[keyof GetAdminUsersResponses];
 
 export type PutAdminUsersByIdStatusData = {
-    body: boolean;
+    body: UpdateUserStatusBody;
     path: {
         id: number;
     };
@@ -1290,9 +1318,26 @@ export type PutAdminUsersByIdStatusData = {
     url: '/admin/users/{id}/status';
 };
 
+export type PutAdminUsersByIdStatusErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+};
+
+export type PutAdminUsersByIdStatusError = PutAdminUsersByIdStatusErrors[keyof PutAdminUsersByIdStatusErrors];
+
 export type PutAdminUsersByIdStatusResponses = {
     /**
-     * OK
+     * No Content
      */
-    200: unknown;
+    204: unknown;
 };

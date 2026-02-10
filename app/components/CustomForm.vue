@@ -18,21 +18,27 @@
           v-for="field in config"
           :key="field.key"
           :label="field.label"
+          :description="field.description"
         >
           <div class="space-y-3">
             <template v-if="field.multiple">
               <div
-                v-for="(_, index) in formData[field.key] as any[]"
+                v-for="(_, index) in formData[field.key]"
                 :key="index"
                 class="flex gap-2"
               >
-                <UInput v-model="formData[field.key][index]" class="grow" />
+                <UInput
+                  v-model="formData[field.key][index]"
+                  class="grow"
+                  :icon="field.icon"
+                  :placeholder="field.placeholder"
+                />
                 <UButton
                   v-if="formData[field.key].length > 1"
                   icon="i-lucide-minus"
                   color="error"
                   variant="ghost"
-                  @click="removeField(field.key, index)"
+                  @click="removeField(field.key, index as number)"
                 />
               </div>
               <UButton
@@ -40,23 +46,29 @@
                 variant="subtle"
                 size="xs"
                 @click="addField(field.key)"
-                >添加项</UButton
               >
+                添加项
+              </UButton>
             </template>
-
-            <UInput v-else v-model="formData[field.key]" class="w-full" />
-
-            <div
-              v-if="!field.multiple && field.presets?.length"
-              class="flex flex-wrap gap-1.5"
-            >
-              <UButton
-                v-for="p in field.presets"
-                :key="String(p.value)"
-                :label="p.label"
-                @click="formData[field.key] = p.value"
+            <template v-else>
+              <UInput
+                v-model="formData[field.key]"
+                class="w-full"
+                :icon="field.icon"
+                :placeholder="field.placeholder"
               />
-            </div>
+              <div v-if="field.presets?.length" class="flex flex-wrap gap-1.5">
+                <UButton
+                  v-for="p in field.presets"
+                  :key="p.value"
+                  :label="p.label"
+                  size="xs"
+                  variant="subtle"
+                  color="primary"
+                  @click="formData[field.key] = p.value"
+                />
+              </div>
+            </template>
           </div>
         </UFormField>
       </div>
@@ -109,6 +121,7 @@ onMounted(() => {
 function addField(key: string) {
   if (!Array.isArray(formData.value[key])) {
     formData.value[key] = [""];
+    return;
   }
   formData.value[key].push("");
 }
@@ -120,7 +133,7 @@ function removeField(key: string, index: number) {
 }
 
 function onSubmit() {
-  const data = JSON.parse(JSON.stringify(formData.value));
+  const data = structuredClone(formData.value);
   props.config.forEach((f) => {
     if (f.multiple && Array.isArray(data[f.key])) {
       data[f.key] = data[f.key].filter(

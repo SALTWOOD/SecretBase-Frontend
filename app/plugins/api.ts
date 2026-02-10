@@ -41,7 +41,9 @@ export default defineNuxtPlugin(() => {
         .clone()
         .json()
         .catch(() => ({}));
-      const description = data?.message ? `Status ${response.status}: ${data.message}` : `Status ${response.status}`;
+      const description = data?.message
+        ? `Status ${response.status}: ${data.message}`
+        : `Status ${response.status}`;
       console.error(`[API Error] Status: ${response.status}`);
       useToast().add({
         title: "API Error",

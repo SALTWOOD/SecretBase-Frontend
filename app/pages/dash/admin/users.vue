@@ -100,7 +100,10 @@
 
 <script lang="ts" setup>
 import type { User } from "~/types/user";
-import { getAdminUsers } from "~~/packages/api/src/sdk.gen";
+import {
+  getAdminUsers,
+  putAdminUsersByIdStatus,
+} from "~~/packages/api/src/sdk.gen";
 
 enum UserStatusFilter {
   All = "全部状态",
@@ -199,8 +202,15 @@ const getActionItems = (row: any) => [
 
 const handleToggleBan = async (user: User) => {
   // 这里调用你之前的 API 逻辑
-  console.log("Toggle Ban for:", user.username);
-  toast.add({ title: "操作发送成功", color: "primary" });
+  const response = await putAdminUsersByIdStatus({
+    path: { id: user.id as number },
+    body: {
+      isBanned: !user.isBanned,
+    },
+  });
+  if (!response.error) {
+    toast.add({ title: "操作发送成功", color: "primary" });
+  }
 };
 
 const refresh = async () => {

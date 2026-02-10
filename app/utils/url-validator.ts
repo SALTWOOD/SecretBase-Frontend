@@ -12,7 +12,7 @@ export function isValidAvatarUrl(url: string | null | undefined): boolean {
   if (!url) return true;
   try {
     const parsedUrl = new URL(url);
-    return ['http:', 'https:'].includes(parsedUrl.protocol);
+    return ["http:", "https:"].includes(parsedUrl.protocol);
   } catch {
     return false;
   }
@@ -54,5 +54,5 @@ export function isAbsoluteUrl(url: string): boolean {
  * @returns 清理后的 URL
  */
 export function sanitizeUrl(url: string): string {
-  return url.replace(/^(javascript|data|vbscript|about|file):/i, '');
+  return url.replace(/^(javascript|data|vbscript|about|file):/i, "");
 }

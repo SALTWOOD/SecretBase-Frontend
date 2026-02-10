@@ -13,10 +13,16 @@
       <!-- 安全警告：控制台可以执行任意JavaScript代码 -->
       <div class="bg-warning/10 border border-warning/30 rounded-lg p-3 mb-4">
         <div class="flex items-start gap-2">
-          <UIcon name="i-lucide-alert-triangle" class="text-warning w-5 h-5 mt-0.5" />
+          <UIcon
+            name="i-lucide-alert-triangle"
+            class="text-warning w-5 h-5 mt-0.5"
+          />
           <div class="text-xs text-warning">
             <p class="font-bold mb-1">安全警告</p>
-            <p>此控制台可以执行任意 JavaScript 代码。仅限开发人员使用，不要在输入框中粘贴来自不受信任来源的代码。</p>
+            <p>
+              此控制台可以执行任意 JavaScript
+              代码。仅限开发人员使用，不要在输入框中粘贴来自不受信任来源的代码。
+            </p>
           </div>
         </div>
       </div>

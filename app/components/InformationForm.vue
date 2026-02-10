@@ -38,10 +38,10 @@
 </template>
 
 <script setup lang="ts">
-import type { UserTable } from "~~/packages/api/src/types.gen";
+import type { User } from "~~/packages/api/src/types.gen";
 
 defineProps<{
-  users: UserTable[];
+  users: User[];
   loading: boolean;
 }>();
 

@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-center gap-3">
     <UAvatar
-      :src="isValidAvatarUrl(avatar) ? avatar ?? undefined : undefined"
+      :src="isValidAvatarUrl(avatar) ? (avatar ?? undefined) : undefined"
       :alt="username ?? undefined"
       size="sm"
     />

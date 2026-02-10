@@ -117,17 +117,17 @@ import {
   postAdminInvitations,
   putAdminInvitationsById,
 } from "~~/packages/api/src/sdk.gen";
-import type { InviteTable, UserTable } from "~~/packages/api/src/types.gen";
+import type { Invite, User } from "~~/packages/api/src/types.gen";
 
 const toast = useToast();
 
-const inviteCodes = ref<InviteTable[]>([]);
+const inviteCodes = ref<Invite[]>([]);
 const isModalOpen = ref(false);
 const isEditMode = ref(false);
 const isSubmitting = ref(false);
 const currentEditId = ref<number | null>(null);
 const invitationUsers = ref({
-  users: [] as UserTable[],
+  users: [] as User[],
   loading: true,
   open: false,
   page: {
@@ -221,7 +221,7 @@ const openForm = (editMode: boolean, row?: any) => {
   isModalOpen.value = true;
 };
 
-const handleCountClick = async (invite: InviteTable) => {
+const handleCountClick = async (invite: Invite) => {
   console.log(invite);
   invitationUsers.value.loading = true;
   invitationUsers.value.open = true;

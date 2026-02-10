@@ -1451,6 +1451,12 @@ export const OAuthAppResponseSchema = {
         },
         displayName: {
             type: 'string'
+        },
+        userId: {
+            type: [
+                'null',
+                'string'
+            ]
         }
     }
 } as const;
@@ -1826,6 +1832,15 @@ export const UpdateProfileModelSchema = {
                 'null',
                 'string'
             ]
+        }
+    }
+} as const;
+
+export const UpdateUserStatusBodySchema = {
+    type: 'object',
+    properties: {
+        isBanned: {
+            type: 'boolean'
         }
     }
 } as const;

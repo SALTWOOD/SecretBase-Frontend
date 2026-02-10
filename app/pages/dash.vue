@@ -29,7 +29,10 @@
             :square="collapsed"
             class="justify-start px-2"
           >
-            <UAvatar :src="isValidAvatarUrl(user?.avatar) ? user?.avatar : undefined" size="sm" />
+            <UAvatar
+              :src="isValidAvatarUrl(user?.avatar) ? user?.avatar : undefined"
+              size="sm"
+            />
             <div
               v-if="!collapsed"
               class="text-left ml-2 overflow-hidden flex-1"
