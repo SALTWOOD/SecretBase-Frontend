@@ -9,4 +9,5 @@ export interface FieldConfig {
   min?: number | string;
   max?: number | string;
   presets?: { label: string; value: any }[];
+  multiple?: boolean
 }

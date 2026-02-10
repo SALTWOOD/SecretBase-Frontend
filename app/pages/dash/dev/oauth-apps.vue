@@ -1,121 +1,28 @@
 <template>
-  <UContainer>
+  <div class="view-content">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 my-6">
       <div>
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 class="text-3xl font-bold text-highlighted tracking-tight">
           OAuth 应用
         </h1>
-        <p class="text-gray-500 dark:text-gray-400 mt-1 text-sm">
+        <p class="text-muted text-sm mt-1">
           管理您的 OAuth 应用程序和授权配置
         </p>
       </div>
       <UButton
-        icon="i-heroicons-plus-circle"
+        icon="i-lucide-plus-circle"
         size="lg"
-        @click="isCreating = true"
+        @click="openForm(false)"
         class="shadow-md hover:shadow-lg transition-shadow duration-200"
       >
         创建新应用
       </UButton>
     </div>
 
-    <UModal v-model:open="isCreating" :ui="{ content: 'rounded-xl shadow-2xl max-w-2xl' }">
-      <template #content>
-        <div class="p-8 space-y-8">
-          <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
-            <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">
-              创建 OAuth 应用
-            </h2>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">
-              填写以下信息来注册新的 OAuth 应用
-            </p>
-          </div>
-          <UForm @submit="createNewApp" :state="newApp" class="space-y-6">
-            <UFormGroup label="客户端 ID" name="clientId" required>
-              <UInput
-                v-model="newApp.clientId"
-                placeholder="应用的唯一标识符"
-                size="lg"
-                icon="i-heroicons-identification"
-                :ui="{ icon: { base: 'text-gray-400 dark:text-gray-500' } }"
-              />
-            </UFormGroup>
-            <UFormGroup label="客户端密钥" name="clientSecret" required>
-              <UInput
-                v-model="newApp.clientSecret"
-                type="password"
-                placeholder="请妥善保管此密钥！"
-                size="lg"
-                icon="i-heroicons-key"
-                :ui="{ icon: { base: 'text-gray-400 dark:text-gray-500' } }"
-              />
-            </UFormGroup>
-            <UFormGroup label="显示名称" name="displayName" required>
-              <UInput
-                v-model="newApp.displayName"
-                placeholder="我的精彩应用"
-                size="lg"
-                icon="i-heroicons-cube"
-                :ui="{ icon: { base: 'text-gray-400 dark:text-gray-500' } }"
-              />
-            </UFormGroup>
-            <UFormGroup label="回调地址" name="redirectUris" required>
-              <div class="space-y-3">
-                <div
-                  v-for="(uri, index) in newApp.redirectUris"
-                  :key="index"
-                  class="flex items-center gap-2"
-                >
-                  <UInput
-                    v-model="newApp.redirectUris![index]"
-                    placeholder="https://app.example.com/callback"
-                    size="lg"
-                    icon="i-heroicons-link"
-                    class="flex-1"
-                    :ui="{ icon: { base: 'text-gray-400 dark:text-gray-500' } }"
-                  />
-                  <UButton
-                    v-if="newApp.redirectUris!.length > 1"
-                    icon="i-heroicons-minus-circle"
-                    color="error"
-                    variant="ghost"
-                    size="lg"
-                    @click="newApp.redirectUris?.splice(index, 1)"
-                  />
-                </div>
-                <UButton
-                  icon="i-heroicons-plus-circle"
-                  variant="ghost"
-                  size="md"
-                  @click="newApp.redirectUris?.push('')"
-                  class="text-gray-600 dark:text-gray-400"
-                >
-                  添加更多回调地址
-                </UButton>
-              </div>
-            </UFormGroup>
-            <div class="flex justify-end gap-3 pt-6 border-t border-gray-200 dark:border-gray-700">
-              <UButton
-                color="primary"
-                variant="ghost"
-                size="lg"
-                @click="isCreating = false"
-              >
-                取消
-              </UButton>
-              <UButton type="submit" size="lg" class="shadow-md">
-                创建应用
-              </UButton>
-            </div>
-          </UForm>
-        </div>
-      </template>
-    </UModal>
-
     <div v-if="pending" class="flex justify-center items-center py-16">
       <div class="text-center space-y-4">
-        <UIcon name="i-heroicons-arrow-path" class="w-12 h-12 animate-spin text-primary-500" />
-        <p class="text-gray-500 dark:text-gray-400 text-lg">加载应用中...</p>
+        <UIcon name="i-lucide-refresh-cw" class="w-12 h-12 animate-spin text-primary-500" />
+        <p class="text-muted text-lg">加载应用中...</p>
       </div>
     </div>
     <div
@@ -124,14 +31,14 @@
     >
       <div class="text-center space-y-4 max-w-md">
         <div
-          class="w-20 h-20 mx-auto bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center"
+          class="w-20 h-20 mx-auto bg-default/50 rounded-full flex items-center justify-center"
         >
-          <UIcon name="i-heroicons-key" class="w-10 h-10 text-gray-400" />
+          <UIcon name="i-lucide-key" class="w-10 h-10 text-muted" />
         </div>
-        <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
+        <h3 class="text-xl font-semibold text-highlighted">
           暂无 OAuth 应用
         </h3>
-        <p class="text-gray-500 dark:text-gray-400">
+        <p class="text-muted">
           点击上方"创建新应用"按钮来添加您的第一个 OAuth 应用
         </p>
       </div>
@@ -140,7 +47,7 @@
       <UCard
         v-for="app in apps"
         :key="app.id"
-        class="hover:shadow-lg transition-shadow duration-200 border border-gray-200 dark:border-gray-700"
+        class="hover:shadow-lg transition-shadow duration-200 border border-default bg-(--ui-bg-elevated)/50"
       >
         <template #header>
           <div class="flex items-start justify-between">
@@ -148,13 +55,13 @@
               <div
                 class="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center shadow-md"
               >
-                <UIcon name="i-heroicons-cube" class="w-6 h-6 text-white" />
+                <UIcon name="i-lucide-box" class="w-6 h-6 text-white" />
               </div>
               <div>
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                <h3 class="text-lg font-semibold text-highlighted">
                   {{ app.displayName }}
                 </h3>
-                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                <p class="text-xs text-muted mt-0.5">
                   OAuth 应用
                 </p>
               </div>
@@ -162,10 +69,10 @@
           </div>
         </template>
         <div class="space-y-3">
-          <div class="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-            <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">客户端 ID</p>
+          <div class="p-3 bg-default/50 rounded-lg">
+            <p class="text-xs text-muted mb-1">客户端 ID</p>
             <code
-              class="text-sm font-mono text-gray-900 dark:text-gray-100 break-all"
+              class="text-sm font-mono text-highlighted break-all"
               >{{ app.clientId }}</code
             >
           </div>
@@ -175,7 +82,7 @@
             <UButton
               color="error"
               variant="soft"
-              icon="i-heroicons-trash"
+              icon="i-lucide-trash-2"
               size="sm"
               @click="deleteApp(app.id!)"
               class="hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
@@ -186,10 +93,21 @@
         </template>
       </UCard>
     </div>
-  </UContainer>
+
+    <CustomForm
+      v-model:open="isModalOpen"
+      v-model:config="form"
+      v-model:form-data="formState"
+      v-model:loading="isSubmitting"
+      :title="isEditMode ? '编辑 OAuth 应用' : '创建 OAuth 应用'"
+      @success="handleFormSubmit"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
+import CustomForm from "~/components/CustomForm.vue";
+import type { FieldConfig } from "~/types/field-config";
 import {
   getOauthApps,
   postOauthApps,
@@ -204,13 +122,52 @@ const toast = useToast();
 
 const apps = ref<OAuthAppResponse[]>();
 const pending = ref(true);
-const isCreating = ref(false);
+const isModalOpen = ref(false);
+const isEditMode = ref(false);
+const isSubmitting = ref(false);
 
-const newApp = reactive<CreateAppRequest>({
+const form: Ref<FieldConfig[]> = ref([
+  {
+    key: "clientId",
+    label: "客户端 ID",
+    description: "应用的唯一标识符",
+    type: "text",
+    placeholder: "应用的唯一标识符",
+    icon: "i-lucide-fingerprint-pattern",
+  },
+  {
+    key: "clientSecret",
+    label: "客户端密钥",
+    description: "请妥善保管",
+    type: "password",
+    placeholder: "••••••••",
+    icon: "i-lucide-key",
+  },
+  {
+    key: "displayName",
+    label: "显示名称",
+    description: "应用的显示名称",
+    type: "text",
+    placeholder: "请输入文本",
+    icon: "i-lucide-folder",
+  },
+  {
+    key: "redirectUri",
+    label: "回调地址",
+    description: "OAuth 授权后的回调地址（可添加多个）",
+    type: "text",
+    placeholder: "https://app.example.com/callback",
+    icon: "i-lucide-link",
+    multiple: true
+  },
+]);
+
+const formState = ref({
   clientId: "",
   clientSecret: "",
   displayName: "",
-  redirectUris: [""],
+  redirectUri: "",
+  redirectUris: [""] as string[],
 });
 
 const refresh = async () => {
@@ -225,13 +182,37 @@ const refresh = async () => {
   }
 };
 
-async function createNewApp() {
+const openForm = (editMode: boolean) => {
+  isEditMode.value = editMode;
+  if (!editMode) {
+    formState.value = {
+      clientId: "",
+      clientSecret: "",
+      displayName: "",
+      redirectUri: "",
+      redirectUris: [""],
+    };
+  }
+  isModalOpen.value = true;
+};
+
+const handleFormSubmit = async (data: Record<string, any>) => {
+  isSubmitting.value = true;
   try {
+    // 处理 redirectUris：如果用户输入了新的 URI，添加到数组中
+    if (data.redirectUri && data.redirectUri.trim()) {
+      formState.value.redirectUris.push(data.redirectUri.trim());
+    }
+
+    const requestBody: CreateAppRequest = {
+      clientId: data.clientId,
+      clientSecret: data.clientSecret,
+      displayName: data.displayName,
+      redirectUris: formState.value.redirectUris.filter((u) => u.trim()) || [data.redirectUri],
+    };
+
     await postOauthApps({
-      body: {
-        ...newApp,
-        redirectUris: newApp.redirectUris?.filter((u) => u.trim()) ?? [],
-      },
+      body: requestBody,
     });
 
     toast.add({
@@ -240,20 +221,23 @@ async function createNewApp() {
       color: "success",
     });
 
-    isCreating.value = false;
-    Object.assign(newApp, {
+    isModalOpen.value = false;
+    formState.value = {
       clientId: "",
       clientSecret: "",
       displayName: "",
+      redirectUri: "",
       redirectUris: [""],
-    });
+    };
 
     await refresh();
   } catch (error: any) {
     console.error("Failed to create app", error);
     toast.add({ title: "错误", description: error.message, color: "error" });
+  } finally {
+    isSubmitting.value = false;
   }
-}
+};
 
 async function deleteApp(id: string) {
   try {
@@ -280,3 +264,7 @@ onMounted(async () => {
   await refresh();
 });
 </script>
+
+<style scoped>
+@reference "~/assets/css/main.css";
+</style>
