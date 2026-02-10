@@ -128,6 +128,19 @@ const allNavigationItems = computed<NavigationItem[]>(() => [
     ],
   },
   {
+    label: "开放平台",
+    icon: "i-lucide-code-2",
+    type: "trigger",
+    defaultOpen: false,
+    children: [
+      {
+        label: "OAuth Apps",
+        icon: "i-lucide-smartphone",
+        to: "/dash/dev/oauth-apps",
+      },
+    ],
+  },
+  {
     label: "管理后台",
     icon: "i-lucide-shield-check",
     type: "trigger",

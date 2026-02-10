@@ -136,9 +136,8 @@ export type AuthRegisterModel = {
 };
 
 export type AuthResponse = {
-    message?: string;
-    user?: UserTable;
-    expires?: null | Date;
+    status?: string;
+    data?: TokenRenewResponse;
 };
 
 export type CancellationToken = {
@@ -184,6 +183,13 @@ export type ConnectionInfo = {
     localIpAddress?: null | IpAddress;
     localPort?: number | string;
     clientCertificate?: null | X509Certificate2;
+};
+
+export type CreateAppRequest = {
+    clientId: string;
+    clientSecret: string;
+    displayName: string;
+    redirectUris: null | Array<string>;
 };
 
 export type CreateInvitationRequest = {
@@ -293,7 +299,7 @@ export type IIdentity = {
     isAuthenticated?: boolean;
 };
 
-export type InviteTable = {
+export type Invite = {
     id?: number | string;
     code?: string;
     creatorId?: number | string;
@@ -302,8 +308,9 @@ export type InviteTable = {
     maxUses?: number | string;
     usedCount?: number | string;
     isDisabled?: boolean;
-    creator?: null | UserTable;
-    usedBy?: null | Array<UserTable>;
+    creator?: null | User;
+    usedBy?: null | Array<User>;
+    isValid?: boolean;
 };
 
 export type IpAddress = {
@@ -364,9 +371,23 @@ export type MessageResponse = {
     message?: string;
 };
 
+export type OAuthAppResponse = {
+    id?: string;
+    clientId?: string;
+    displayName?: string;
+};
+
 export type Oid = {
     value?: null | string;
     friendlyName?: null | string;
+};
+
+export type OpenIddictTokenResponse = {
+    access_token: string;
+    token_type: string;
+    expires_in: number | string;
+    id_token: null | string;
+    refresh_token: null | string;
 };
 
 export type PathString = {
@@ -431,6 +452,12 @@ export type SafeWaitHandle = {
 
 export type Stream = Blob | File;
 
+export type TokenRenewResponse = {
+    message?: string;
+    user?: User;
+    expires?: null | Date;
+};
+
 export type TotpSetupResponse = {
     secret?: string;
     url?: string;
@@ -463,7 +490,18 @@ export type UpdateProfileModel = {
     oldPassword?: null | string;
 };
 
-export type UserCredentialTable = {
+export type User = {
+    id?: number | string;
+    username?: string;
+    email?: string;
+    role?: UserRole;
+    isBanned?: boolean;
+    registerTime?: Date;
+    avatar?: string;
+    usedInviteId?: null | number | string;
+};
+
+export type UserCredential = {
     id?: number | string;
     credentialId?: string;
     publicKey?: string;
@@ -474,17 +512,6 @@ export type UserCredentialTable = {
 };
 
 export type UserRole = number;
-
-export type UserTable = {
-    id?: number | string;
-    username?: string;
-    email?: string;
-    role?: UserRole;
-    isBanned?: boolean;
-    registerTime?: Date;
-    avatar?: string;
-    usedInviteId?: null | number | string;
-};
 
 export type UserVerificationRequirement = unknown;
 
@@ -600,7 +627,7 @@ export type PostAuthRegisterResponses = {
     /**
      * OK
      */
-    200: UserTable;
+    200: User;
 };
 
 export type PostAuthRegisterResponse = PostAuthRegisterResponses[keyof PostAuthRegisterResponses];
@@ -625,7 +652,7 @@ export type PostAuthRenewResponses = {
     /**
      * OK
      */
-    200: AuthResponse;
+    200: TokenRenewResponse;
 };
 
 export type PostAuthRenewResponse = PostAuthRenewResponses[keyof PostAuthRenewResponses];
@@ -641,7 +668,7 @@ export type GetUserProfileResponses = {
     /**
      * OK
      */
-    200: UserTable;
+    200: User;
 };
 
 export type GetUserProfileResponse = GetUserProfileResponses[keyof GetUserProfileResponses];
@@ -688,6 +715,156 @@ export type PostUserAvatarResponses = {
 };
 
 export type PostUserAvatarResponse = PostUserAvatarResponses[keyof PostUserAvatarResponses];
+
+export type GetConnectAuthorizeData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/connect/authorize';
+};
+
+export type GetConnectAuthorizeErrors = {
+    /**
+     * Bad Request
+     */
+    400: ProblemDetails;
+};
+
+export type GetConnectAuthorizeError = GetConnectAuthorizeErrors[keyof GetConnectAuthorizeErrors];
+
+export type PostConnectAuthorizeData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/connect/authorize';
+};
+
+export type PostConnectAuthorizeErrors = {
+    /**
+     * Bad Request
+     */
+    400: ProblemDetails;
+};
+
+export type PostConnectAuthorizeError = PostConnectAuthorizeErrors[keyof PostConnectAuthorizeErrors];
+
+export type PostConnectTokenData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/connect/token';
+};
+
+export type PostConnectTokenErrors = {
+    /**
+     * Bad Request
+     */
+    400: ProblemDetails;
+};
+
+export type PostConnectTokenError = PostConnectTokenErrors[keyof PostConnectTokenErrors];
+
+export type PostConnectTokenResponses = {
+    /**
+     * OK
+     */
+    200: OpenIddictTokenResponse;
+};
+
+export type PostConnectTokenResponse = PostConnectTokenResponses[keyof PostConnectTokenResponses];
+
+export type GetOauthAppsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/oauth/apps';
+};
+
+export type GetOauthAppsResponses = {
+    /**
+     * OK
+     */
+    200: Array<OAuthAppResponse>;
+};
+
+export type GetOauthAppsResponse = GetOauthAppsResponses[keyof GetOauthAppsResponses];
+
+export type PostOauthAppsData = {
+    body: CreateAppRequest;
+    path?: never;
+    query?: never;
+    url: '/oauth/apps';
+};
+
+export type PostOauthAppsErrors = {
+    /**
+     * Bad Request
+     */
+    400: ProblemDetails;
+};
+
+export type PostOauthAppsError = PostOauthAppsErrors[keyof PostOauthAppsErrors];
+
+export type PostOauthAppsResponses = {
+    /**
+     * Created
+     */
+    201: OAuthAppResponse;
+};
+
+export type PostOauthAppsResponse = PostOauthAppsResponses[keyof PostOauthAppsResponses];
+
+export type DeleteOauthAppsByIdData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/oauth/apps/{id}';
+};
+
+export type DeleteOauthAppsByIdErrors = {
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+};
+
+export type DeleteOauthAppsByIdError = DeleteOauthAppsByIdErrors[keyof DeleteOauthAppsByIdErrors];
+
+export type DeleteOauthAppsByIdResponses = {
+    /**
+     * No Content
+     */
+    204: unknown;
+};
+
+export type GetOauthPublicAppInfoData = {
+    body?: never;
+    path?: never;
+    query?: {
+        clientId?: string;
+    };
+    url: '/oauth/public/app-info';
+};
+
+export type GetOauthPublicAppInfoErrors = {
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+};
+
+export type GetOauthPublicAppInfoError = GetOauthPublicAppInfoErrors[keyof GetOauthPublicAppInfoErrors];
+
+export type GetOauthPublicAppInfoResponses = {
+    /**
+     * OK
+     */
+    200: OAuthAppResponse;
+};
+
+export type GetOauthPublicAppInfoResponse = GetOauthPublicAppInfoResponses[keyof GetOauthPublicAppInfoResponses];
 
 export type PostAuthWebauthnRegisterOptionsData = {
     body?: never;
@@ -750,7 +927,7 @@ export type PostAuthWebauthnLoginVerifyResponses = {
     /**
      * OK
      */
-    200: AuthResponse;
+    200: MessageResponse;
 };
 
 export type PostAuthWebauthnLoginVerifyResponse = PostAuthWebauthnLoginVerifyResponses[keyof PostAuthWebauthnLoginVerifyResponses];
@@ -782,7 +959,7 @@ export type GetAuthWebauthnCredentialsResponses = {
     /**
      * OK
      */
-    200: Array<UserCredentialTable>;
+    200: Array<UserCredential>;
 };
 
 export type GetAuthWebauthnCredentialsResponse = GetAuthWebauthnCredentialsResponses[keyof GetAuthWebauthnCredentialsResponses];
@@ -975,7 +1152,7 @@ export type GetAdminInvitationsResponses = {
     /**
      * OK
      */
-    200: Array<InviteTable>;
+    200: Array<Invite>;
 };
 
 export type GetAdminInvitationsResponse = GetAdminInvitationsResponses[keyof GetAdminInvitationsResponses];
@@ -991,7 +1168,7 @@ export type PostAdminInvitationsResponses = {
     /**
      * Created
      */
-    201: InviteTable;
+    201: Invite;
 };
 
 export type PostAdminInvitationsResponse = PostAdminInvitationsResponses[keyof PostAdminInvitationsResponses];
@@ -1034,7 +1211,7 @@ export type GetAdminInvitationsByIdResponses = {
     /**
      * OK
      */
-    200: InviteTable;
+    200: Invite;
 };
 
 export type GetAdminInvitationsByIdResponse = GetAdminInvitationsByIdResponses[keyof GetAdminInvitationsByIdResponses];
@@ -1080,7 +1257,7 @@ export type GetAdminInvitationsByIdUsersResponses = {
     /**
      * OK
      */
-    200: Array<UserTable>;
+    200: Array<User>;
 };
 
 export type GetAdminInvitationsByIdUsersResponse = GetAdminInvitationsByIdUsersResponses[keyof GetAdminInvitationsByIdUsersResponses];
@@ -1099,7 +1276,7 @@ export type GetAdminUsersResponses = {
     /**
      * OK
      */
-    200: Array<UserTable>;
+    200: Array<User>;
 };
 
 export type GetAdminUsersResponse = GetAdminUsersResponses[keyof GetAdminUsersResponses];
@@ -1113,18 +1290,9 @@ export type PutAdminUsersByIdStatusData = {
     url: '/admin/users/{id}/status';
 };
 
-export type PutAdminUsersByIdStatusErrors = {
-    /**
-     * Not Found
-     */
-    404: ProblemDetails;
-};
-
-export type PutAdminUsersByIdStatusError = PutAdminUsersByIdStatusErrors[keyof PutAdminUsersByIdStatusErrors];
-
 export type PutAdminUsersByIdStatusResponses = {
     /**
-     * No Content
+     * OK
      */
-    204: unknown;
+    200: unknown;
 };

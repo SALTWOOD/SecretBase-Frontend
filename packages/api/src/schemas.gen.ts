@@ -544,18 +544,11 @@ export const AuthRegisterModelSchema = {
 export const AuthResponseSchema = {
     type: 'object',
     properties: {
-        message: {
+        status: {
             type: 'string'
         },
-        user: {
-            $ref: '#/components/schemas/UserTable'
-        },
-        expires: {
-            type: [
-                'null',
-                'string'
-            ],
-            format: 'date-time'
+        data: {
+            $ref: '#/components/schemas/TokenRenewResponse'
         }
     }
 } as const;
@@ -752,6 +745,36 @@ export const ConnectionInfoSchema = {
                     $ref: '#/components/schemas/X509Certificate2'
                 }
             ]
+        }
+    }
+} as const;
+
+export const CreateAppRequestSchema = {
+    required: [
+        'clientId',
+        'clientSecret',
+        'displayName',
+        'redirectUris'
+    ],
+    type: 'object',
+    properties: {
+        clientId: {
+            type: 'string'
+        },
+        clientSecret: {
+            type: 'string'
+        },
+        displayName: {
+            type: 'string'
+        },
+        redirectUris: {
+            type: [
+                'null',
+                'array'
+            ],
+            items: {
+                type: 'string'
+            }
         }
     }
 } as const;
@@ -1142,7 +1165,7 @@ export const IIdentitySchema = {
     }
 } as const;
 
-export const InviteTableSchema = {
+export const InviteSchema = {
     type: 'object',
     properties: {
         id: {
@@ -1200,7 +1223,7 @@ export const InviteTableSchema = {
                     type: 'null'
                 },
                 {
-                    $ref: '#/components/schemas/UserTable'
+                    $ref: '#/components/schemas/User'
                 }
             ]
         },
@@ -1210,8 +1233,11 @@ export const InviteTableSchema = {
                 'array'
             ],
             items: {
-                $ref: '#/components/schemas/UserTable'
+                $ref: '#/components/schemas/User'
             }
+        },
+        isValid: {
+            type: 'boolean'
         }
     }
 } as const;
@@ -1414,6 +1440,21 @@ export const MessageResponseSchema = {
     }
 } as const;
 
+export const OAuthAppResponseSchema = {
+    type: 'object',
+    properties: {
+        id: {
+            type: 'string'
+        },
+        clientId: {
+            type: 'string'
+        },
+        displayName: {
+            type: 'string'
+        }
+    }
+} as const;
+
 export const OidSchema = {
     type: 'object',
     properties: {
@@ -1424,6 +1465,45 @@ export const OidSchema = {
             ]
         },
         friendlyName: {
+            type: [
+                'null',
+                'string'
+            ]
+        }
+    }
+} as const;
+
+export const OpenIddictTokenResponseSchema = {
+    required: [
+        'access_token',
+        'token_type',
+        'expires_in',
+        'id_token',
+        'refresh_token'
+    ],
+    type: 'object',
+    properties: {
+        access_token: {
+            type: 'string'
+        },
+        token_type: {
+            type: 'string'
+        },
+        expires_in: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        id_token: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        refresh_token: {
             type: [
                 'null',
                 'string'
@@ -1628,6 +1708,25 @@ export const StreamSchema = {
     format: 'binary'
 } as const;
 
+export const TokenRenewResponseSchema = {
+    type: 'object',
+    properties: {
+        message: {
+            type: 'string'
+        },
+        user: {
+            $ref: '#/components/schemas/User'
+        },
+        expires: {
+            type: [
+                'null',
+                'string'
+            ],
+            format: 'date-time'
+        }
+    }
+} as const;
+
 export const TotpSetupResponseSchema = {
     type: 'object',
     properties: {
@@ -1731,7 +1830,49 @@ export const UpdateProfileModelSchema = {
     }
 } as const;
 
-export const UserCredentialTableSchema = {
+export const UserSchema = {
+    type: 'object',
+    properties: {
+        id: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        username: {
+            type: 'string'
+        },
+        email: {
+            type: 'string'
+        },
+        role: {
+            $ref: '#/components/schemas/UserRole'
+        },
+        isBanned: {
+            type: 'boolean'
+        },
+        registerTime: {
+            type: 'string',
+            format: 'date-time'
+        },
+        avatar: {
+            type: 'string'
+        },
+        usedInviteId: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'null',
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        }
+    }
+} as const;
+
+export const UserCredentialSchema = {
     type: 'object',
     properties: {
         id: {
@@ -1778,48 +1919,6 @@ export const UserCredentialTableSchema = {
 
 export const UserRoleSchema = {
     type: 'integer'
-} as const;
-
-export const UserTableSchema = {
-    type: 'object',
-    properties: {
-        id: {
-            pattern: '^-?(?:0|[1-9]\\d*)$',
-            type: [
-                'integer',
-                'string'
-            ],
-            format: 'int32'
-        },
-        username: {
-            type: 'string'
-        },
-        email: {
-            type: 'string'
-        },
-        role: {
-            $ref: '#/components/schemas/UserRole'
-        },
-        isBanned: {
-            type: 'boolean'
-        },
-        registerTime: {
-            type: 'string',
-            format: 'date-time'
-        },
-        avatar: {
-            type: 'string'
-        },
-        usedInviteId: {
-            pattern: '^-?(?:0|[1-9]\\d*)$',
-            type: [
-                'null',
-                'integer',
-                'string'
-            ],
-            format: 'int32'
-        }
-    }
 } as const;
 
 export const UserVerificationRequirementSchema = {} as const;

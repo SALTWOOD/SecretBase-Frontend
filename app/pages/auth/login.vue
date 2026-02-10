@@ -120,17 +120,32 @@ const handleLogin = async () => {
       },
     });
 
-    if (!response.error && response.data?.user) {
+    if (!response.error) {
+      switch (response.data.status) {
+        case "pending":
+          const { openChallengeModal } = useChallenge();
+          if (!openChallengeModal.value)
+            throw new Error(
+              "Two-factor authentication component was not initialized.",
+            );
+          const result = await openChallengeModal.value();
+          if (!result) return; // intended; fallthrough to "success" case and store user information
+        /* fallthrough */
+        case "success":
+          userStore.$patch({
+            user: response.data.data!.user,
+            isLoggedIn: true,
+            expires: response.data.data!.expires,
+          });
+          navigateTo((route.query.redirect as string) ?? "/dash");
+          break;
+        default:
+          break;
+      }
       toast.add({
         title: "Login success",
         color: "success",
       });
-      userStore.$patch({
-        user: response.data.user,
-        isLoggedIn: true,
-        expires: response.data.expires,
-      });
-      navigateTo((route.query.redirect as string) ?? "/dash");
     }
   } finally {
     loading.value = false;
@@ -146,27 +161,12 @@ const handleWebAuthn = async () => {
     optionsJSON: optionsResponse.data as any,
   });
 
-  const response = await postAuthWebauthnLoginVerify({
+  await postAuthWebauthnLoginVerify({
     body: assertionResponse,
     query: {
       isLogin: true,
     },
   });
-
-  if (!response.error && response.response.status === 200) {
-    toast.add({
-      title: "Login success",
-      color: "success",
-    });
-    userStore.$patch({
-      user: response.data.user,
-      isLoggedIn: true,
-      expires: response.data.expires,
-    });
-    setTimeout(() => {
-      navigateTo("/dash");
-    }, 1200);
-  }
 };
 </script>
 
