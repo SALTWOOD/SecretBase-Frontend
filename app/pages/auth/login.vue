@@ -90,6 +90,7 @@ import {
 } from "@secret-base/api/src/sdk.gen";
 import { startAuthentication } from "@simplewebauthn/browser";
 import { useUserStore } from "~/stores/user";
+import { isValidRedirectUrl } from "~/utils/url-validator";
 
 const form = reactive({ email: "", password: "" });
 const loading = ref(false);
@@ -137,7 +138,8 @@ const handleLogin = async () => {
             isLoggedIn: true,
             expires: response.data.data!.expires,
           });
-          navigateTo((route.query.redirect as string) ?? "/dash");
+          const redirectUrl = route.query.redirect as string;
+          navigateTo(isValidRedirectUrl(redirectUrl) ? redirectUrl : "/dash");
           break;
         default:
           break;

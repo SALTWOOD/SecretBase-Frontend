@@ -14,7 +14,7 @@
 
       <form @submit.prevent="updateProfile" class="space-y-4">
         <div class="flex items-center gap-6 mb-6">
-          <UAvatar :src="form.avatar" size="xl" />
+          <UAvatar :src="isValidAvatarUrl(form.avatar) ? form.avatar : undefined" size="xl" />
           <UButton color="neutral" variant="ghost" icon="i-lucide-camera">
             更换头像
           </UButton>
@@ -47,6 +47,7 @@
 <script setup lang="ts">
 import type { User } from "~/types/user";
 import { getUserProfile, postUserProfile } from "~~/packages/api/src/sdk.gen";
+import { isValidAvatarUrl } from "~/utils/url-validator";
 
 const loading = ref(true);
 const user: Ref<User | null> = ref(null);

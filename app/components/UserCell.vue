@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-center gap-3">
     <UAvatar
-      :src="avatar ?? undefined"
+      :src="isValidAvatarUrl(avatar) ? avatar ?? undefined : undefined"
       :alt="username ?? undefined"
       size="sm"
     />
@@ -14,6 +14,8 @@
 </template>
 
 <script lang="ts" setup>
+import { isValidAvatarUrl } from "~/utils/url-validator";
+
 defineProps<{
   username: string | null;
   email?: string | null;

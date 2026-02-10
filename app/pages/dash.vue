@@ -29,7 +29,7 @@
             :square="collapsed"
             class="justify-start px-2"
           >
-            <UAvatar :src="user?.avatar" size="sm" />
+            <UAvatar :src="isValidAvatarUrl(user?.avatar) ? user?.avatar : undefined" size="sm" />
             <div
               v-if="!collapsed"
               class="text-left ml-2 overflow-hidden flex-1"
@@ -77,6 +77,7 @@
 <script setup lang="ts">
 import type { User } from "~/types/user";
 import { postAuthLogout } from "~~/packages/api/src/sdk.gen";
+import { isValidAvatarUrl } from "~/utils/url-validator";
 
 interface NavigationItem {
   label: string;
