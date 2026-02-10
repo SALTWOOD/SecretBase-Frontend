@@ -31,11 +31,21 @@ export default defineNuxtPlugin(() => {
         }
         return response;
       }
+    }
+    return response;
+  });
 
+  client.interceptors.response.use(async (response) => {
+    if (!response.ok) {
+      const data = await response
+        .clone()
+        .json()
+        .catch(() => ({}));
+      const description = data?.message ? `Status ${response.status}: ${data.message}` : `Status ${response.status}`;
       console.error(`[API Error] Status: ${response.status}`);
       useToast().add({
         title: "API Error",
-        description: `Status: ${response.status}`,
+        description,
         color: "error",
       });
     }
