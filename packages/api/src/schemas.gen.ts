@@ -751,19 +751,11 @@ export const ConnectionInfoSchema = {
 
 export const CreateAppRequestSchema = {
     required: [
-        'clientId',
-        'clientSecret',
         'displayName',
         'redirectUris'
     ],
     type: 'object',
     properties: {
-        clientId: {
-            type: 'string'
-        },
-        clientSecret: {
-            type: 'string'
-        },
         displayName: {
             type: 'string'
         },
@@ -775,6 +767,51 @@ export const CreateAppRequestSchema = {
             items: {
                 type: 'string'
             }
+        },
+        clientType: {
+            type: [
+                'null',
+                'string'
+            ],
+            default: 'confidential'
+        },
+        applicationType: {
+            type: [
+                'null',
+                'string'
+            ],
+            default: 'web'
+        },
+        consentType: {
+            type: [
+                'null',
+                'string'
+            ],
+            default: 'explicit'
+        }
+    }
+} as const;
+
+export const CreateAppResponseSchema = {
+    required: [
+        'id',
+        'clientId',
+        'clientSecret',
+        'displayName'
+    ],
+    type: 'object',
+    properties: {
+        id: {
+            type: 'string'
+        },
+        clientId: {
+            type: 'string'
+        },
+        clientSecret: {
+            type: 'string'
+        },
+        displayName: {
+            type: 'string'
         }
     }
 } as const;
@@ -1440,6 +1477,54 @@ export const MessageResponseSchema = {
     }
 } as const;
 
+export const NewSecretResponseSchema = {
+    required: [
+        'clientSecret'
+    ],
+    type: 'object',
+    properties: {
+        clientSecret: {
+            type: 'string'
+        }
+    }
+} as const;
+
+export const OAuthAppDetailResponseSchema = {
+    type: 'object',
+    properties: {
+        id: {
+            type: 'string'
+        },
+        clientId: {
+            type: 'string'
+        },
+        displayName: {
+            type: 'string'
+        },
+        userId: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        redirectUris: {
+            type: 'array',
+            items: {
+                type: 'string'
+            }
+        },
+        clientType: {
+            type: 'string'
+        },
+        applicationType: {
+            type: 'string'
+        },
+        consentType: {
+            type: 'string'
+        }
+    }
+} as const;
+
 export const OAuthAppResponseSchema = {
     type: 'object',
     properties: {
@@ -1457,6 +1542,15 @@ export const OAuthAppResponseSchema = {
                 'null',
                 'string'
             ]
+        },
+        clientType: {
+            type: 'string'
+        },
+        applicationType: {
+            type: 'string'
+        },
+        consentType: {
+            type: 'string'
         }
     }
 } as const;
@@ -1510,6 +1604,45 @@ export const OpenIddictTokenResponseSchema = {
             ]
         },
         refresh_token: {
+            type: [
+                'null',
+                'string'
+            ]
+        }
+    }
+} as const;
+
+export const PatchAppRequestSchema = {
+    type: 'object',
+    properties: {
+        displayName: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        redirectUris: {
+            type: [
+                'null',
+                'array'
+            ],
+            items: {
+                type: 'string'
+            }
+        },
+        clientType: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        applicationType: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        consentType: {
             type: [
                 'null',
                 'string'
@@ -1776,6 +1909,46 @@ export const TwoFactorStatusSchema = {
 } as const;
 
 export const TypeSchema = {} as const;
+
+export const UpdateAppRequestSchema = {
+    required: [
+        'displayName',
+        'redirectUris'
+    ],
+    type: 'object',
+    properties: {
+        displayName: {
+            type: 'string'
+        },
+        redirectUris: {
+            type: [
+                'null',
+                'array'
+            ],
+            items: {
+                type: 'string'
+            }
+        },
+        clientType: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        applicationType: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        consentType: {
+            type: [
+                'null',
+                'string'
+            ]
+        }
+    }
+} as const;
 
 export const UpdateInvitationRequestSchema = {
     required: [

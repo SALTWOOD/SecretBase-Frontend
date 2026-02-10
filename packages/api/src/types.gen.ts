@@ -186,10 +186,18 @@ export type ConnectionInfo = {
 };
 
 export type CreateAppRequest = {
+    displayName: string;
+    redirectUris: null | Array<string>;
+    clientType?: null | string;
+    applicationType?: null | string;
+    consentType?: null | string;
+};
+
+export type CreateAppResponse = {
+    id: string;
     clientId: string;
     clientSecret: string;
     displayName: string;
-    redirectUris: null | Array<string>;
 };
 
 export type CreateInvitationRequest = {
@@ -371,11 +379,29 @@ export type MessageResponse = {
     message?: string;
 };
 
+export type NewSecretResponse = {
+    clientSecret: string;
+};
+
+export type OAuthAppDetailResponse = {
+    id?: string;
+    clientId?: string;
+    displayName?: string;
+    userId?: null | string;
+    redirectUris?: Array<string>;
+    clientType?: string;
+    applicationType?: string;
+    consentType?: string;
+};
+
 export type OAuthAppResponse = {
     id?: string;
     clientId?: string;
     displayName?: string;
     userId?: null | string;
+    clientType?: string;
+    applicationType?: string;
+    consentType?: string;
 };
 
 export type Oid = {
@@ -389,6 +415,14 @@ export type OpenIddictTokenResponse = {
     expires_in: number | string;
     id_token: null | string;
     refresh_token: null | string;
+};
+
+export type PatchAppRequest = {
+    displayName?: null | string;
+    redirectUris?: null | Array<string>;
+    clientType?: null | string;
+    applicationType?: null | string;
+    consentType?: null | string;
 };
 
 export type PathString = {
@@ -478,6 +512,14 @@ export type TwoFactorStatus = {
 };
 
 export type Type = unknown;
+
+export type UpdateAppRequest = {
+    displayName: string;
+    redirectUris: null | Array<string>;
+    clientType?: null | string;
+    applicationType?: null | string;
+    consentType?: null | string;
+};
 
 export type UpdateInvitationRequest = {
     isDisabled: null | boolean;
@@ -814,7 +856,7 @@ export type PostOauthAppsResponses = {
     /**
      * Created
      */
-    201: OAuthAppResponse;
+    201: CreateAppResponse;
 };
 
 export type PostOauthAppsResponse = PostOauthAppsResponses[keyof PostOauthAppsResponses];
@@ -847,6 +889,138 @@ export type DeleteOauthAppsByIdResponses = {
      */
     204: unknown;
 };
+
+export type GetOauthAppsByIdData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/oauth/apps/{id}';
+};
+
+export type GetOauthAppsByIdErrors = {
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+};
+
+export type GetOauthAppsByIdError = GetOauthAppsByIdErrors[keyof GetOauthAppsByIdErrors];
+
+export type GetOauthAppsByIdResponses = {
+    /**
+     * OK
+     */
+    200: OAuthAppDetailResponse;
+};
+
+export type GetOauthAppsByIdResponse = GetOauthAppsByIdResponses[keyof GetOauthAppsByIdResponses];
+
+export type PatchOauthAppsByIdData = {
+    body: PatchAppRequest;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/oauth/apps/{id}';
+};
+
+export type PatchOauthAppsByIdErrors = {
+    /**
+     * Bad Request
+     */
+    400: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+};
+
+export type PatchOauthAppsByIdError = PatchOauthAppsByIdErrors[keyof PatchOauthAppsByIdErrors];
+
+export type PatchOauthAppsByIdResponses = {
+    /**
+     * OK
+     */
+    200: OAuthAppResponse;
+};
+
+export type PatchOauthAppsByIdResponse = PatchOauthAppsByIdResponses[keyof PatchOauthAppsByIdResponses];
+
+export type PutOauthAppsByIdData = {
+    body: UpdateAppRequest;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/oauth/apps/{id}';
+};
+
+export type PutOauthAppsByIdErrors = {
+    /**
+     * Bad Request
+     */
+    400: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+};
+
+export type PutOauthAppsByIdError = PutOauthAppsByIdErrors[keyof PutOauthAppsByIdErrors];
+
+export type PutOauthAppsByIdResponses = {
+    /**
+     * OK
+     */
+    200: OAuthAppResponse;
+};
+
+export type PutOauthAppsByIdResponse = PutOauthAppsByIdResponses[keyof PutOauthAppsByIdResponses];
+
+export type PostOauthAppsByIdSecretData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/oauth/apps/{id}/secret';
+};
+
+export type PostOauthAppsByIdSecretErrors = {
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+};
+
+export type PostOauthAppsByIdSecretError = PostOauthAppsByIdSecretErrors[keyof PostOauthAppsByIdSecretErrors];
+
+export type PostOauthAppsByIdSecretResponses = {
+    /**
+     * OK
+     */
+    200: NewSecretResponse;
+};
+
+export type PostOauthAppsByIdSecretResponse = PostOauthAppsByIdSecretResponses[keyof PostOauthAppsByIdSecretResponses];
 
 export type GetOauthPublicAppInfoData = {
     body?: never;

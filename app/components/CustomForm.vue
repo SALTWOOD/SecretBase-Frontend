@@ -32,6 +32,7 @@
                   class="grow"
                   :icon="field.icon"
                   :placeholder="field.placeholder"
+                  :disabled="field.disabled"
                 />
                 <UButton
                   v-if="formData[field.key].length > 1"
@@ -50,12 +51,21 @@
                 添加项
               </UButton>
             </template>
+            <template v-else-if="field.type === 'select'">
+              <USelect
+                v-model="formData[field.key]"
+                :items="field.options || []"
+                :placeholder="field.placeholder"
+                class="w-full"
+              />
+            </template>
             <template v-else>
               <UInput
                 v-model="formData[field.key]"
                 class="w-full"
                 :icon="field.icon"
                 :placeholder="field.placeholder"
+                :disabled="field.disabled"
               />
               <div v-if="field.presets?.length" class="flex flex-wrap gap-1.5">
                 <UButton
@@ -133,12 +143,14 @@ function removeField(key: string, index: number) {
 }
 
 function onSubmit() {
-  const data = structuredClone(formData.value);
+  const data: Record<string, any> = {};
   props.config.forEach((f) => {
-    if (f.multiple && Array.isArray(data[f.key])) {
-      data[f.key] = data[f.key].filter(
+    if (f.multiple && Array.isArray(formData.value[f.key])) {
+      data[f.key] = formData.value[f.key].filter(
         (v: any) => v && String(v).trim() !== "",
       );
+    } else {
+      data[f.key] = formData.value[f.key];
     }
   });
   emit("success", data);
