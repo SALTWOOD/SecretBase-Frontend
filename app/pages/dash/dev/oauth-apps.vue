@@ -1,13 +1,13 @@
 <template>
   <div class="view-content">
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 my-6">
+    <div
+      class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 my-6"
+    >
       <div>
         <h1 class="text-3xl font-bold text-highlighted tracking-tight">
           OAuth 应用
         </h1>
-        <p class="text-muted text-sm mt-1">
-          管理您的 OAuth 应用程序和授权配置
-        </p>
+        <p class="text-muted text-sm mt-1">管理您的 OAuth 应用程序和授权配置</p>
       </div>
       <UButton
         icon="i-lucide-plus-circle"
@@ -21,7 +21,10 @@
 
     <div v-if="pending" class="flex justify-center items-center py-16">
       <div class="text-center space-y-4">
-        <UIcon name="i-lucide-refresh-cw" class="w-12 h-12 animate-spin text-primary-500" />
+        <UIcon
+          name="i-lucide-refresh-cw"
+          class="w-12 h-12 animate-spin text-primary-500"
+        />
         <p class="text-muted text-lg">加载应用中...</p>
       </div>
     </div>
@@ -35,9 +38,7 @@
         >
           <UIcon name="i-lucide-key" class="w-10 h-10 text-muted" />
         </div>
-        <h3 class="text-xl font-semibold text-highlighted">
-          暂无 OAuth 应用
-        </h3>
+        <h3 class="text-xl font-semibold text-highlighted">暂无 OAuth 应用</h3>
         <p class="text-muted">
           点击上方"创建新应用"按钮来添加您的第一个 OAuth 应用
         </p>
@@ -61,9 +62,7 @@
                 <h3 class="text-lg font-semibold text-highlighted">
                   {{ app.displayName }}
                 </h3>
-                <p class="text-xs text-muted mt-0.5">
-                  OAuth 应用
-                </p>
+                <p class="text-xs text-muted mt-0.5">OAuth 应用</p>
               </div>
             </div>
           </div>
@@ -71,10 +70,9 @@
         <div class="space-y-3">
           <div class="p-3 bg-default/50 rounded-lg">
             <p class="text-xs text-muted mb-1">客户端 ID</p>
-            <code
-              class="text-sm font-mono text-highlighted break-all"
-              >{{ app.clientId }}</code
-            >
+            <code class="text-sm font-mono text-highlighted break-all">{{
+              app.clientId
+            }}</code>
           </div>
         </div>
         <template #footer>
@@ -158,7 +156,7 @@ const form: Ref<FieldConfig[]> = ref([
     type: "text",
     placeholder: "https://app.example.com/callback",
     icon: "i-lucide-link",
-    multiple: true
+    multiple: true,
   },
 ]);
 
@@ -208,7 +206,9 @@ const handleFormSubmit = async (data: Record<string, any>) => {
       clientId: data.clientId,
       clientSecret: data.clientSecret,
       displayName: data.displayName,
-      redirectUris: formState.value.redirectUris.filter((u) => u.trim()) || [data.redirectUri],
+      redirectUris: formState.value.redirectUris.filter((u) => u.trim()) || [
+        data.redirectUri,
+      ],
     };
 
     await postOauthApps({
