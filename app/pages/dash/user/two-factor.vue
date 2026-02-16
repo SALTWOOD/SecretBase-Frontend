@@ -277,7 +277,7 @@ const editPasskey = (id: number) => {
 
 const handleFormSuccess = async (data: Record<string, any>) => {
   const response = await putAuthWebauthnCredentialsById({
-    path: { id: data["id"] },
+    path: { id: formState.value.id },
     body: formState.value,
   });
   if (!response.error) {
