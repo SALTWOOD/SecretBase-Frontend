@@ -487,9 +487,7 @@ async function copyToClipboard(text: string) {
   }
 }
 
-onMounted(async () => {
-  await refresh();
-});
+onMounted(refresh);
 </script>
 
 <style scoped>

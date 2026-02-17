@@ -30,9 +30,7 @@ const deleteArticle = async (id: string | number) => {
   }
 };
 
-onMounted(async () => {
-  await refresh();
-});
+onMounted(refresh);
 </script>
 
 <template>

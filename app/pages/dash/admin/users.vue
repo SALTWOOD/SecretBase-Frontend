@@ -240,9 +240,7 @@ watch(
   () => page.value.page,
   () => refresh(),
 );
-onMounted(() => {
-  refresh();
-});
+onMounted(refresh);
 </script>
 
 <style scoped>

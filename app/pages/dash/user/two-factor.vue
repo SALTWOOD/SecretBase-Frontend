@@ -290,5 +290,5 @@ const handleFormSuccess = async (data: Record<string, any>) => {
   }
 };
 
-onMounted(() => refresh());
+onMounted(refresh);
 </script>

@@ -13,14 +13,14 @@ const isEdit = computed(() => articleId !== "create");
 const toast = useToast();
 
 // 1. 获取初始数据
-const { data: articleData, pending } = await useAsyncData(
-  `article-detail-${articleId}`,
-  async () => {
-    const res = await getArticlesById({ path: { id: articleId } });
-    return res.data;
-  },
-  { server: false }
-);
+const articleData = ref();
+
+const refresh = async () => {
+  const response = await getArticlesById({ path: { id: articleId } });
+  if (!response.error && response.data) {
+    articleData.value = response.data;
+  }
+};
 
 // 2. 表单响应式数据
 const formState = reactive({
@@ -63,6 +63,8 @@ const handleSave = async () => {
     isSaving.value = false;
   }
 };
+
+onMounted(refresh)
 </script>
 
 <template>
