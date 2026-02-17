@@ -12,6 +12,9 @@ export default defineNuxtConfig({
   css: ["~/assets/css/main.css"],
   runtimeConfig: {
     capSecretKey: "",
+    public: {
+      apiBase: "/api/v1"
+    }
   },
   routeRules: {
     "/api/v1/**": {

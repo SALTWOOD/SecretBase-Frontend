@@ -1,8 +1,9 @@
 import { client } from "@secret-base/api/src/client.gen";
 
 export default defineNuxtPlugin(() => {
+  const config = useRuntimeConfig();
   client.setConfig({
-    baseUrl: "/api/v1",
+    baseUrl: config.public.apiBase as string,
   });
 
   client.interceptors.response.use(async (response, request) => {
