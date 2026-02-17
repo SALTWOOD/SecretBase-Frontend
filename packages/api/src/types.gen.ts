@@ -8,6 +8,30 @@ export type AddressFamily = number;
 
 export type Algorithm = number;
 
+export type ArticleCreateModel = {
+    title: string;
+    content: string;
+    isPublished?: boolean;
+};
+
+export type ArticleResponse = {
+    id?: number | string;
+    title?: string;
+    content?: string;
+    authorId?: number | string;
+    authorUsername?: null | string;
+    createdAt?: Date;
+    updatedAt?: Date;
+    isPublished?: boolean;
+    commentCount?: number | string;
+};
+
+export type ArticleUpdateModel = {
+    title: string;
+    content: string;
+    isPublished?: boolean;
+};
+
 export type AsnEncodedData = {
     oid?: null | Oid;
     rawData?: string;
@@ -176,6 +200,28 @@ export type ClaimsPrincipal = {
     identity?: IIdentity;
 };
 
+export type CommentCreateModel = {
+    content: string;
+    parentCommentId?: null | number | string;
+};
+
+export type CommentResponse = {
+    id?: number | string;
+    content?: string;
+    articleId?: number | string;
+    authorId?: number | string;
+    authorUsername?: null | string;
+    parentCommentId?: null | number | string;
+    createdAt?: Date;
+    updatedAt?: Date;
+    isDeleted?: boolean;
+    replyCount?: number | string;
+};
+
+export type CommentUpdateModel = {
+    content: string;
+};
+
 export type ConnectionInfo = {
     id?: string;
     remoteIpAddress?: null | IpAddress;
@@ -190,7 +236,6 @@ export type CreateAppRequest = {
     redirectUris: null | Array<string>;
     clientType?: null | string;
     applicationType?: null | string;
-    consentType?: null | string;
 };
 
 export type CreateAppResponse = {
@@ -404,6 +449,24 @@ export type OAuthAppResponse = {
     consentType?: string;
 };
 
+export type OAuthConsentResponse = {
+    id?: string;
+    applicationId?: string;
+    clientId?: string;
+    displayName?: string;
+    createdAt?: Date;
+};
+
+export type OAuthTokenResponse = {
+    id?: string;
+    applicationId?: string;
+    clientId?: string;
+    displayName?: string;
+    tokenType?: string;
+    expiresAt?: Date;
+    createdAt?: Date;
+};
+
 export type Oid = {
     value?: null | string;
     friendlyName?: null | string;
@@ -422,7 +485,6 @@ export type PatchAppRequest = {
     redirectUris?: null | Array<string>;
     clientType?: null | string;
     applicationType?: null | string;
-    consentType?: null | string;
 };
 
 export type PathString = {
@@ -485,6 +547,20 @@ export type SafeWaitHandle = {
     isClosed?: boolean;
 };
 
+export type SeoMetaResponse = {
+    title?: string;
+    description?: string;
+    keywords?: null | string;
+    ogTitle?: null | string;
+    ogDescription?: null | string;
+    ogImage?: null | string;
+    twitterCard?: string;
+    robots?: string;
+    extras?: null | {
+        [key: string]: string;
+    };
+};
+
 export type Stream = Blob | File;
 
 export type TokenRenewResponse = {
@@ -518,7 +594,6 @@ export type UpdateAppRequest = {
     redirectUris: null | Array<string>;
     clientType?: null | string;
     applicationType?: null | string;
-    consentType?: null | string;
 };
 
 export type UpdateInvitationRequest = {
@@ -606,6 +681,144 @@ export type X509Extension = {
     oid?: null | Oid;
     rawData?: string;
 };
+
+export type GetArticlesData = {
+    body?: never;
+    path?: never;
+    query?: {
+        page?: number | string;
+        pageSize?: number | string;
+        published?: boolean;
+    };
+    url: '/articles';
+};
+
+export type GetArticlesResponses = {
+    /**
+     * OK
+     */
+    200: Array<ArticleResponse>;
+};
+
+export type GetArticlesResponse = GetArticlesResponses[keyof GetArticlesResponses];
+
+export type PostArticlesData = {
+    body: ArticleCreateModel;
+    path?: never;
+    query?: never;
+    url: '/articles';
+};
+
+export type PostArticlesErrors = {
+    /**
+     * Bad Request
+     */
+    400: MessageResponse;
+};
+
+export type PostArticlesError = PostArticlesErrors[keyof PostArticlesErrors];
+
+export type PostArticlesResponses = {
+    /**
+     * Created
+     */
+    201: ArticleResponse;
+};
+
+export type PostArticlesResponse = PostArticlesResponses[keyof PostArticlesResponses];
+
+export type DeleteArticlesByIdData = {
+    body?: never;
+    path: {
+        id: number | string;
+    };
+    query?: never;
+    url: '/articles/{id}';
+};
+
+export type DeleteArticlesByIdErrors = {
+    /**
+     * Forbidden
+     */
+    403: MessageResponse;
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+};
+
+export type DeleteArticlesByIdError = DeleteArticlesByIdErrors[keyof DeleteArticlesByIdErrors];
+
+export type DeleteArticlesByIdResponses = {
+    /**
+     * OK
+     */
+    200: MessageResponse;
+};
+
+export type DeleteArticlesByIdResponse = DeleteArticlesByIdResponses[keyof DeleteArticlesByIdResponses];
+
+export type GetArticlesByIdData = {
+    body?: never;
+    path: {
+        id: number | string;
+    };
+    query?: never;
+    url: '/articles/{id}';
+};
+
+export type GetArticlesByIdErrors = {
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+};
+
+export type GetArticlesByIdError = GetArticlesByIdErrors[keyof GetArticlesByIdErrors];
+
+export type GetArticlesByIdResponses = {
+    /**
+     * OK
+     */
+    200: ArticleResponse;
+};
+
+export type GetArticlesByIdResponse = GetArticlesByIdResponses[keyof GetArticlesByIdResponses];
+
+export type PutArticlesByIdData = {
+    body: ArticleUpdateModel;
+    path: {
+        id: number | string;
+    };
+    query?: never;
+    url: '/articles/{id}';
+};
+
+export type PutArticlesByIdErrors = {
+    /**
+     * Bad Request
+     */
+    400: MessageResponse;
+    /**
+     * Forbidden
+     */
+    403: MessageResponse;
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+};
+
+export type PutArticlesByIdError = PutArticlesByIdErrors[keyof PutArticlesByIdErrors];
+
+export type PutArticlesByIdResponses = {
+    /**
+     * OK
+     */
+    200: ArticleResponse;
+};
+
+export type PutArticlesByIdResponse = PutArticlesByIdResponses[keyof PutArticlesByIdResponses];
 
 export type PostAuthLoginData = {
     body: AuthLoginModel;
@@ -703,6 +916,162 @@ export type PostAuthRenewResponses = {
 };
 
 export type PostAuthRenewResponse = PostAuthRenewResponses[keyof PostAuthRenewResponses];
+
+export type GetCommentsArticleByArticleIdData = {
+    body?: never;
+    path: {
+        articleId: number | string;
+    };
+    query?: {
+        page?: number | string;
+        pageSize?: number | string;
+    };
+    url: '/comments/article/{articleId}';
+};
+
+export type GetCommentsArticleByArticleIdResponses = {
+    /**
+     * OK
+     */
+    200: Array<CommentResponse>;
+};
+
+export type GetCommentsArticleByArticleIdResponse = GetCommentsArticleByArticleIdResponses[keyof GetCommentsArticleByArticleIdResponses];
+
+export type GetCommentsByIdRepliesData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: {
+        commentId?: number | string;
+        page?: number | string;
+        pageSize?: number | string;
+    };
+    url: '/comments/{id}/replies';
+};
+
+export type GetCommentsByIdRepliesResponses = {
+    /**
+     * OK
+     */
+    200: Array<CommentResponse>;
+};
+
+export type GetCommentsByIdRepliesResponse = GetCommentsByIdRepliesResponses[keyof GetCommentsByIdRepliesResponses];
+
+export type PostCommentsData = {
+    body: CommentCreateModel;
+    path?: never;
+    query?: {
+        articleId?: number | string;
+    };
+    url: '/comments';
+};
+
+export type PostCommentsErrors = {
+    /**
+     * Bad Request
+     */
+    400: MessageResponse;
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+};
+
+export type PostCommentsError = PostCommentsErrors[keyof PostCommentsErrors];
+
+export type PostCommentsResponses = {
+    /**
+     * Created
+     */
+    201: CommentResponse;
+};
+
+export type PostCommentsResponse = PostCommentsResponses[keyof PostCommentsResponses];
+
+export type DeleteCommentsByIdData = {
+    body?: never;
+    path: {
+        id: number | string;
+    };
+    query?: never;
+    url: '/comments/{id}';
+};
+
+export type DeleteCommentsByIdErrors = {
+    /**
+     * Forbidden
+     */
+    403: MessageResponse;
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+};
+
+export type DeleteCommentsByIdError = DeleteCommentsByIdErrors[keyof DeleteCommentsByIdErrors];
+
+export type DeleteCommentsByIdResponses = {
+    /**
+     * OK
+     */
+    200: MessageResponse;
+};
+
+export type DeleteCommentsByIdResponse = DeleteCommentsByIdResponses[keyof DeleteCommentsByIdResponses];
+
+export type PutCommentsByIdData = {
+    body: CommentUpdateModel;
+    path: {
+        id: number | string;
+    };
+    query?: never;
+    url: '/comments/{id}';
+};
+
+export type PutCommentsByIdErrors = {
+    /**
+     * Bad Request
+     */
+    400: MessageResponse;
+    /**
+     * Forbidden
+     */
+    403: MessageResponse;
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+};
+
+export type PutCommentsByIdError = PutCommentsByIdErrors[keyof PutCommentsByIdErrors];
+
+export type PutCommentsByIdResponses = {
+    /**
+     * OK
+     */
+    200: CommentResponse;
+};
+
+export type PutCommentsByIdResponse = PutCommentsByIdResponses[keyof PutCommentsByIdResponses];
+
+export type GetSiteSeoData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/site/seo';
+};
+
+export type GetSiteSeoResponses = {
+    /**
+     * OK
+     */
+    200: SeoMetaResponse;
+};
+
+export type GetSiteSeoResponse = GetSiteSeoResponses[keyof GetSiteSeoResponses];
 
 export type GetUserProfileData = {
     body?: never;
@@ -819,6 +1188,71 @@ export type PostConnectTokenResponses = {
 };
 
 export type PostConnectTokenResponse = PostConnectTokenResponses[keyof PostConnectTokenResponses];
+
+export type GetConnectUserinfoData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/connect/userinfo';
+};
+
+export type GetConnectUserinfoErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+};
+
+export type GetConnectUserinfoError = GetConnectUserinfoErrors[keyof GetConnectUserinfoErrors];
+
+export type GetConnectUserinfoResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type PostConnectRevokeData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/connect/revoke';
+};
+
+export type PostConnectRevokeResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type GetConnectLogoutData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/connect/logout';
+};
+
+export type GetConnectLogoutResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type PostConnectLogoutData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/connect/logout';
+};
+
+export type PostConnectLogoutResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
 
 export type GetOauthAppsData = {
     body?: never;
@@ -1021,6 +1455,96 @@ export type PostOauthAppsByIdSecretResponses = {
 };
 
 export type PostOauthAppsByIdSecretResponse = PostOauthAppsByIdSecretResponses[keyof PostOauthAppsByIdSecretResponses];
+
+export type GetOauthConsentsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/oauth/consents';
+};
+
+export type GetOauthConsentsResponses = {
+    /**
+     * OK
+     */
+    200: Array<OAuthConsentResponse>;
+};
+
+export type GetOauthConsentsResponse = GetOauthConsentsResponses[keyof GetOauthConsentsResponses];
+
+export type DeleteOauthConsentsByIdData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/oauth/consents/{id}';
+};
+
+export type DeleteOauthConsentsByIdErrors = {
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+};
+
+export type DeleteOauthConsentsByIdError = DeleteOauthConsentsByIdErrors[keyof DeleteOauthConsentsByIdErrors];
+
+export type DeleteOauthConsentsByIdResponses = {
+    /**
+     * No Content
+     */
+    204: unknown;
+};
+
+export type GetOauthConsentsTokensData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/oauth/consents/tokens';
+};
+
+export type GetOauthConsentsTokensResponses = {
+    /**
+     * OK
+     */
+    200: Array<OAuthTokenResponse>;
+};
+
+export type GetOauthConsentsTokensResponse = GetOauthConsentsTokensResponses[keyof GetOauthConsentsTokensResponses];
+
+export type DeleteOauthConsentsTokensByIdData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/oauth/consents/tokens/{id}';
+};
+
+export type DeleteOauthConsentsTokensByIdErrors = {
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+};
+
+export type DeleteOauthConsentsTokensByIdError = DeleteOauthConsentsTokensByIdErrors[keyof DeleteOauthConsentsTokensByIdErrors];
+
+export type DeleteOauthConsentsTokensByIdResponses = {
+    /**
+     * No Content
+     */
+    204: unknown;
+};
 
 export type GetOauthPublicAppInfoData = {
     body?: never;

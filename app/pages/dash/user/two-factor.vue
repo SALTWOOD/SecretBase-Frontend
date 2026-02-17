@@ -155,9 +155,9 @@ import {
   postAuthWebauthnRegisterVerify,
   putAuthWebauthnCredentialsById,
 } from "~~/packages/api/src/sdk.gen";
-import type { UserCredentialTable } from "~~/packages/api/src/types.gen";
+import type { UserCredential } from "~~/packages/api/src/types.gen";
 
-const credentials = ref<UserCredentialTable[]>([]);
+const credentials = ref<UserCredential[]>([]);
 const loading = ref(false);
 const toast = useToast();
 

@@ -132,6 +132,29 @@ const allNavigationItems = computed<NavigationItem[]>(() => [
     ],
   },
   {
+    label: "内容中心",
+    icon: "i-lucide-notebook-pen",
+    type: "trigger",
+    defaultOpen: true,
+    children: [
+      {
+        label: "全部文章",
+        icon: "i-lucide-files",
+        to: "/dash/content/articles",
+      },
+      {
+        label: "草稿箱",
+        icon: "i-lucide-file-clock",
+        to: "/dash/content/articles/drafts",
+      },
+      {
+        label: "分类目录",
+        icon: "i-lucide-layers",
+        to: "/dash/content/articles/categories",
+      },
+    ],
+  },
+  {
     label: "开放平台",
     icon: "i-lucide-code-2",
     type: "trigger",

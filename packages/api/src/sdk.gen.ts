@@ -2,8 +2,8 @@
 
 import { type Client, formDataBodySerializer, type Options as Options2, type TDataShape } from './client';
 import { client } from './client.gen';
-import { getAdminInvitationsByIdResponseTransformer, getAdminInvitationsByIdUsersResponseTransformer, getAdminInvitationsResponseTransformer, getAdminUsersResponseTransformer, getAuthWebauthnCredentialsResponseTransformer, getUserProfileResponseTransformer, postAdminInvitationsResponseTransformer, postAuthLoginResponseTransformer, postAuthRegisterResponseTransformer, postAuthRenewResponseTransformer } from './transformers.gen';
-import type { DeleteAdminInvitationsByIdData, DeleteAdminInvitationsByIdErrors, DeleteAdminInvitationsByIdResponses, DeleteAuthWebauthnCredentialsByIdData, DeleteAuthWebauthnCredentialsByIdResponses, DeleteOauthAppsByIdData, DeleteOauthAppsByIdErrors, DeleteOauthAppsByIdResponses, GetAdminInvitationsByIdData, GetAdminInvitationsByIdResponses, GetAdminInvitationsByIdUsersData, GetAdminInvitationsByIdUsersResponses, GetAdminInvitationsData, GetAdminInvitationsResponses, GetAdminUsersData, GetAdminUsersResponses, GetAuthTwoFactorPolicyData, GetAuthTwoFactorPolicyResponses, GetAuthWebauthnCredentialsData, GetAuthWebauthnCredentialsResponses, GetConnectAuthorizeData, GetConnectAuthorizeErrors, GetOauthAppsByIdData, GetOauthAppsByIdErrors, GetOauthAppsByIdResponses, GetOauthAppsData, GetOauthAppsResponses, GetOauthPublicAppInfoData, GetOauthPublicAppInfoErrors, GetOauthPublicAppInfoResponses, GetUserProfileData, GetUserProfileResponses, PatchOauthAppsByIdData, PatchOauthAppsByIdErrors, PatchOauthAppsByIdResponses, PostAdminInvitationsData, PostAdminInvitationsResponses, PostAuthLoginData, PostAuthLoginErrors, PostAuthLoginResponses, PostAuthLogoutData, PostAuthLogoutResponses, PostAuthRegisterData, PostAuthRegisterErrors, PostAuthRegisterResponses, PostAuthRenewData, PostAuthRenewErrors, PostAuthRenewResponses, PostAuthTwoFactorPolicyDisableData, PostAuthTwoFactorPolicyDisableErrors, PostAuthTwoFactorPolicyDisableResponses, PostAuthTwoFactorPolicyEnableData, PostAuthTwoFactorPolicyEnableErrors, PostAuthTwoFactorPolicyEnableResponses, PostAuthTwoFactorTotpDisableData, PostAuthTwoFactorTotpDisableErrors, PostAuthTwoFactorTotpDisableResponses, PostAuthTwoFactorTotpEnableData, PostAuthTwoFactorTotpEnableErrors, PostAuthTwoFactorTotpEnableResponses, PostAuthTwoFactorTotpSetupData, PostAuthTwoFactorTotpSetupResponses, PostAuthTwoFactorTotpVerifyData, PostAuthTwoFactorTotpVerifyErrors, PostAuthTwoFactorTotpVerifyResponses, PostAuthWebauthnLoginOptionsData, PostAuthWebauthnLoginOptionsResponses, PostAuthWebauthnLoginVerifyData, PostAuthWebauthnLoginVerifyErrors, PostAuthWebauthnLoginVerifyResponses, PostAuthWebauthnRegisterOptionsData, PostAuthWebauthnRegisterOptionsResponses, PostAuthWebauthnRegisterVerifyData, PostAuthWebauthnRegisterVerifyErrors, PostAuthWebauthnRegisterVerifyResponses, PostConnectAuthorizeData, PostConnectAuthorizeErrors, PostConnectTokenData, PostConnectTokenErrors, PostConnectTokenResponses, PostOauthAppsByIdSecretData, PostOauthAppsByIdSecretErrors, PostOauthAppsByIdSecretResponses, PostOauthAppsData, PostOauthAppsErrors, PostOauthAppsResponses, PostUserAvatarData, PostUserAvatarResponses, PostUserProfileData, PostUserProfileErrors, PostUserProfileResponses, PutAdminInvitationsByIdData, PutAdminInvitationsByIdErrors, PutAdminInvitationsByIdResponses, PutAdminUsersByIdStatusData, PutAdminUsersByIdStatusErrors, PutAdminUsersByIdStatusResponses, PutAuthWebauthnCredentialsByIdData, PutAuthWebauthnCredentialsByIdResponses, PutOauthAppsByIdData, PutOauthAppsByIdErrors, PutOauthAppsByIdResponses } from './types.gen';
+import { getAdminInvitationsByIdResponseTransformer, getAdminInvitationsByIdUsersResponseTransformer, getAdminInvitationsResponseTransformer, getAdminUsersResponseTransformer, getArticlesByIdResponseTransformer, getArticlesResponseTransformer, getAuthWebauthnCredentialsResponseTransformer, getCommentsArticleByArticleIdResponseTransformer, getCommentsByIdRepliesResponseTransformer, getOauthConsentsResponseTransformer, getOauthConsentsTokensResponseTransformer, getUserProfileResponseTransformer, postAdminInvitationsResponseTransformer, postArticlesResponseTransformer, postAuthLoginResponseTransformer, postAuthRegisterResponseTransformer, postAuthRenewResponseTransformer, postCommentsResponseTransformer, putArticlesByIdResponseTransformer, putCommentsByIdResponseTransformer } from './transformers.gen';
+import type { DeleteAdminInvitationsByIdData, DeleteAdminInvitationsByIdErrors, DeleteAdminInvitationsByIdResponses, DeleteArticlesByIdData, DeleteArticlesByIdErrors, DeleteArticlesByIdResponses, DeleteAuthWebauthnCredentialsByIdData, DeleteAuthWebauthnCredentialsByIdResponses, DeleteCommentsByIdData, DeleteCommentsByIdErrors, DeleteCommentsByIdResponses, DeleteOauthAppsByIdData, DeleteOauthAppsByIdErrors, DeleteOauthAppsByIdResponses, DeleteOauthConsentsByIdData, DeleteOauthConsentsByIdErrors, DeleteOauthConsentsByIdResponses, DeleteOauthConsentsTokensByIdData, DeleteOauthConsentsTokensByIdErrors, DeleteOauthConsentsTokensByIdResponses, GetAdminInvitationsByIdData, GetAdminInvitationsByIdResponses, GetAdminInvitationsByIdUsersData, GetAdminInvitationsByIdUsersResponses, GetAdminInvitationsData, GetAdminInvitationsResponses, GetAdminUsersData, GetAdminUsersResponses, GetArticlesByIdData, GetArticlesByIdErrors, GetArticlesByIdResponses, GetArticlesData, GetArticlesResponses, GetAuthTwoFactorPolicyData, GetAuthTwoFactorPolicyResponses, GetAuthWebauthnCredentialsData, GetAuthWebauthnCredentialsResponses, GetCommentsArticleByArticleIdData, GetCommentsArticleByArticleIdResponses, GetCommentsByIdRepliesData, GetCommentsByIdRepliesResponses, GetConnectAuthorizeData, GetConnectAuthorizeErrors, GetConnectLogoutData, GetConnectLogoutResponses, GetConnectUserinfoData, GetConnectUserinfoErrors, GetConnectUserinfoResponses, GetOauthAppsByIdData, GetOauthAppsByIdErrors, GetOauthAppsByIdResponses, GetOauthAppsData, GetOauthAppsResponses, GetOauthConsentsData, GetOauthConsentsResponses, GetOauthConsentsTokensData, GetOauthConsentsTokensResponses, GetOauthPublicAppInfoData, GetOauthPublicAppInfoErrors, GetOauthPublicAppInfoResponses, GetSiteSeoData, GetSiteSeoResponses, GetUserProfileData, GetUserProfileResponses, PatchOauthAppsByIdData, PatchOauthAppsByIdErrors, PatchOauthAppsByIdResponses, PostAdminInvitationsData, PostAdminInvitationsResponses, PostArticlesData, PostArticlesErrors, PostArticlesResponses, PostAuthLoginData, PostAuthLoginErrors, PostAuthLoginResponses, PostAuthLogoutData, PostAuthLogoutResponses, PostAuthRegisterData, PostAuthRegisterErrors, PostAuthRegisterResponses, PostAuthRenewData, PostAuthRenewErrors, PostAuthRenewResponses, PostAuthTwoFactorPolicyDisableData, PostAuthTwoFactorPolicyDisableErrors, PostAuthTwoFactorPolicyDisableResponses, PostAuthTwoFactorPolicyEnableData, PostAuthTwoFactorPolicyEnableErrors, PostAuthTwoFactorPolicyEnableResponses, PostAuthTwoFactorTotpDisableData, PostAuthTwoFactorTotpDisableErrors, PostAuthTwoFactorTotpDisableResponses, PostAuthTwoFactorTotpEnableData, PostAuthTwoFactorTotpEnableErrors, PostAuthTwoFactorTotpEnableResponses, PostAuthTwoFactorTotpSetupData, PostAuthTwoFactorTotpSetupResponses, PostAuthTwoFactorTotpVerifyData, PostAuthTwoFactorTotpVerifyErrors, PostAuthTwoFactorTotpVerifyResponses, PostAuthWebauthnLoginOptionsData, PostAuthWebauthnLoginOptionsResponses, PostAuthWebauthnLoginVerifyData, PostAuthWebauthnLoginVerifyErrors, PostAuthWebauthnLoginVerifyResponses, PostAuthWebauthnRegisterOptionsData, PostAuthWebauthnRegisterOptionsResponses, PostAuthWebauthnRegisterVerifyData, PostAuthWebauthnRegisterVerifyErrors, PostAuthWebauthnRegisterVerifyResponses, PostCommentsData, PostCommentsErrors, PostCommentsResponses, PostConnectAuthorizeData, PostConnectAuthorizeErrors, PostConnectLogoutData, PostConnectLogoutResponses, PostConnectRevokeData, PostConnectRevokeResponses, PostConnectTokenData, PostConnectTokenErrors, PostConnectTokenResponses, PostOauthAppsByIdSecretData, PostOauthAppsByIdSecretErrors, PostOauthAppsByIdSecretResponses, PostOauthAppsData, PostOauthAppsErrors, PostOauthAppsResponses, PostUserAvatarData, PostUserAvatarResponses, PostUserProfileData, PostUserProfileErrors, PostUserProfileResponses, PutAdminInvitationsByIdData, PutAdminInvitationsByIdErrors, PutAdminInvitationsByIdResponses, PutAdminUsersByIdStatusData, PutAdminUsersByIdStatusErrors, PutAdminUsersByIdStatusResponses, PutArticlesByIdData, PutArticlesByIdErrors, PutArticlesByIdResponses, PutAuthWebauthnCredentialsByIdData, PutAuthWebauthnCredentialsByIdResponses, PutCommentsByIdData, PutCommentsByIdErrors, PutCommentsByIdResponses, PutOauthAppsByIdData, PutOauthAppsByIdErrors, PutOauthAppsByIdResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -18,6 +18,40 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
      */
     meta?: Record<string, unknown>;
 };
+
+export const getArticles = <ThrowOnError extends boolean = false>(options?: Options<GetArticlesData, ThrowOnError>) => (options?.client ?? client).get<GetArticlesResponses, unknown, ThrowOnError>({
+    responseTransformer: getArticlesResponseTransformer,
+    url: '/articles',
+    ...options
+});
+
+export const postArticles = <ThrowOnError extends boolean = false>(options: Options<PostArticlesData, ThrowOnError>) => (options.client ?? client).post<PostArticlesResponses, PostArticlesErrors, ThrowOnError>({
+    responseTransformer: postArticlesResponseTransformer,
+    url: '/articles',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+export const deleteArticlesById = <ThrowOnError extends boolean = false>(options: Options<DeleteArticlesByIdData, ThrowOnError>) => (options.client ?? client).delete<DeleteArticlesByIdResponses, DeleteArticlesByIdErrors, ThrowOnError>({ url: '/articles/{id}', ...options });
+
+export const getArticlesById = <ThrowOnError extends boolean = false>(options: Options<GetArticlesByIdData, ThrowOnError>) => (options.client ?? client).get<GetArticlesByIdResponses, GetArticlesByIdErrors, ThrowOnError>({
+    responseTransformer: getArticlesByIdResponseTransformer,
+    url: '/articles/{id}',
+    ...options
+});
+
+export const putArticlesById = <ThrowOnError extends boolean = false>(options: Options<PutArticlesByIdData, ThrowOnError>) => (options.client ?? client).put<PutArticlesByIdResponses, PutArticlesByIdErrors, ThrowOnError>({
+    responseTransformer: putArticlesByIdResponseTransformer,
+    url: '/articles/{id}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
 
 export const postAuthLogin = <ThrowOnError extends boolean = false>(options: Options<PostAuthLoginData, ThrowOnError>) => (options.client ?? client).post<PostAuthLoginResponses, PostAuthLoginErrors, ThrowOnError>({
     responseTransformer: postAuthLoginResponseTransformer,
@@ -46,6 +80,42 @@ export const postAuthRenew = <ThrowOnError extends boolean = false>(options?: Op
     url: '/auth/renew',
     ...options
 });
+
+export const getCommentsArticleByArticleId = <ThrowOnError extends boolean = false>(options: Options<GetCommentsArticleByArticleIdData, ThrowOnError>) => (options.client ?? client).get<GetCommentsArticleByArticleIdResponses, unknown, ThrowOnError>({
+    responseTransformer: getCommentsArticleByArticleIdResponseTransformer,
+    url: '/comments/article/{articleId}',
+    ...options
+});
+
+export const getCommentsByIdReplies = <ThrowOnError extends boolean = false>(options: Options<GetCommentsByIdRepliesData, ThrowOnError>) => (options.client ?? client).get<GetCommentsByIdRepliesResponses, unknown, ThrowOnError>({
+    responseTransformer: getCommentsByIdRepliesResponseTransformer,
+    url: '/comments/{id}/replies',
+    ...options
+});
+
+export const postComments = <ThrowOnError extends boolean = false>(options: Options<PostCommentsData, ThrowOnError>) => (options.client ?? client).post<PostCommentsResponses, PostCommentsErrors, ThrowOnError>({
+    responseTransformer: postCommentsResponseTransformer,
+    url: '/comments',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+export const deleteCommentsById = <ThrowOnError extends boolean = false>(options: Options<DeleteCommentsByIdData, ThrowOnError>) => (options.client ?? client).delete<DeleteCommentsByIdResponses, DeleteCommentsByIdErrors, ThrowOnError>({ url: '/comments/{id}', ...options });
+
+export const putCommentsById = <ThrowOnError extends boolean = false>(options: Options<PutCommentsByIdData, ThrowOnError>) => (options.client ?? client).put<PutCommentsByIdResponses, PutCommentsByIdErrors, ThrowOnError>({
+    responseTransformer: putCommentsByIdResponseTransformer,
+    url: '/comments/{id}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+export const getSiteSeo = <ThrowOnError extends boolean = false>(options?: Options<GetSiteSeoData, ThrowOnError>) => (options?.client ?? client).get<GetSiteSeoResponses, unknown, ThrowOnError>({ url: '/site/seo', ...options });
 
 export const getUserProfile = <ThrowOnError extends boolean = false>(options?: Options<GetUserProfileData, ThrowOnError>) => (options?.client ?? client).get<GetUserProfileResponses, unknown, ThrowOnError>({
     responseTransformer: getUserProfileResponseTransformer,
@@ -77,6 +147,14 @@ export const getConnectAuthorize = <ThrowOnError extends boolean = false>(option
 export const postConnectAuthorize = <ThrowOnError extends boolean = false>(options?: Options<PostConnectAuthorizeData, ThrowOnError>) => (options?.client ?? client).post<unknown, PostConnectAuthorizeErrors, ThrowOnError>({ url: '/connect/authorize', ...options });
 
 export const postConnectToken = <ThrowOnError extends boolean = false>(options?: Options<PostConnectTokenData, ThrowOnError>) => (options?.client ?? client).post<PostConnectTokenResponses, PostConnectTokenErrors, ThrowOnError>({ url: '/connect/token', ...options });
+
+export const getConnectUserinfo = <ThrowOnError extends boolean = false>(options?: Options<GetConnectUserinfoData, ThrowOnError>) => (options?.client ?? client).get<GetConnectUserinfoResponses, GetConnectUserinfoErrors, ThrowOnError>({ url: '/connect/userinfo', ...options });
+
+export const postConnectRevoke = <ThrowOnError extends boolean = false>(options?: Options<PostConnectRevokeData, ThrowOnError>) => (options?.client ?? client).post<PostConnectRevokeResponses, unknown, ThrowOnError>({ url: '/connect/revoke', ...options });
+
+export const getConnectLogout = <ThrowOnError extends boolean = false>(options?: Options<GetConnectLogoutData, ThrowOnError>) => (options?.client ?? client).get<GetConnectLogoutResponses, unknown, ThrowOnError>({ url: '/connect/logout', ...options });
+
+export const postConnectLogout = <ThrowOnError extends boolean = false>(options?: Options<PostConnectLogoutData, ThrowOnError>) => (options?.client ?? client).post<PostConnectLogoutResponses, unknown, ThrowOnError>({ url: '/connect/logout', ...options });
 
 export const getOauthApps = <ThrowOnError extends boolean = false>(options?: Options<GetOauthAppsData, ThrowOnError>) => (options?.client ?? client).get<GetOauthAppsResponses, unknown, ThrowOnError>({ url: '/oauth/apps', ...options });
 
@@ -112,6 +190,22 @@ export const putOauthAppsById = <ThrowOnError extends boolean = false>(options: 
 });
 
 export const postOauthAppsByIdSecret = <ThrowOnError extends boolean = false>(options: Options<PostOauthAppsByIdSecretData, ThrowOnError>) => (options.client ?? client).post<PostOauthAppsByIdSecretResponses, PostOauthAppsByIdSecretErrors, ThrowOnError>({ url: '/oauth/apps/{id}/secret', ...options });
+
+export const getOauthConsents = <ThrowOnError extends boolean = false>(options?: Options<GetOauthConsentsData, ThrowOnError>) => (options?.client ?? client).get<GetOauthConsentsResponses, unknown, ThrowOnError>({
+    responseTransformer: getOauthConsentsResponseTransformer,
+    url: '/oauth/consents',
+    ...options
+});
+
+export const deleteOauthConsentsById = <ThrowOnError extends boolean = false>(options: Options<DeleteOauthConsentsByIdData, ThrowOnError>) => (options.client ?? client).delete<DeleteOauthConsentsByIdResponses, DeleteOauthConsentsByIdErrors, ThrowOnError>({ url: '/oauth/consents/{id}', ...options });
+
+export const getOauthConsentsTokens = <ThrowOnError extends boolean = false>(options?: Options<GetOauthConsentsTokensData, ThrowOnError>) => (options?.client ?? client).get<GetOauthConsentsTokensResponses, unknown, ThrowOnError>({
+    responseTransformer: getOauthConsentsTokensResponseTransformer,
+    url: '/oauth/consents/tokens',
+    ...options
+});
+
+export const deleteOauthConsentsTokensById = <ThrowOnError extends boolean = false>(options: Options<DeleteOauthConsentsTokensByIdData, ThrowOnError>) => (options.client ?? client).delete<DeleteOauthConsentsTokensByIdResponses, DeleteOauthConsentsTokensByIdErrors, ThrowOnError>({ url: '/oauth/consents/tokens/{id}', ...options });
 
 export const getOauthPublicAppInfo = <ThrowOnError extends boolean = false>(options?: Options<GetOauthPublicAppInfoData, ThrowOnError>) => (options?.client ?? client).get<GetOauthPublicAppInfoResponses, GetOauthPublicAppInfoErrors, ThrowOnError>({ url: '/oauth/public/app-info', ...options });
 

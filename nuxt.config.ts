@@ -7,6 +7,7 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
     "pinia-plugin-persistedstate",
     "nuxt-qrcode",
+    "@nuxtjs/mdc",
   ],
   css: ["~/assets/css/main.css"],
   runtimeConfig: {

@@ -8,6 +8,101 @@ export const AlgorithmSchema = {
     type: 'integer'
 } as const;
 
+export const ArticleCreateModelSchema = {
+    required: [
+        'title',
+        'content'
+    ],
+    type: 'object',
+    properties: {
+        title: {
+            maxLength: 200,
+            type: 'string'
+        },
+        content: {
+            maxLength: 10000,
+            type: 'string'
+        },
+        isPublished: {
+            type: 'boolean'
+        }
+    }
+} as const;
+
+export const ArticleResponseSchema = {
+    type: 'object',
+    properties: {
+        id: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        title: {
+            type: 'string'
+        },
+        content: {
+            type: 'string'
+        },
+        authorId: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        authorUsername: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        createdAt: {
+            type: 'string',
+            format: 'date-time'
+        },
+        updatedAt: {
+            type: 'string',
+            format: 'date-time'
+        },
+        isPublished: {
+            type: 'boolean'
+        },
+        commentCount: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        }
+    }
+} as const;
+
+export const ArticleUpdateModelSchema = {
+    required: [
+        'title',
+        'content'
+    ],
+    type: 'object',
+    properties: {
+        title: {
+            maxLength: 200,
+            type: 'string'
+        },
+        content: {
+            maxLength: 10000,
+            type: 'string'
+        },
+        isPublished: {
+            type: 'boolean'
+        }
+    }
+} as const;
+
 export const AsnEncodedDataSchema = {
     type: 'object',
     properties: {
@@ -694,6 +789,108 @@ export const ClaimsPrincipalSchema = {
     }
 } as const;
 
+export const CommentCreateModelSchema = {
+    required: [
+        'content'
+    ],
+    type: 'object',
+    properties: {
+        content: {
+            maxLength: 2000,
+            type: 'string'
+        },
+        parentCommentId: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'null',
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        }
+    }
+} as const;
+
+export const CommentResponseSchema = {
+    type: 'object',
+    properties: {
+        id: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        content: {
+            type: 'string'
+        },
+        articleId: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        authorId: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        authorUsername: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        parentCommentId: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'null',
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        createdAt: {
+            type: 'string',
+            format: 'date-time'
+        },
+        updatedAt: {
+            type: 'string',
+            format: 'date-time'
+        },
+        isDeleted: {
+            type: 'boolean'
+        },
+        replyCount: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        }
+    }
+} as const;
+
+export const CommentUpdateModelSchema = {
+    required: [
+        'content'
+    ],
+    type: 'object',
+    properties: {
+        content: {
+            maxLength: 2000,
+            type: 'string'
+        }
+    }
+} as const;
+
 export const ConnectionInfoSchema = {
     type: 'object',
     properties: {
@@ -781,13 +978,6 @@ export const CreateAppRequestSchema = {
                 'string'
             ],
             default: 'web'
-        },
-        consentType: {
-            type: [
-                'null',
-                'string'
-            ],
-            default: 'explicit'
         }
     }
 } as const;
@@ -1555,6 +1745,57 @@ export const OAuthAppResponseSchema = {
     }
 } as const;
 
+export const OAuthConsentResponseSchema = {
+    type: 'object',
+    properties: {
+        id: {
+            type: 'string'
+        },
+        applicationId: {
+            type: 'string'
+        },
+        clientId: {
+            type: 'string'
+        },
+        displayName: {
+            type: 'string'
+        },
+        createdAt: {
+            type: 'string',
+            format: 'date-time'
+        }
+    }
+} as const;
+
+export const OAuthTokenResponseSchema = {
+    type: 'object',
+    properties: {
+        id: {
+            type: 'string'
+        },
+        applicationId: {
+            type: 'string'
+        },
+        clientId: {
+            type: 'string'
+        },
+        displayName: {
+            type: 'string'
+        },
+        tokenType: {
+            type: 'string'
+        },
+        expiresAt: {
+            type: 'string',
+            format: 'date-time'
+        },
+        createdAt: {
+            type: 'string',
+            format: 'date-time'
+        }
+    }
+} as const;
+
 export const OidSchema = {
     type: 'object',
     properties: {
@@ -1637,12 +1878,6 @@ export const PatchAppRequestSchema = {
             ]
         },
         applicationType: {
-            type: [
-                'null',
-                'string'
-            ]
-        },
-        consentType: {
             type: [
                 'null',
                 'string'
@@ -1842,6 +2077,57 @@ export const SafeWaitHandleSchema = {
     }
 } as const;
 
+export const SeoMetaResponseSchema = {
+    type: 'object',
+    properties: {
+        title: {
+            type: 'string'
+        },
+        description: {
+            type: 'string'
+        },
+        keywords: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        ogTitle: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        ogDescription: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        ogImage: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        twitterCard: {
+            type: 'string'
+        },
+        robots: {
+            type: 'string'
+        },
+        extras: {
+            type: [
+                'null',
+                'object'
+            ],
+            additionalProperties: {
+                type: 'string'
+            }
+        }
+    }
+} as const;
+
 export const StreamSchema = {
     type: 'string',
     format: 'binary'
@@ -1936,12 +2222,6 @@ export const UpdateAppRequestSchema = {
             ]
         },
         applicationType: {
-            type: [
-                'null',
-                'string'
-            ]
-        },
-        consentType: {
             type: [
                 'null',
                 'string'
