@@ -8,8 +8,8 @@ const seoMeta = computed(() => seoData.value);
 const articles = computed(() => articlesData.value || []);
 const isLoading = computed(() => seoPending.value || articlesPending.value);
 
-const formatDate = (dateStr: string) => {
-  return new Date(dateStr).toLocaleDateString('zh-CN', {
+const formatDate = (dateStr: Date) => {
+  return dateStr.toLocaleDateString('zh-CN', {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
@@ -72,7 +72,7 @@ useSeoMeta({
             </h2>
 
             <p class="text-sm text-muted line-clamp-3 mb-6 grow">
-              {{ truncateContent(article.content) }}
+              {{ truncateContent(article.content!) }}
             </p>
 
             <div class="flex items-center justify-between mt-auto">
