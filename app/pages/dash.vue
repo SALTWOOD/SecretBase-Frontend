@@ -82,6 +82,10 @@ import type { User } from "~/types/user";
 import { postAuthLogout } from "~~/packages/api/src/sdk.gen";
 import { isValidAvatarUrl } from "~/utils/url-validator";
 
+definePageMeta({
+  layout: false
+});
+
 interface NavigationItem {
   label: string;
   icon?: string;

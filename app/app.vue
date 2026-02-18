@@ -1,6 +1,8 @@
 <template>
   <UApp>
-    <NuxtPage />
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
   </UApp>
   <TwoFactorChallengeModal ref="tfModal" />
 </template>
