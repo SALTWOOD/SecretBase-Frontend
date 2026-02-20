@@ -1,6 +1,6 @@
 <template>
   <nav
-    class="absolute top-0 left-0 right-0 z-50 border-b border-default bg-default/50 backdrop-blur-md"
+    class="fixed top-0 left-0 right-0 z-50 bg-default/50 backdrop-blur-md"
   >
     <UContainer class="flex items-center justify-between h-16">
       <NuxtLink to="/" class="flex items-center gap-2">
