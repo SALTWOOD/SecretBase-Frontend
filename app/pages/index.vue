@@ -1,10 +1,18 @@
 <script setup lang="ts">
-import { getArticles, getSettingsHome, getSettingsSeo } from "@secret-base/api/src/sdk.gen";
+/**
+ * @file Index page for Secret Base
+ * @description List articles with a beautiful background image
+ */
+import { getArticles, getSettingsSeo } from "@secret-base/api/src/sdk.gen";
+
+const BACKGROUND_IMAGE_URL = "";
+
 
 const { data: seoMeta, pending: seoPending } = await useAsyncData(
   "site-seo",
   async () => (await getSettingsSeo()).data,
 );
+
 const { data: articles, pending: articlesPending } = await useAsyncData(
   "articles-list",
   async () => (await getArticles()).data,
@@ -12,8 +20,9 @@ const { data: articles, pending: articlesPending } = await useAsyncData(
 
 const isLoading = computed(() => seoPending.value || articlesPending.value);
 
-const formatDate = (dateStr: Date) => {
-  return dateStr.toLocaleDateString("zh-CN", {
+const formatDate = (dateStr: string | Date) => {
+  const date = typeof dateStr === 'string' ? new Date(dateStr) : dateStr;
+  return date.toLocaleDateString("zh-CN", {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -36,15 +45,22 @@ useSeoMeta({
 </script>
 
 <template>
-  <main class="relative overflow-hidden pt-12 pb-32">
+  <main
+    class="relative min-h-screen overflow-hidden pt-12 pb-32 bg-cover bg-center bg-no-repeat bg-fixed"
+    :style="{ backgroundImage: `url(${BACKGROUND_IMAGE_URL})` }"
+  >
     <div
-      class="absolute top-0 left-1/2 -translate-x-1/2 w-200 h-100 rounded-full bg-primary/10 blur-[120px] -z-10"
+      class="absolute inset-0 bg-white/70 dark:bg-slate-900/80 backdrop-blur-[2px] -z-10"
+    />
+
+    <div
+      class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-gradient-to-b from-primary/5 to-transparent -z-10"
     />
 
     <UContainer>
       <header class="mb-16 text-center lg:text-left">
         <h1
-          class="text-4xl font-extrabold tracking-tight text-highlighted mb-4"
+          class="text-4xl md:text-5xl font-extrabold tracking-tight text-highlighted mb-4"
         >
           {{ seoMeta?.title || "探索技术与创新" }}
         </h1>
@@ -62,13 +78,13 @@ useSeoMeta({
 
       <template v-else>
         <div
-          v-if="articles.length > 0"
+          v-if="articles && articles.length > 0"
           class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
         >
           <article
             v-for="article in articles"
             :key="article.id"
-            class="group relative flex flex-col p-6 rounded-2xl border border-default bg-default hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5"
+            class="group relative flex flex-col p-6 rounded-2xl border border-default bg-default/80 backdrop-blur-md hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:shadow-primary/10"
           >
             <div class="flex items-center gap-2 mb-4">
               <UBadge
@@ -93,7 +109,7 @@ useSeoMeta({
             </h2>
 
             <p class="text-sm text-muted line-clamp-3 mb-6 grow">
-              {{ truncateContent(article.content!) }}
+              {{ truncateContent(article.content || '') }}
             </p>
 
             <div class="flex items-center justify-between mt-auto">
@@ -132,3 +148,20 @@ useSeoMeta({
     </UContainer>
   </main>
 </template>
+
+<style scoped>
+@reference 'tailwindcss';
+/* 针对文字高亮效果的自定义颜色变量，需确保你的 tailwind.config 有对应配置 */
+.text-highlighted {
+  @apply text-slate-900 dark:text-white;
+}
+.text-muted {
+  @apply text-slate-600 dark:text-slate-400;
+}
+.border-default {
+  @apply border-slate-200 dark:border-slate-800;
+}
+.bg-default {
+  @apply bg-white dark:bg-slate-900;
+}
+</style>
