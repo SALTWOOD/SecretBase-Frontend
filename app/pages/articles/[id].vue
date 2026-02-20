@@ -3,26 +3,28 @@ import type { ArticleResponse } from "~~/packages/api/src/types.gen";
 import { getArticlesById } from "~~/packages/api/src/sdk.gen";
 
 const route = useRoute();
-const router = useRouter();
 const articleId = route.params.id as string;
 
-const { data: article, pending: isLoading, refresh } = await useAsyncData(`article-${articleId}`, async () => {
-  const response = await getArticlesById({ path: { id: articleId } });
-  if (response.error) throw response.error;
+const {
+  data: article,
+  pending: isLoading,
+  refresh,
+} = await useAsyncData(
+  `article-${articleId}`,
+  async () => (await getArticlesById({ path: { id: articleId } })).data,
+);
 
-  useSeoMeta({
-    title: response.data.title,
-    description: response.data.content?.substring(0, 160)
-  });
-
-  return response.data;
+useSeoMeta({
+  title: article.value?.title
 });
 
 const formatDate = (date: any, full = false) => {
   if (!date) return "";
   return new Date(date).toLocaleDateString("zh-CN", {
-    year: "numeric", month: "long", day: "numeric",
-    ...(full ? { hour: "2-digit", minute: "2-digit" } : {})
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    ...(full ? { hour: "2-digit", minute: "2-digit" } : {}),
   });
 };
 
@@ -40,37 +42,56 @@ const handleCommentCountChange = (count: number) => {
     </div>
 
     <UAlert
-      v-else-if="error"
+      v-else-if="!article"
       icon="i-lucide-circle-alert"
       color="error"
       variant="subtle"
-      title="Article Not Found"
-      description="The article you are looking for might have been moved or deleted."
+      title="文章未找到"
+      description="您寻找的文章可能已被移动或删除。"
     />
 
     <article v-else-if="article">
       <header class="mb-8">
         <UBreadcrumb
-          :items="[{ label: 'Home', to: '/' }, { label: 'Articles', to: '/articles' }, { label: article.title }]"
+          :items="[
+            { label: '首页', to: '/' },
+            { label: '文章', to: '/articles' },
+            { label: article.title || '' },
+          ]"
           class="mb-4"
         />
 
-        <h1 class="text-4xl font-bold tracking-tight text-gray-900 dark:text-white mb-4">
+        <h1
+          class="text-4xl font-bold tracking-tight text-gray-900 dark:text-white mb-4"
+        >
           {{ article.title }}
         </h1>
 
-        <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
-          <UAvatar :src="article.author?.avatar" :alt="article.author?.name" size="sm" />
-          <span>{{ article.author?.name }}</span>
-          <time :datetime="article.createdAt">{{ formatDate(article.createdAt) }}</time>
-          <UBadge variant="soft" color="primary" v-if="article.category">
-            {{ article.category }}
+        <div
+          class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400"
+        >
+          <UAvatar
+            :src="undefined"
+            :alt="article.authorUsername ?? undefined"
+            size="sm"
+          />
+          <span>{{ article.authorUsername }}</span>
+          <time :datetime="article.createdAt?.toString()">{{
+            formatDate(article.createdAt)
+          }}</time>
+          <UBadge
+            variant="soft"
+            color="primary"
+            v-if="article.isPublished === false"
+          >
+            草稿
           </UBadge>
         </div>
       </header>
 
+      <!-- Markdown 内容渲染 -->
       <div class="prose prose-primary dark:prose-invert max-w-none">
-        <div v-html="article.content" />
+        <MDC :value="article.content || ''" />
       </div>
 
       <UDivider class="my-10" />
@@ -79,25 +100,30 @@ const handleCommentCountChange = (count: number) => {
         <div class="flex justify-between items-center">
           <div class="flex gap-2">
             <UButton icon="i-lucide-thumbs-up" variant="ghost" color="neutral">
-              {{ article.likesCount ?? 0 }}
+              {{ article.commentCount ?? 0 }}
             </UButton>
-            <UButton icon="i-lucide-message-square" variant="ghost" color="neutral">
+            <UButton
+              icon="i-lucide-message-square"
+              variant="ghost"
+              color="neutral"
+            >
               {{ article.commentCount ?? 0 }}
             </UButton>
           </div>
           <UButton icon="i-lucide-share-2" variant="ghost" color="neutral" />
         </div>
 
-        <section class="mt-12">
-          <h3 class="text-lg font-semibold mb-4">Comments</h3>
-          </section>
+        <!-- 评论组件 -->
+        <CommentSection
+          :article-id="articleId"
+          @comment-count-change="handleCommentCountChange"
+        />
       </footer>
     </article>
   </UContainer>
 </template>
 
 <style scoped>
-/* 如果没配置 Typography 模块，可以简单加一点样式 */
 .prose {
   line-height: 1.75;
 }

@@ -13,8 +13,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     capSecretKey: "",
     public: {
-      apiBase: "/api/v1"
-    }
+      apiBase: "/api/v1",
+    },
   },
   routeRules: {
     "/api/v1/**": {

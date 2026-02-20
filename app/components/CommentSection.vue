@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import type { CommentResponse } from "~~/packages/api/src/types.gen";
-import { getCommentsArticleByArticleId, postComments } from "~~/packages/api/src/sdk.gen";
+import {
+  getCommentsArticleByArticleId,
+  postComments,
+} from "~~/packages/api/src/sdk.gen";
 
 const props = defineProps<{
   articleId: string | number;
@@ -17,14 +20,20 @@ const comments = ref<CommentResponse[]>([]);
 const isLoading = ref(false);
 const isSubmitting = ref(false);
 const newComment = ref("");
-const replyTo = ref<string | number | null>(null);
+const replyTo = ref<CommentResponse | null>(null);
 const replyContent = ref("");
+
+// 构建评论树结构
+const commentTree = computed(() => {
+  const rootComments = comments.value.filter((c) => !c.parentCommentId);
+  return rootComments;
+});
 
 const loadComments = async () => {
   isLoading.value = true;
   try {
     const response = await getCommentsArticleByArticleId({
-      path: { articleId: props.articleId },
+      path: { articleId: String(props.articleId) },
     });
     if (!response.error && response.data) {
       comments.value = response.data;
@@ -56,7 +65,7 @@ const handleSubmit = async () => {
         parentCommentId: null,
       },
       query: {
-        articleId: props.articleId,
+        articleId: String(props.articleId),
       },
     });
 
@@ -67,6 +76,11 @@ const handleSubmit = async () => {
       });
       newComment.value = "";
       await loadComments();
+    } else {
+      toast.add({
+        title: "发布失败",
+        color: "error",
+      });
     }
   } catch (error) {
     console.error("Failed to submit comment:", error);
@@ -79,7 +93,7 @@ const handleSubmit = async () => {
   }
 };
 
-const handleReply = async (commentId: string | number) => {
+const handleReply = async () => {
   if (!replyContent.value.trim()) return;
   if (!userStore.isLoggedIn) {
     toast.add({
@@ -90,15 +104,17 @@ const handleReply = async (commentId: string | number) => {
     return;
   }
 
+  if (!replyTo.value) return;
+
   isSubmitting.value = true;
   try {
     const response = await postComments({
       body: {
         content: replyContent.value,
-        parentCommentId: commentId,
+        parentCommentId: replyTo.value.id!,
       },
       query: {
-        articleId: props.articleId,
+        articleId: String(props.articleId),
       },
     });
 
@@ -110,6 +126,11 @@ const handleReply = async (commentId: string | number) => {
       replyContent.value = "";
       replyTo.value = null;
       await loadComments();
+    } else {
+      toast.add({
+        title: "回复失败",
+        color: "error",
+      });
     }
   } catch (error) {
     console.error("Failed to submit reply:", error);
@@ -123,7 +144,11 @@ const handleReply = async (commentId: string | number) => {
 };
 
 const handleReplyClick = (commentId: string | number) => {
-  replyTo.value = commentId;
+  const comment = comments.value.find((c) => c.id === commentId);
+  if (comment) {
+    replyTo.value = comment;
+    replyContent.value = "";
+  }
 };
 
 const cancelReply = () => {
@@ -139,7 +164,10 @@ onMounted(loadComments);
     <div class="border-t border-gray-200 dark:border-gray-800 pt-6 mt-6">
       <h2 class="text-xl font-bold mb-4">
         评论
-        <span v-if="comments.length > 0" class="text-sm font-normal text-gray-500 ml-2">
+        <span
+          v-if="comments.length > 0"
+          class="text-sm font-normal text-gray-500 ml-2"
+        >
           ({{ comments.length }})
         </span>
       </h2>
@@ -163,21 +191,30 @@ onMounted(loadComments);
         </div>
       </div>
 
-      <div v-else class="mb-6 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg text-center">
-        <p class="text-gray-600 dark:text-gray-400 mb-3">
-          登录后参与讨论
-        </p>
-        <UButton to="/auth/login" variant="ghost">
-          前往登录
-        </UButton>
+      <div
+        v-else
+        class="mb-6 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg text-center"
+      >
+        <p class="text-gray-600 dark:text-gray-400 mb-3">登录后参与讨论</p>
+        <UButton to="/auth/login" variant="ghost"> 前往登录 </UButton>
       </div>
 
       <!-- 回复表单 -->
-      <div v-if="replyTo" class="mb-6 p-4 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-200 dark:border-primary-800">
+      <div
+        v-if="replyTo"
+        class="mb-6 p-4 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-200 dark:border-primary-800"
+      >
         <div class="flex items-center justify-between mb-3">
-          <span class="text-sm font-medium text-primary-600 dark:text-primary-400">
-            回复评论
-          </span>
+          <div>
+            <span
+              class="text-sm font-medium text-primary-600 dark:text-primary-400"
+            >
+              回复 @{{ replyTo.authorUsername || "匿名用户" }}
+            </span>
+            <p class="text-xs text-gray-500 mt-1 line-clamp-1">
+              {{ replyTo.content }}
+            </p>
+          </div>
           <UButton size="xs" variant="ghost" @click="cancelReply">
             取消
           </UButton>
@@ -192,7 +229,7 @@ onMounted(loadComments);
           <UButton
             :loading="isSubmitting"
             :disabled="!replyContent.trim()"
-            @click="handleReply(replyTo)"
+            @click="handleReply"
           >
             发表回复
           </UButton>
@@ -201,17 +238,30 @@ onMounted(loadComments);
 
       <!-- 评论列表 -->
       <div v-if="isLoading" class="text-center py-8 text-gray-500">
-        加载评论中...
+        <UIcon
+          name="i-lucide-loader-2"
+          class="w-6 h-6 animate-spin inline mb-2"
+        />
+        <p>加载评论中...</p>
       </div>
 
-      <div v-else-if="comments.length === 0" class="text-center py-8 text-gray-500">
-        <UIcon name="i-heroicons-chat-bubble-left-right" class="w-12 h-12 mx-auto mb-2 opacity-50" />
+      <div
+        v-else-if="comments.length === 0"
+        class="text-center py-8 text-gray-500"
+      >
+        <UIcon
+          name="i-lucide-message-square"
+          class="w-12 h-12 mx-auto mb-2 opacity-50"
+        />
         <p>暂无评论，快来抢沙发吧！</p>
       </div>
 
-      <div v-else class="space-y-0">
+      <div
+        v-else
+        class="space-y-0 divide-y divide-gray-100 dark:divide-gray-800"
+      >
         <CommentItem
-          v-for="comment in comments"
+          v-for="comment in commentTree"
           :key="comment.id"
           :comment="comment"
           :article-id="articleId"
@@ -226,5 +276,12 @@ onMounted(loadComments);
 <style scoped>
 .comment-section {
   max-width: 768px;
+}
+
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 </style>

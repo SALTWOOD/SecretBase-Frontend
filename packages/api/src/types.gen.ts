@@ -281,6 +281,14 @@ export type Fido2User = {
     displayName?: null | string;
 };
 
+export type HomeAppearanceResponse = {
+    backgroundUrl?: string;
+    backgroundBlur?: number | string;
+    backgroundOpacity?: number | string;
+    bannerContent?: string;
+    bannerDisplayMode?: string;
+};
+
 export type HostString = {
     value?: null | string;
     hasValue?: boolean;
@@ -556,9 +564,12 @@ export type SeoMetaResponse = {
     ogImage?: null | string;
     twitterCard?: string;
     robots?: string;
-    extras?: null | {
-        [key: string]: string;
-    };
+};
+
+export type SiteInitResponse = {
+    seo?: SeoMetaResponse;
+    home?: HomeAppearanceResponse;
+    registrationEnabled?: boolean;
 };
 
 export type Stream = Blob | File;
@@ -1057,21 +1068,53 @@ export type PutCommentsByIdResponses = {
 
 export type PutCommentsByIdResponse = PutCommentsByIdResponses[keyof PutCommentsByIdResponses];
 
-export type GetSiteSeoData = {
+export type GetSettingsSeoData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/site/seo';
+    url: '/settings/seo';
 };
 
-export type GetSiteSeoResponses = {
+export type GetSettingsSeoResponses = {
     /**
      * OK
      */
     200: SeoMetaResponse;
 };
 
-export type GetSiteSeoResponse = GetSiteSeoResponses[keyof GetSiteSeoResponses];
+export type GetSettingsSeoResponse = GetSettingsSeoResponses[keyof GetSettingsSeoResponses];
+
+export type GetSettingsHomeData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/settings/home';
+};
+
+export type GetSettingsHomeResponses = {
+    /**
+     * OK
+     */
+    200: HomeAppearanceResponse;
+};
+
+export type GetSettingsHomeResponse = GetSettingsHomeResponses[keyof GetSettingsHomeResponses];
+
+export type GetSettingsInitData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/settings/init';
+};
+
+export type GetSettingsInitResponses = {
+    /**
+     * OK
+     */
+    200: SiteInitResponse;
+};
+
+export type GetSettingsInitResponse = GetSettingsInitResponses[keyof GetSettingsInitResponses];
 
 export type GetUserProfileData = {
     body?: never;

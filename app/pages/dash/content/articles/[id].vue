@@ -64,7 +64,7 @@ const handleSave = async () => {
   }
 };
 
-onMounted(refresh)
+onMounted(refresh);
 </script>
 
 <template>

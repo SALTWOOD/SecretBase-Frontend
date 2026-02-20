@@ -83,7 +83,7 @@ import { postAuthLogout } from "~~/packages/api/src/sdk.gen";
 import { isValidAvatarUrl } from "~/utils/url-validator";
 
 definePageMeta({
-  layout: false
+  layout: false,
 });
 
 interface NavigationItem {

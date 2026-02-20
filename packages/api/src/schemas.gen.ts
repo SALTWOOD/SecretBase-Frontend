@@ -1145,6 +1145,37 @@ export const Fido2UserSchema = {
     }
 } as const;
 
+export const HomeAppearanceResponseSchema = {
+    type: 'object',
+    properties: {
+        backgroundUrl: {
+            type: 'string'
+        },
+        backgroundBlur: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        backgroundOpacity: {
+            pattern: '^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$',
+            type: [
+                'number',
+                'string'
+            ],
+            format: 'double'
+        },
+        bannerContent: {
+            type: 'string'
+        },
+        bannerDisplayMode: {
+            type: 'string'
+        }
+    }
+} as const;
+
 export const HostStringSchema = {
     type: 'object',
     properties: {
@@ -2115,15 +2146,21 @@ export const SeoMetaResponseSchema = {
         },
         robots: {
             type: 'string'
+        }
+    }
+} as const;
+
+export const SiteInitResponseSchema = {
+    type: 'object',
+    properties: {
+        seo: {
+            $ref: '#/components/schemas/SeoMetaResponse'
         },
-        extras: {
-            type: [
-                'null',
-                'object'
-            ],
-            additionalProperties: {
-                type: 'string'
-            }
+        home: {
+            $ref: '#/components/schemas/HomeAppearanceResponse'
+        },
+        registrationEnabled: {
+            type: 'boolean'
         }
     }
 } as const;

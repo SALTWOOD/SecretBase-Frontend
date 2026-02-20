@@ -1,94 +1,231 @@
 <script setup lang="ts">
-// 假设你的 OpenAPI 生成了 Comment 相关的类型
-// import type { CommentResponse } from "~~/packages/api/src/types.gen";
+import type { CommentResponse } from "~~/packages/api/src/types.gen";
+import {
+  deleteCommentsById,
+  getCommentsByIdReplies,
+} from "~~/packages/api/src/sdk.gen";
 
-interface Props {
-  authorName: string;
-  avatar?: string;
-  content: string;
-  createdAt: string | Date;
-  likesCount?: number;
-  isLiked?: boolean;
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  likesCount: 0,
-  isLiked: false
-});
-
-const emit = defineEmits<{
-  reply: [];
-  like: [active: boolean];
+const props = defineProps<{
+  comment: CommentResponse;
+  articleId: string | number;
+  depth?: number;
 }>();
 
-// 简单的格式化，或者使用你页面里定义的 formatDate
-const timeAgo = (date: string | Date) => {
-  // 生产环境建议用 @vueuse/core 的 useTimeAgo
-  return new Date(date).toLocaleDateString("zh-CN");
+const emit = defineEmits<{
+  refresh: [];
+  reply: [commentId: string | number];
+}>();
+
+const userStore = useUserStore();
+const toast = useToast();
+
+const isDeleting = ref(false);
+const showReplies = ref(false);
+const replies = ref<CommentResponse[]>([]);
+const isLoadingReplies = ref(false);
+
+// 检查是否是当前用户的评论
+const isOwner = computed(() => {
+  if (!userStore.user || !props.comment.authorId) return false;
+  return String(userStore.user.id) === String(props.comment.authorId);
+});
+
+// 格式化时间
+const timeAgo = (date: string | Date | undefined) => {
+  if (!date) return "";
+  const d = new Date(date);
+  const now = new Date();
+  const diff = now.getTime() - d.getTime();
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (days > 7) {
+    return d.toLocaleDateString("zh-CN");
+  } else if (days > 0) {
+    return `${days} 天前`;
+  } else if (hours > 0) {
+    return `${hours} 小时前`;
+  } else if (minutes > 0) {
+    return `${minutes} 分钟前`;
+  } else {
+    return "刚刚";
+  }
 };
 
-const handleLike = () => {
-  emit('like', !props.isLiked);
+// 删除评论
+const handleDelete = async () => {
+  if (!confirm("确定要删除这条评论吗？")) return;
+
+  isDeleting.value = true;
+  try {
+    const response = await deleteCommentsById({
+      path: { id: String(props.comment.id!) },
+    });
+
+    if (!response.error) {
+      toast.add({
+        title: "评论已删除",
+        color: "success",
+      });
+      emit("refresh");
+    } else {
+      toast.add({
+        title: "删除失败",
+        description: "您只能删除自己的评论",
+        color: "error",
+      });
+    }
+  } catch (error) {
+    console.error("Failed to delete comment:", error);
+    toast.add({
+      title: "删除失败",
+      color: "error",
+    });
+  } finally {
+    isDeleting.value = false;
+  }
 };
+
+// 加载回复
+const loadReplies = async () => {
+  if (showReplies.value) {
+    showReplies.value = false;
+    return;
+  }
+
+  isLoadingReplies.value = true;
+  showReplies.value = true;
+  try {
+    const response = await getCommentsByIdReplies({
+      path: { id: String(props.comment.id!) },
+    });
+    if (!response.error && response.data) {
+      replies.value = response.data;
+    }
+  } catch (error) {
+    console.error("Failed to load replies:", error);
+  } finally {
+    isLoadingReplies.value = false;
+  }
+};
+
+// 下拉菜单选项
+const menuItems = computed(() => {
+  const items = [];
+  if (isOwner.value) {
+    items.push({
+      label: "删除",
+      icon: "i-lucide-trash-2",
+      click: handleDelete,
+    });
+  }
+  items.push({
+    label: "举报",
+    icon: "i-lucide-flag",
+    click: () => {
+      toast.add({ title: "举报功能暂未开放", color: "info" });
+    },
+  });
+  return [items];
+});
 </script>
 
 <template>
-  <div class="flex gap-4 py-4 group">
-    <UAvatar
-      :src="avatar"
-      :alt="authorName"
-      size="md"
-      class="flex-shrink-0"
-    />
+  <div class="comment-item">
+    <div class="flex gap-4 py-4 group">
+      <UAvatar
+        :src="undefined"
+        :alt="comment.authorUsername ?? undefined"
+        size="md"
+        class="flex-shrink-0"
+      />
 
-    <div class="flex-1 min-w-0">
-      <div class="flex items-center justify-between mb-1">
-        <div class="flex items-center gap-2">
-          <span class="font-medium text-sm text-gray-900 dark:text-white">
-            {{ authorName }}
-          </span>
-          <span class="text-xs text-gray-500 dark:text-gray-400">
-            {{ timeAgo(createdAt) }}
-          </span>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center justify-between mb-1">
+          <div class="flex items-center gap-2">
+            <span class="font-medium text-sm text-gray-900 dark:text-white">
+              {{ comment.authorUsername || "匿名用户" }}
+            </span>
+            <span class="text-xs text-gray-500 dark:text-gray-400">
+              {{ timeAgo(comment.createdAt) }}
+            </span>
+          </div>
+
+          <UDropdownMenu :items="menuItems">
+            <UButton
+              icon="i-lucide-ellipsis"
+              variant="ghost"
+              color="neutral"
+              size="xs"
+              class="opacity-0 group-hover:opacity-100 transition-opacity"
+              :loading="isDeleting"
+            />
+          </UDropdownMenu>
         </div>
 
-        <UDropdownMenu :items="[[{ label: 'Report', icon: 'i-lucide-flag' }]]">
+        <div
+          class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed mb-3"
+        >
+          {{ comment.content }}
+        </div>
+
+        <div class="flex items-center gap-4">
           <UButton
-            icon="i-lucide-ellipsis"
+            icon="i-lucide-message-circle"
             variant="ghost"
             color="neutral"
             size="xs"
-            class="opacity-0 group-hover:opacity-100 transition-opacity"
+            label="回复"
+            @click="emit('reply', comment.id!)"
           />
-        </UDropdownMenu>
-      </div>
+          <UButton
+            v-if="comment.replyCount && Number(comment.replyCount) > 0"
+            :icon="
+              showReplies ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'
+            "
+            variant="ghost"
+            color="neutral"
+            size="xs"
+            :label="`${comment.replyCount} 条回复`"
+            @click="loadReplies"
+          />
+        </div>
 
-      <div class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
-        {{ content }}
-      </div>
-
-      <div class="flex items-center gap-4">
-        <UButton
-          :icon="isLiked ? 'i-lucide-thumbs-up-fill' : 'i-lucide-thumbs-up'"
-          :color="isLiked ? 'primary' : 'neutral'"
-          variant="ghost"
-          size="xs"
-          :label="String(likesCount)"
-          @click="handleLike"
-        />
-        <UButton
-          icon="i-lucide-message-circle"
-          variant="ghost"
-          color="neutral"
-          size="xs"
-          label="Reply"
-          @click="emit('reply')"
-        />
+        <!-- 回复列表 -->
+        <div
+          v-if="showReplies"
+          class="mt-4 pl-4 border-l-2 border-gray-200 dark:border-gray-700"
+        >
+          <div v-if="isLoadingReplies" class="py-4 text-center text-gray-500">
+            <UIcon
+              name="i-lucide-loader-2"
+              class="w-5 h-5 animate-spin inline"
+            />
+          </div>
+          <template v-else-if="replies.length > 0">
+            <CommentItem
+              v-for="reply in replies"
+              :key="reply.id"
+              :comment="reply"
+              :article-id="articleId"
+              :depth="(depth || 0) + 1"
+              @refresh="loadReplies"
+              @reply="(id) => emit('reply', id)"
+            />
+          </template>
+          <div v-else class="py-4 text-center text-gray-500 text-sm">
+            暂无回复
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-/* 可以在这里微调回复列表的缩进线 */
+.comment-item {
+  position: relative;
+}
 </style>

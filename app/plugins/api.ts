@@ -4,6 +4,7 @@ export default defineNuxtPlugin(() => {
   const config = useRuntimeConfig();
   client.setConfig({
     baseUrl: config.public.apiBase as string,
+    credentials: "include",
   });
 
   client.interceptors.response.use(async (response, request) => {
