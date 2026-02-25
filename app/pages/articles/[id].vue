@@ -15,7 +15,7 @@ const {
 );
 
 useSeoMeta({
-  title: article.value?.title
+  title: article.value?.title,
 });
 
 const formatDate = (date: any, full = false) => {

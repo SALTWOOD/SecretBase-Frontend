@@ -436,6 +436,51 @@ export type NewSecretResponse = {
     clientSecret: string;
 };
 
+export type OAuth2ApproveRequest = {
+    clientId: string;
+    redirectUri: string;
+    scope?: null | string;
+    approved?: boolean;
+    state?: null | string;
+    codeChallenge?: null | string;
+    codeChallengeMethod?: null | string;
+};
+
+export type OAuth2ApproveResultResponse = {
+    success?: boolean;
+    redirectUrl?: null | string;
+    error?: null | string;
+    errorDescription?: null | string;
+};
+
+export type OAuth2AuthorizeResponse = {
+    clientId?: string;
+    appName?: string;
+    description?: null | string;
+    homepage?: null | string;
+    redirectUri?: string;
+    scopes?: Array<string>;
+    scopeDescriptions?: {
+        [key: string]: string;
+    };
+    state?: null | string;
+    userId?: number | string;
+    appCreator?: null | string;
+};
+
+export type OAuth2ErrorResponse = {
+    error?: string;
+    errorDescription?: null | string;
+};
+
+export type OAuth2TokenResponse = {
+    accessToken?: string;
+    tokenType?: string;
+    expiresIn?: number | string;
+    refreshToken?: null | string;
+    scope?: null | string;
+};
+
 export type OAuthAppDetailResponse = {
     id?: string;
     clientId?: string;
@@ -478,14 +523,6 @@ export type OAuthTokenResponse = {
 export type Oid = {
     value?: null | string;
     friendlyName?: null | string;
-};
-
-export type OpenIddictTokenResponse = {
-    access_token: string;
-    token_type: string;
-    expires_in: number | string;
-    id_token: null | string;
-    refresh_token: null | string;
 };
 
 export type PatchAppRequest = {
@@ -1175,179 +1212,184 @@ export type PostUserAvatarResponses = {
 
 export type PostUserAvatarResponse = PostUserAvatarResponses[keyof PostUserAvatarResponses];
 
-export type GetConnectAuthorizeData = {
+export type GetOauth2AuthorizeData = {
     body?: never;
     path?: never;
-    query?: never;
-    url: '/connect/authorize';
+    query?: {
+        ResponseType?: string;
+        ClientId?: string;
+        RedirectUri?: string;
+        Scope?: string;
+        State?: string;
+        CodeChallenge?: string;
+        CodeChallengeMethod?: string;
+    };
+    url: '/oauth2/authorize';
 };
 
-export type GetConnectAuthorizeErrors = {
+export type GetOauth2AuthorizeErrors = {
     /**
      * Bad Request
      */
-    400: ProblemDetails;
-};
-
-export type GetConnectAuthorizeError = GetConnectAuthorizeErrors[keyof GetConnectAuthorizeErrors];
-
-export type PostConnectAuthorizeData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/connect/authorize';
-};
-
-export type PostConnectAuthorizeErrors = {
-    /**
-     * Bad Request
-     */
-    400: ProblemDetails;
-};
-
-export type PostConnectAuthorizeError = PostConnectAuthorizeErrors[keyof PostConnectAuthorizeErrors];
-
-export type PostConnectTokenData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/connect/token';
-};
-
-export type PostConnectTokenErrors = {
-    /**
-     * Bad Request
-     */
-    400: ProblemDetails;
-};
-
-export type PostConnectTokenError = PostConnectTokenErrors[keyof PostConnectTokenErrors];
-
-export type PostConnectTokenResponses = {
-    /**
-     * OK
-     */
-    200: OpenIddictTokenResponse;
-};
-
-export type PostConnectTokenResponse = PostConnectTokenResponses[keyof PostConnectTokenResponses];
-
-export type GetConnectUserinfoData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/connect/userinfo';
-};
-
-export type GetConnectUserinfoErrors = {
+    400: OAuth2ErrorResponse;
     /**
      * Unauthorized
      */
     401: ProblemDetails;
 };
 
-export type GetConnectUserinfoError = GetConnectUserinfoErrors[keyof GetConnectUserinfoErrors];
+export type GetOauth2AuthorizeError = GetOauth2AuthorizeErrors[keyof GetOauth2AuthorizeErrors];
 
-export type GetConnectUserinfoResponses = {
+export type GetOauth2AuthorizeResponses = {
+    /**
+     * OK
+     */
+    200: OAuth2AuthorizeResponse;
+};
+
+export type GetOauth2AuthorizeResponse = GetOauth2AuthorizeResponses[keyof GetOauth2AuthorizeResponses];
+
+export type PostOauth2ApproveData = {
+    body: OAuth2ApproveRequest;
+    path?: never;
+    query?: never;
+    url: '/oauth2/approve';
+};
+
+export type PostOauth2ApproveErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+};
+
+export type PostOauth2ApproveError = PostOauth2ApproveErrors[keyof PostOauth2ApproveErrors];
+
+export type PostOauth2ApproveResponses = {
+    /**
+     * OK
+     */
+    200: OAuth2ApproveResultResponse;
+};
+
+export type PostOauth2ApproveResponse = PostOauth2ApproveResponses[keyof PostOauth2ApproveResponses];
+
+export type PostOauth2TokenData = {
+    body: {
+        GrantType?: string;
+        Code?: string;
+        RedirectUri?: string;
+        RefreshToken?: string;
+        ClientId?: string;
+        ClientSecret?: string;
+        CodeVerifier?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/oauth2/token';
+};
+
+export type PostOauth2TokenErrors = {
+    /**
+     * Bad Request
+     */
+    400: OAuth2ErrorResponse;
+    /**
+     * Unauthorized
+     */
+    401: OAuth2ErrorResponse;
+};
+
+export type PostOauth2TokenError = PostOauth2TokenErrors[keyof PostOauth2TokenErrors];
+
+export type PostOauth2TokenResponses = {
+    /**
+     * OK
+     */
+    200: OAuth2TokenResponse;
+};
+
+export type PostOauth2TokenResponse = PostOauth2TokenResponses[keyof PostOauth2TokenResponses];
+
+export type PostOauth2RevokeData = {
+    body: {
+        Token?: string;
+        TokenTypeHint?: string;
+        ClientId?: string;
+        ClientSecret?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/oauth2/revoke';
+};
+
+export type PostOauth2RevokeErrors = {
+    /**
+     * Unauthorized
+     */
+    401: OAuth2ErrorResponse;
+};
+
+export type PostOauth2RevokeError = PostOauth2RevokeErrors[keyof PostOauth2RevokeErrors];
+
+export type PostOauth2RevokeResponses = {
     /**
      * OK
      */
     200: unknown;
 };
 
-export type PostConnectRevokeData = {
+export type GetUserOauthAppsData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/connect/revoke';
+    url: '/user/oauth/apps';
 };
 
-export type PostConnectRevokeResponses = {
-    /**
-     * OK
-     */
-    200: unknown;
-};
-
-export type GetConnectLogoutData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/connect/logout';
-};
-
-export type GetConnectLogoutResponses = {
-    /**
-     * OK
-     */
-    200: unknown;
-};
-
-export type PostConnectLogoutData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/connect/logout';
-};
-
-export type PostConnectLogoutResponses = {
-    /**
-     * OK
-     */
-    200: unknown;
-};
-
-export type GetOauthAppsData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/oauth/apps';
-};
-
-export type GetOauthAppsResponses = {
+export type GetUserOauthAppsResponses = {
     /**
      * OK
      */
     200: Array<OAuthAppResponse>;
 };
 
-export type GetOauthAppsResponse = GetOauthAppsResponses[keyof GetOauthAppsResponses];
+export type GetUserOauthAppsResponse = GetUserOauthAppsResponses[keyof GetUserOauthAppsResponses];
 
-export type PostOauthAppsData = {
+export type PostUserOauthAppData = {
     body: CreateAppRequest;
     path?: never;
     query?: never;
-    url: '/oauth/apps';
+    url: '/user/oauth/app';
 };
 
-export type PostOauthAppsErrors = {
+export type PostUserOauthAppErrors = {
     /**
      * Bad Request
      */
     400: ProblemDetails;
 };
 
-export type PostOauthAppsError = PostOauthAppsErrors[keyof PostOauthAppsErrors];
+export type PostUserOauthAppError = PostUserOauthAppErrors[keyof PostUserOauthAppErrors];
 
-export type PostOauthAppsResponses = {
+export type PostUserOauthAppResponses = {
     /**
      * Created
      */
     201: CreateAppResponse;
 };
 
-export type PostOauthAppsResponse = PostOauthAppsResponses[keyof PostOauthAppsResponses];
+export type PostUserOauthAppResponse = PostUserOauthAppResponses[keyof PostUserOauthAppResponses];
 
-export type DeleteOauthAppsByIdData = {
+export type DeleteUserOauthAppByIdData = {
     body?: never;
     path: {
         id: string;
     };
     query?: never;
-    url: '/oauth/apps/{id}';
+    url: '/user/oauth/app/{id}';
 };
 
-export type DeleteOauthAppsByIdErrors = {
+export type DeleteUserOauthAppByIdErrors = {
     /**
      * Forbidden
      */
@@ -1358,25 +1400,25 @@ export type DeleteOauthAppsByIdErrors = {
     404: ProblemDetails;
 };
 
-export type DeleteOauthAppsByIdError = DeleteOauthAppsByIdErrors[keyof DeleteOauthAppsByIdErrors];
+export type DeleteUserOauthAppByIdError = DeleteUserOauthAppByIdErrors[keyof DeleteUserOauthAppByIdErrors];
 
-export type DeleteOauthAppsByIdResponses = {
+export type DeleteUserOauthAppByIdResponses = {
     /**
      * No Content
      */
     204: unknown;
 };
 
-export type GetOauthAppsByIdData = {
+export type GetUserOauthAppByIdData = {
     body?: never;
     path: {
         id: string;
     };
     query?: never;
-    url: '/oauth/apps/{id}';
+    url: '/user/oauth/app/{id}';
 };
 
-export type GetOauthAppsByIdErrors = {
+export type GetUserOauthAppByIdErrors = {
     /**
      * Forbidden
      */
@@ -1387,27 +1429,27 @@ export type GetOauthAppsByIdErrors = {
     404: ProblemDetails;
 };
 
-export type GetOauthAppsByIdError = GetOauthAppsByIdErrors[keyof GetOauthAppsByIdErrors];
+export type GetUserOauthAppByIdError = GetUserOauthAppByIdErrors[keyof GetUserOauthAppByIdErrors];
 
-export type GetOauthAppsByIdResponses = {
+export type GetUserOauthAppByIdResponses = {
     /**
      * OK
      */
     200: OAuthAppDetailResponse;
 };
 
-export type GetOauthAppsByIdResponse = GetOauthAppsByIdResponses[keyof GetOauthAppsByIdResponses];
+export type GetUserOauthAppByIdResponse = GetUserOauthAppByIdResponses[keyof GetUserOauthAppByIdResponses];
 
-export type PatchOauthAppsByIdData = {
+export type PatchUserOauthAppByIdData = {
     body: PatchAppRequest;
     path: {
         id: string;
     };
     query?: never;
-    url: '/oauth/apps/{id}';
+    url: '/user/oauth/app/{id}';
 };
 
-export type PatchOauthAppsByIdErrors = {
+export type PatchUserOauthAppByIdErrors = {
     /**
      * Bad Request
      */
@@ -1422,27 +1464,27 @@ export type PatchOauthAppsByIdErrors = {
     404: ProblemDetails;
 };
 
-export type PatchOauthAppsByIdError = PatchOauthAppsByIdErrors[keyof PatchOauthAppsByIdErrors];
+export type PatchUserOauthAppByIdError = PatchUserOauthAppByIdErrors[keyof PatchUserOauthAppByIdErrors];
 
-export type PatchOauthAppsByIdResponses = {
+export type PatchUserOauthAppByIdResponses = {
     /**
      * OK
      */
     200: OAuthAppResponse;
 };
 
-export type PatchOauthAppsByIdResponse = PatchOauthAppsByIdResponses[keyof PatchOauthAppsByIdResponses];
+export type PatchUserOauthAppByIdResponse = PatchUserOauthAppByIdResponses[keyof PatchUserOauthAppByIdResponses];
 
-export type PutOauthAppsByIdData = {
+export type PutUserOauthAppByIdData = {
     body: UpdateAppRequest;
     path: {
         id: string;
     };
     query?: never;
-    url: '/oauth/apps/{id}';
+    url: '/user/oauth/app/{id}';
 };
 
-export type PutOauthAppsByIdErrors = {
+export type PutUserOauthAppByIdErrors = {
     /**
      * Bad Request
      */
@@ -1457,27 +1499,27 @@ export type PutOauthAppsByIdErrors = {
     404: ProblemDetails;
 };
 
-export type PutOauthAppsByIdError = PutOauthAppsByIdErrors[keyof PutOauthAppsByIdErrors];
+export type PutUserOauthAppByIdError = PutUserOauthAppByIdErrors[keyof PutUserOauthAppByIdErrors];
 
-export type PutOauthAppsByIdResponses = {
+export type PutUserOauthAppByIdResponses = {
     /**
      * OK
      */
     200: OAuthAppResponse;
 };
 
-export type PutOauthAppsByIdResponse = PutOauthAppsByIdResponses[keyof PutOauthAppsByIdResponses];
+export type PutUserOauthAppByIdResponse = PutUserOauthAppByIdResponses[keyof PutUserOauthAppByIdResponses];
 
-export type PostOauthAppsByIdSecretData = {
+export type PostUserOauthAppByIdResetSecretData = {
     body?: never;
     path: {
         id: string;
     };
     query?: never;
-    url: '/oauth/apps/{id}/secret';
+    url: '/user/oauth/app/{id}/reset-secret';
 };
 
-export type PostOauthAppsByIdSecretErrors = {
+export type PostUserOauthAppByIdResetSecretErrors = {
     /**
      * Forbidden
      */
@@ -1488,43 +1530,43 @@ export type PostOauthAppsByIdSecretErrors = {
     404: ProblemDetails;
 };
 
-export type PostOauthAppsByIdSecretError = PostOauthAppsByIdSecretErrors[keyof PostOauthAppsByIdSecretErrors];
+export type PostUserOauthAppByIdResetSecretError = PostUserOauthAppByIdResetSecretErrors[keyof PostUserOauthAppByIdResetSecretErrors];
 
-export type PostOauthAppsByIdSecretResponses = {
+export type PostUserOauthAppByIdResetSecretResponses = {
     /**
      * OK
      */
     200: NewSecretResponse;
 };
 
-export type PostOauthAppsByIdSecretResponse = PostOauthAppsByIdSecretResponses[keyof PostOauthAppsByIdSecretResponses];
+export type PostUserOauthAppByIdResetSecretResponse = PostUserOauthAppByIdResetSecretResponses[keyof PostUserOauthAppByIdResetSecretResponses];
 
-export type GetOauthConsentsData = {
+export type GetUserOauthAuthorizationsData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/oauth/consents';
+    url: '/user/oauth/authorizations';
 };
 
-export type GetOauthConsentsResponses = {
+export type GetUserOauthAuthorizationsResponses = {
     /**
      * OK
      */
     200: Array<OAuthConsentResponse>;
 };
 
-export type GetOauthConsentsResponse = GetOauthConsentsResponses[keyof GetOauthConsentsResponses];
+export type GetUserOauthAuthorizationsResponse = GetUserOauthAuthorizationsResponses[keyof GetUserOauthAuthorizationsResponses];
 
-export type DeleteOauthConsentsByIdData = {
+export type DeleteUserOauthAuthorizationByClientIdData = {
     body?: never;
     path: {
-        id: string;
+        clientId: string;
     };
     query?: never;
-    url: '/oauth/consents/{id}';
+    url: '/user/oauth/authorization/{clientId}';
 };
 
-export type DeleteOauthConsentsByIdErrors = {
+export type DeleteUserOauthAuthorizationByClientIdErrors = {
     /**
      * Forbidden
      */
@@ -1535,41 +1577,41 @@ export type DeleteOauthConsentsByIdErrors = {
     404: ProblemDetails;
 };
 
-export type DeleteOauthConsentsByIdError = DeleteOauthConsentsByIdErrors[keyof DeleteOauthConsentsByIdErrors];
+export type DeleteUserOauthAuthorizationByClientIdError = DeleteUserOauthAuthorizationByClientIdErrors[keyof DeleteUserOauthAuthorizationByClientIdErrors];
 
-export type DeleteOauthConsentsByIdResponses = {
+export type DeleteUserOauthAuthorizationByClientIdResponses = {
     /**
      * No Content
      */
     204: unknown;
 };
 
-export type GetOauthConsentsTokensData = {
+export type GetUserOauthTokensData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/oauth/consents/tokens';
+    url: '/user/oauth/tokens';
 };
 
-export type GetOauthConsentsTokensResponses = {
+export type GetUserOauthTokensResponses = {
     /**
      * OK
      */
     200: Array<OAuthTokenResponse>;
 };
 
-export type GetOauthConsentsTokensResponse = GetOauthConsentsTokensResponses[keyof GetOauthConsentsTokensResponses];
+export type GetUserOauthTokensResponse = GetUserOauthTokensResponses[keyof GetUserOauthTokensResponses];
 
-export type DeleteOauthConsentsTokensByIdData = {
+export type DeleteUserOauthTokensByIdData = {
     body?: never;
     path: {
         id: string;
     };
     query?: never;
-    url: '/oauth/consents/tokens/{id}';
+    url: '/user/oauth/tokens/{id}';
 };
 
-export type DeleteOauthConsentsTokensByIdErrors = {
+export type DeleteUserOauthTokensByIdErrors = {
     /**
      * Forbidden
      */
@@ -1580,9 +1622,9 @@ export type DeleteOauthConsentsTokensByIdErrors = {
     404: ProblemDetails;
 };
 
-export type DeleteOauthConsentsTokensByIdError = DeleteOauthConsentsTokensByIdErrors[keyof DeleteOauthConsentsTokensByIdErrors];
+export type DeleteUserOauthTokensByIdError = DeleteUserOauthTokensByIdErrors[keyof DeleteUserOauthTokensByIdErrors];
 
-export type DeleteOauthConsentsTokensByIdResponses = {
+export type DeleteUserOauthTokensByIdResponses = {
     /**
      * No Content
      */

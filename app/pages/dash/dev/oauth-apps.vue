@@ -168,12 +168,12 @@ import CustomForm from "~/components/CustomForm.vue";
 import TextDisplayModal from "~/components/TextDisplayModal.vue";
 import type { FieldConfig } from "~/types/field-config";
 import {
-  getOauthApps,
-  postOauthApps,
-  deleteOauthAppsById,
-  patchOauthAppsById,
-  getOauthAppsById,
-  postOauthAppsByIdSecret,
+  getUserOauthApps,
+  postUserOauthApp,
+  deleteUserOauthAppById,
+  patchUserOauthAppById,
+  getUserOauthAppById,
+  postUserOauthAppByIdResetSecret,
 } from "~~/packages/api/src/sdk.gen";
 import type {
   CreateAppRequest,
@@ -250,19 +250,6 @@ const form: Ref<FieldConfig[]> = ref([
     ],
     icon: "i-lucide-laptop",
   },
-  {
-    key: "consentType",
-    label: "同意类型",
-    description: "用户授权同意的处理方式",
-    type: "select",
-    options: [
-      { label: "显式 (Explicit) - 用户需要明确同意", value: "explicit" },
-      { label: "隐式 (Implicit) - 自动同意", value: "implicit" },
-      { label: "外部 (External) - 外部处理", value: "external" },
-      { label: "系统 (Systematic) - 系统处理", value: "systematic" },
-    ],
-    icon: "i-lucide-check-circle",
-  },
 ]);
 
 const formState = ref({
@@ -271,13 +258,12 @@ const formState = ref({
   redirectUri: [""] as string[],
   clientType: "confidential" as string,
   applicationType: "web" as string,
-  consentType: "explicit" as string,
 });
 
 const refresh = async () => {
   pending.value = true;
   try {
-    const response = await getOauthApps();
+    const response = await getUserOauthApps();
     if (!response.error) {
       apps.value = response.data;
     }
@@ -315,12 +301,11 @@ const openForm = async (editMode: boolean, appId?: string) => {
       redirectUri: [""],
       clientType: "confidential",
       applicationType: "web",
-      consentType: "explicit",
     };
   } else if (appId) {
     // 获取应用详情用于编辑
     try {
-      const response = await getOauthAppsById({
+      const response = await getUserOauthAppById({
         path: { id: appId },
       });
       if (!response.error && response.data) {
@@ -331,7 +316,6 @@ const openForm = async (editMode: boolean, appId?: string) => {
           redirectUri: appData.redirectUris || [""],
           clientType: appData.clientType || "confidential",
           applicationType: appData.applicationType || "web",
-          consentType: appData.consentType || "explicit",
         };
       }
     } catch (error) {
@@ -358,10 +342,9 @@ const handleFormSubmit = async (data: Record<string, any>) => {
           formState.value.redirectUri.filter((u: string) => u.trim()) || [],
         clientType: data.clientType || "confidential",
         applicationType: data.applicationType || "web",
-        consentType: data.consentType || "explicit",
       };
 
-      const response = await postOauthApps({
+      const response = await postUserOauthApp({
         body: requestBody,
       });
 
@@ -385,10 +368,9 @@ const handleFormSubmit = async (data: Record<string, any>) => {
           formState.value.redirectUri.filter((u: string) => u.trim()) || [],
         clientType: data.clientType || undefined,
         applicationType: data.applicationType || undefined,
-        consentType: data.consentType || undefined,
       };
 
-      const response = await patchOauthAppsById({
+      const response = await patchUserOauthAppById({
         path: { id: editingAppId.value! },
         body: requestBody,
       });
@@ -409,7 +391,6 @@ const handleFormSubmit = async (data: Record<string, any>) => {
       redirectUri: [""],
       clientType: "confidential",
       applicationType: "web",
-      consentType: "explicit",
     };
     editingAppId.value = null;
 
@@ -424,7 +405,7 @@ const handleFormSubmit = async (data: Record<string, any>) => {
 
 async function deleteApp(id: string) {
   try {
-    await deleteOauthAppsById({
+    await deleteUserOauthAppById({
       path: { id },
     });
 
@@ -445,7 +426,7 @@ async function deleteApp(id: string) {
 
 async function resetSecret(id: string) {
   try {
-    const response = await postOauthAppsByIdSecret({
+    const response = await postUserOauthAppByIdResetSecret({
       path: { id },
     });
 

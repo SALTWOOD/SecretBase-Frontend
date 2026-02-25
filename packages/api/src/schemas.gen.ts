@@ -1710,6 +1710,182 @@ export const NewSecretResponseSchema = {
     }
 } as const;
 
+export const OAuth2ApproveRequestSchema = {
+    required: [
+        'clientId',
+        'redirectUri'
+    ],
+    type: 'object',
+    properties: {
+        clientId: {
+            type: 'string'
+        },
+        redirectUri: {
+            type: 'string'
+        },
+        scope: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        approved: {
+            type: 'boolean'
+        },
+        state: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        codeChallenge: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        codeChallengeMethod: {
+            type: [
+                'null',
+                'string'
+            ]
+        }
+    }
+} as const;
+
+export const OAuth2ApproveResultResponseSchema = {
+    type: 'object',
+    properties: {
+        success: {
+            type: 'boolean'
+        },
+        redirectUrl: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        error: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        errorDescription: {
+            type: [
+                'null',
+                'string'
+            ]
+        }
+    }
+} as const;
+
+export const OAuth2AuthorizeResponseSchema = {
+    type: 'object',
+    properties: {
+        clientId: {
+            type: 'string'
+        },
+        appName: {
+            type: 'string'
+        },
+        description: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        homepage: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        redirectUri: {
+            type: 'string'
+        },
+        scopes: {
+            type: 'array',
+            items: {
+                type: 'string'
+            }
+        },
+        scopeDescriptions: {
+            type: 'object',
+            additionalProperties: {
+                type: 'string'
+            }
+        },
+        state: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        userId: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        appCreator: {
+            type: [
+                'null',
+                'string'
+            ]
+        }
+    }
+} as const;
+
+export const OAuth2ErrorResponseSchema = {
+    type: 'object',
+    properties: {
+        error: {
+            type: 'string'
+        },
+        errorDescription: {
+            type: [
+                'null',
+                'string'
+            ]
+        }
+    }
+} as const;
+
+export const OAuth2TokenResponseSchema = {
+    type: 'object',
+    properties: {
+        accessToken: {
+            type: 'string'
+        },
+        tokenType: {
+            type: 'string'
+        },
+        expiresIn: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        refreshToken: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        scope: {
+            type: [
+                'null',
+                'string'
+            ]
+        }
+    }
+} as const;
+
 export const OAuthAppDetailResponseSchema = {
     type: 'object',
     properties: {
@@ -1837,45 +2013,6 @@ export const OidSchema = {
             ]
         },
         friendlyName: {
-            type: [
-                'null',
-                'string'
-            ]
-        }
-    }
-} as const;
-
-export const OpenIddictTokenResponseSchema = {
-    required: [
-        'access_token',
-        'token_type',
-        'expires_in',
-        'id_token',
-        'refresh_token'
-    ],
-    type: 'object',
-    properties: {
-        access_token: {
-            type: 'string'
-        },
-        token_type: {
-            type: 'string'
-        },
-        expires_in: {
-            pattern: '^-?(?:0|[1-9]\\d*)$',
-            type: [
-                'integer',
-                'string'
-            ],
-            format: 'int32'
-        },
-        id_token: {
-            type: [
-                'null',
-                'string'
-            ]
-        },
-        refresh_token: {
             type: [
                 'null',
                 'string'
