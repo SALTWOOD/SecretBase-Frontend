@@ -16,6 +16,7 @@ const toast = useToast();
 const articleData = ref();
 
 const refresh = async () => {
+  if (articleId === "create") return;
   const response = await getArticlesById({ path: { id: articleId } });
   if (!response.error && response.data) {
     articleData.value = response.data;
