@@ -37,15 +37,15 @@ const handleSave = async () => {
   try {
     let response;
     if (isEdit) {
-      response = await postArticles({
+      response = await putArticlesById({
+        path: { id: articleId },
         body: {
           title: formState.title,
           content: formState.content,
         },
       });
     } else {
-      response = await putArticlesById({
-        path: { id: articleId },
+      response = await postArticles({
         body: {
           title: formState.title,
           content: formState.content,
@@ -64,6 +64,13 @@ const handleSave = async () => {
     isSaving.value = false;
   }
 };
+
+watch(articleData, (newData) => {
+  if (newData) {
+    formState.title = newData.title || "";
+    formState.content = newData.content || "";
+  }
+}, { immediate: true });
 
 onMounted(refresh);
 </script>
