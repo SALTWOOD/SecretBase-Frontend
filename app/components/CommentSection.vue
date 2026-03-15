@@ -161,7 +161,7 @@ onMounted(loadComments);
 
 <template>
   <div class="comment-section">
-    <div class="border-t border-gray-200 dark:border-gray-800 pt-6 mt-6">
+    <div class="border-gray-200 dark:border-gray-800">
       <h2 class="text-xl font-bold mb-4">
         评论
         <span
