@@ -28,3 +28,9 @@ onMounted(async () => {
   }
 });
 </script>
+
+<style>
+html {
+  scroll-behavior: smooth;
+}
+</style>
