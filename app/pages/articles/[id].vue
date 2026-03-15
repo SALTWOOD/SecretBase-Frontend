@@ -65,7 +65,7 @@ const handleCommentCountChange = (count: number) => {
     />
 
     <div v-else-if="article" class="flex flex-col gap-8">
-      <UCard class="article-card shadow-xl overflow-visible article-container">
+      <UCard class="article-card shadow-xl overflow-visible">
         <article class="grid grid-cols-1 lg:grid-cols-[1fr_260px] gap-12">
           <div class="min-w-0">
             <header class="mb-10">
@@ -160,14 +160,14 @@ const handleCommentCountChange = (count: number) => {
 <style scoped>
 @reference 'tailwindcss';
 
-.article-container {
+.article-card {
   @apply p-4 md:p-8 rounded-xl shadow-xl transition-colors duration-300;
   background-color: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-.dark .article-container {
+.dark .article-card {
   background-color: rgba(23, 23, 23, 0.7);
   border: 1px solid rgba(255, 255, 255, 0.05);
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
