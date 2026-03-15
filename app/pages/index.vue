@@ -3,23 +3,27 @@
  * @file Index page for Secret Base
  * @description List articles with a clean layout
  */
-import { getArticles, getSettingsHome, getSettingsSeo, } from "@secret-base/api/src/sdk.gen";
+import {
+  getArticles,
+  getSettingsHome,
+  getSettingsSeo,
+} from "@secret-base/api/src/sdk.gen";
 
 definePageMeta({
-  layout: 'background'
+  layout: "background",
 });
 
-const {data: seoMeta, pending: seoPending} = await useAsyncData(
+const { data: seoMeta, pending: seoPending } = await useAsyncData(
   "site-seo",
   async () => (await getSettingsSeo()).data,
 );
 
-const {data: homeSettings, pending: homePending} = await useAsyncData(
+const { data: homeSettings, pending: homePending } = await useAsyncData(
   "home-settings",
   async () => (await getSettingsHome()).data,
 );
 
-const {data: articles, pending: articlesPending} = await useAsyncData(
+const { data: articles, pending: articlesPending } = await useAsyncData(
   "articles-list",
   async () => (await getArticles()).data,
 );
@@ -63,10 +67,7 @@ useSeoMeta({
 
 <template>
   <main class="min-h-screen">
-    <div
-      v-if="showBanner && isFullScreenMode"
-      class="banner-full"
-    >
+    <div v-if="showBanner && isFullScreenMode" class="banner-full">
       <h1
         class="text-5xl md:text-7xl font-extrabold tracking-tight text-highlighted mb-6"
       >
@@ -111,7 +112,7 @@ useSeoMeta({
           v-if="isLoading"
           class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
         >
-          <USkeleton v-for="i in 6" :key="i" class="h-64 w-full rounded-2xl"/>
+          <USkeleton v-for="i in 6" :key="i" class="h-64 w-full rounded-2xl" />
         </div>
 
         <template v-else>
@@ -132,9 +133,8 @@ useSeoMeta({
                 >
                   {{ article.isPublished ? "已发布" : "草稿" }}
                 </UBadge>
-                <time v-if="article.createdAt" class="text-xs text-muted">{{
-                    formatDate(article.createdAt)
-                  }}
+                <time v-if="article.createdAt" class="text-xs text-muted"
+                  >{{ formatDate(article.createdAt) }}
                 </time>
               </div>
 
@@ -143,7 +143,7 @@ useSeoMeta({
               >
                 <NuxtLink :to="`/articles/${article.id}`">
                   {{ article.title }}
-                  <span class="absolute inset-0"/>
+                  <span class="absolute inset-0" />
                 </NuxtLink>
               </h2>
 
@@ -178,7 +178,12 @@ useSeoMeta({
 }
 
 .dark .banner-full {
-  background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.1) 50%, rgba(0, 0, 0, 0.3));
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(0, 0, 0, 0.1) 50%,
+    rgba(0, 0, 0, 0.3)
+  );
 }
 
 .article-card {

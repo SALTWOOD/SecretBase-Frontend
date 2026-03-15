@@ -2,14 +2,14 @@
 import { ref, onMounted, computed } from "vue";
 import { MdPreview, MdCatalog } from "md-editor-v3";
 import { getArticlesById } from "~~/packages/api/src/sdk.gen";
-import 'md-editor-v3/lib/preview.css';
+import "md-editor-v3/lib/preview.css";
 
 const route = useRoute();
 const articleId = route.params.id as string;
 
 definePageMeta({
-  layout: 'background'
-})
+  layout: "background",
+});
 
 const scrollElement = ref<HTMLElement | null>(null);
 onMounted(() => {
@@ -17,12 +17,9 @@ onMounted(() => {
 });
 
 const colorMode = useColorMode();
-const theme = computed(() => (colorMode.value === 'dark' ? 'dark' : 'light'));
+const theme = computed(() => (colorMode.value === "dark" ? "dark" : "light"));
 
-const {
-  data: article,
-  pending: isLoading,
-} = await useAsyncData(
+const { data: article, pending: isLoading } = await useAsyncData(
   `article-${articleId}`,
   async () => (await getArticlesById({ path: { id: articleId } })).data,
 );
@@ -60,7 +57,10 @@ const handleCommentCountChange = (count: number) => {
       title="Article Not Found"
     />
 
-    <article v-else-if="article" class="grid grid-cols-1 lg:grid-cols-[1fr_200px] gap-8 article-container">
+    <article
+      v-else-if="article"
+      class="grid grid-cols-1 lg:grid-cols-[1fr_200px] gap-8 article-container"
+    >
       <div>
         <header class="mb-8">
           <UBreadcrumb
@@ -103,7 +103,9 @@ const handleCommentCountChange = (count: number) => {
 
       <aside class="hidden lg:block">
         <div class="sticky top-24">
-          <p class="text-sm font-semibold mb-4 text-gray-900 dark:text-white">目录</p>
+          <p class="text-sm font-semibold mb-4 text-gray-900 dark:text-white">
+            目录
+          </p>
           <ClientOnly>
             <MdCatalog
               editorId="article-content"

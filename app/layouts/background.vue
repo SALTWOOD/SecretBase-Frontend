@@ -26,13 +26,15 @@ const backgroundStyle = computed(() => {
   const blur = homeSettings.value?.backgroundBlur || 0;
   return {
     backdropFilter: `blur(${blur}px)`,
-    minHeight: '100vh'
+    minHeight: "100vh",
   };
 });
 </script>
 
 <template>
-  <div class="min-h-screen bg-default bg-grid-slate selection:bg-(--ui-primary)/30">
+  <div
+    class="min-h-screen bg-default bg-grid-slate selection:bg-(--ui-primary)/30"
+  >
     <AppHeader />
     <main :style="mainStyle" class="transition-[filter] duration-700">
       <div :style="backgroundStyle">
