@@ -44,9 +44,15 @@ const handleCommentCountChange = (count: number) => {
 
 <template>
   <UContainer class="py-10 relative">
-    <div v-if="isLoading" class="space-y-4">
-      <USkeleton class="h-10 w-3/4" />
-      <USkeleton class="h-64 w-full" />
+    <div v-if="isLoading" class="space-y-6">
+      <USkeleton class="h-12 w-3/4 rounded-lg" />
+      <UCard class="article-card shadow-xl">
+        <div class="space-y-4">
+          <USkeleton class="h-4 w-full" />
+          <USkeleton class="h-4 w-5/6" />
+          <USkeleton class="h-64 w-full" />
+        </div>
+      </UCard>
     </div>
 
     <UAlert
@@ -55,69 +61,99 @@ const handleCommentCountChange = (count: number) => {
       color="error"
       variant="subtle"
       title="Article Not Found"
+      description="The article you are looking for does not exist or has been removed."
     />
 
-    <article
-      v-else-if="article"
-      class="grid grid-cols-1 lg:grid-cols-[1fr_200px] gap-8 article-container"
-    >
-      <div>
-        <header class="mb-8">
-          <UBreadcrumb
-            :items="[
-              { label: 'Home', to: '/' },
-              { label: 'Articles', to: '/articles' },
-              { label: article.title || '' },
-            ]"
-            class="mb-4"
-          />
+    <div v-else-if="article" class="flex flex-col gap-8">
+      <UCard class="article-card shadow-xl overflow-visible article-container">
+        <article class="grid grid-cols-1 lg:grid-cols-[1fr_260px] gap-12">
+          <div class="min-w-0">
+            <header class="mb-10">
+              <UBreadcrumb
+                :items="[
+                  { label: 'Home', to: '/' },
+                  { label: 'Articles', to: '/articles' },
+                  { label: article.title || 'Untitled' },
+                ]"
+                class="mb-6"
+              />
 
-          <h1 class="text-4xl font-bold tracking-tight mb-4">
-            {{ article.title }}
-          </h1>
+              <h1
+                class="text-4xl md:text-5xl font-extrabold tracking-tight mb-6 text-gray-900 dark:text-white"
+              >
+                {{ article.title }}
+              </h1>
 
-          <div class="flex items-center gap-4 text-sm text-gray-500">
-            <span>{{ article.authorUsername }}</span>
-            <time>{{ formatDate(article.createdAt) }}</time>
+              <div
+                class="flex items-center gap-6 text-sm text-gray-500 dark:text-gray-400"
+              >
+                <div class="flex items-center gap-2">
+                  <UAvatar :alt="article.authorUsername" size="xs" />
+                  <span class="font-medium">{{ article.authorUsername }}</span>
+                </div>
+                <div class="flex items-center gap-1">
+                  <UIcon name="i-lucide-calendar" />
+                  <time>{{ formatDate(article.createdAt) }}</time>
+                </div>
+              </div>
+            </header>
+
+            <div class="prose prose-primary dark:prose-invert max-w-none">
+              <ClientOnly>
+                <MdPreview
+                  id="article-content"
+                  :modelValue="article.content"
+                  :theme="theme"
+                  class="custom-md-preview"
+                />
+              </ClientOnly>
+            </div>
           </div>
-        </header>
 
-        <div class="prose prose-primary dark:prose-invert max-w-none">
-          <ClientOnly>
-            <MdPreview
-              id="article-content"
-              :modelValue="article.content"
-              :theme="theme"
-              class="custom-md-preview"
+          <aside class="hidden lg:block">
+            <div
+              class="sticky top-24 pl-8 border-l border-gray-100 dark:border-gray-800"
+            >
+              <div
+                class="flex items-center gap-2 mb-4 text-gray-900 dark:text-white"
+              >
+                <UIcon name="i-lucide-list-tree" class="w-4 h-4" />
+                <span class="text-sm font-bold uppercase tracking-widest"
+                  >Catalog</span
+                >
+              </div>
+
+              <ClientOnly>
+                <MdCatalog
+                  editorId="article-content"
+                  :scrollElement="scrollElement!"
+                  class="text-sm custom-catalog"
+                  :offsetTop="100"
+                  :scrollElementOffsetTop="80"
+                />
+              </ClientOnly>
+            </div>
+          </aside>
+        </article>
+      </UCard>
+
+      <UCard class="article-card shadow-xl">
+        <template #header>
+          <div class="flex items-center gap-2">
+            <UIcon
+              name="i-lucide-message-square"
+              class="w-5 h-5 text-primary"
             />
-          </ClientOnly>
-        </div>
+            <h3 class="text-lg font-semibold">Discussion</h3>
+          </div>
+        </template>
 
-        <footer class="space-y-8">
-          <CommentSection
-            :article-id="articleId"
-            @comment-count-change="handleCommentCountChange"
-          />
-        </footer>
-      </div>
-
-      <aside class="hidden lg:block">
-        <div class="sticky top-24">
-          <p class="text-sm font-semibold mb-4 text-gray-900 dark:text-white">
-            目录
-          </p>
-          <ClientOnly>
-            <MdCatalog
-              editorId="article-content"
-              :scrollElement="scrollElement!"
-              class="text-sm"
-              :offsetTop="100"
-              :scrollElementOffsetTop="80"
-            />
-          </ClientOnly>
-        </div>
-      </aside>
-    </article>
+        <CommentSection
+          :article-id="articleId"
+          @comment-count-change="handleCommentCountChange"
+        />
+      </UCard>
+    </div>
   </UContainer>
 </template>
 
@@ -125,7 +161,7 @@ const handleCommentCountChange = (count: number) => {
 @reference 'tailwindcss';
 
 .article-container {
-  @apply p-8 md:p-12 rounded-xl shadow-xl transition-colors duration-300;
+  @apply p-4 md:p-8 rounded-xl shadow-xl transition-colors duration-300;
   background-color: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.3);

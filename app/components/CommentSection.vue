@@ -274,10 +274,6 @@ onMounted(loadComments);
 </template>
 
 <style scoped>
-.comment-section {
-  max-width: 768px;
-}
-
 .line-clamp-1 {
   display: -webkit-box;
   -webkit-line-clamp: 1;
