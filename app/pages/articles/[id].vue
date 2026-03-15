@@ -1,14 +1,23 @@
 <script setup lang="ts">
-import type { ArticleResponse } from "~~/packages/api/src/types.gen";
+import { ref, onMounted, computed } from "vue";
+import { MdPreview, MdCatalog } from "md-editor-v3";
 import { getArticlesById } from "~~/packages/api/src/sdk.gen";
+import 'md-editor-v3/lib/preview.css';
 
 const route = useRoute();
 const articleId = route.params.id as string;
 
+const scrollElement = ref<HTMLElement | null>(null);
+onMounted(() => {
+  scrollElement.value = document.documentElement;
+});
+
+const colorMode = useColorMode();
+const theme = computed(() => (colorMode.value === 'dark' ? 'dark' : 'light'));
+
 const {
   data: article,
   pending: isLoading,
-  refresh,
 } = await useAsyncData(
   `article-${articleId}`,
   async () => (await getArticlesById({ path: { id: articleId } })).data,
@@ -18,13 +27,12 @@ useSeoMeta({
   title: article.value?.title,
 });
 
-const formatDate = (date: any, full = false) => {
+const formatDate = (date: any) => {
   if (!date) return "";
   return new Date(date).toLocaleDateString("zh-CN", {
     year: "numeric",
     month: "long",
     day: "numeric",
-    ...(full ? { hour: "2-digit", minute: "2-digit" } : {}),
   });
 };
 
@@ -34,10 +42,9 @@ const handleCommentCountChange = (count: number) => {
 </script>
 
 <template>
-  <UContainer class="py-10 max-w-4xl">
+  <UContainer class="py-10 relative">
     <div v-if="isLoading" class="space-y-4">
       <USkeleton class="h-10 w-3/4" />
-      <USkeleton class="h-4 w-1/4" />
       <USkeleton class="h-64 w-full" />
     </div>
 
@@ -46,85 +53,78 @@ const handleCommentCountChange = (count: number) => {
       icon="i-lucide-circle-alert"
       color="error"
       variant="subtle"
-      title="文章未找到"
-      description="您寻找的文章可能已被移动或删除。"
+      title="Article Not Found"
     />
 
-    <article v-else-if="article">
-      <header class="mb-8">
-        <UBreadcrumb
-          :items="[
-            { label: '首页', to: '/' },
-            { label: '文章', to: '/articles' },
-            { label: article.title || '' },
-          ]"
-          class="mb-4"
-        />
-
-        <h1
-          class="text-4xl font-bold tracking-tight text-gray-900 dark:text-white mb-4"
-        >
-          {{ article.title }}
-        </h1>
-
-        <div
-          class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400"
-        >
-          <UAvatar
-            :src="undefined"
-            :alt="article.authorUsername ?? undefined"
-            size="sm"
+    <article v-else-if="article" class="grid grid-cols-1 lg:grid-cols-[1fr_200px] gap-8">
+      <div>
+        <header class="mb-8">
+          <UBreadcrumb
+            :items="[
+              { label: 'Home', to: '/' },
+              { label: 'Articles', to: '/articles' },
+              { label: article.title || '' },
+            ]"
+            class="mb-4"
           />
-          <span>{{ article.authorUsername }}</span>
-          <time :datetime="article.createdAt?.toString()">{{
-            formatDate(article.createdAt)
-          }}</time>
-          <UBadge
-            variant="soft"
-            color="primary"
-            v-if="article.isPublished === false"
-          >
-            草稿
-          </UBadge>
-        </div>
-      </header>
 
-      <!-- Markdown 内容渲染 -->
-      <div class="prose prose-primary dark:prose-invert max-w-none">
-        <MDC :value="article.content || ''" />
+          <h1 class="text-4xl font-bold tracking-tight mb-4">
+            {{ article.title }}
+          </h1>
+
+          <div class="flex items-center gap-4 text-sm text-gray-500">
+            <span>{{ article.authorUsername }}</span>
+            <time>{{ formatDate(article.createdAt) }}</time>
+          </div>
+        </header>
+
+        <div class="prose prose-primary dark:prose-invert max-w-none">
+          <ClientOnly>
+            <MdPreview
+              id="article-content"
+              :modelValue="article.content"
+              :theme="theme"
+              class="custom-md-preview"
+            />
+          </ClientOnly>
+        </div>
+
+        <footer class="space-y-8">
+          <CommentSection
+            :article-id="articleId"
+            @comment-count-change="handleCommentCountChange"
+          />
+        </footer>
       </div>
 
-      <UDivider class="my-10" />
-
-      <footer class="space-y-8">
-        <div class="flex justify-between items-center">
-          <div class="flex gap-2">
-            <UButton icon="i-lucide-thumbs-up" variant="ghost" color="neutral">
-              {{ article.commentCount ?? 0 }}
-            </UButton>
-            <UButton
-              icon="i-lucide-message-square"
-              variant="ghost"
-              color="neutral"
-            >
-              {{ article.commentCount ?? 0 }}
-            </UButton>
-          </div>
-          <UButton icon="i-lucide-share-2" variant="ghost" color="neutral" />
+      <aside class="hidden lg:block">
+        <div class="sticky top-24">
+          <p class="text-sm font-semibold mb-4 text-gray-900 dark:text-white">目录</p>
+          <ClientOnly>
+            <MdCatalog
+              editorId="article-content"
+              :scrollElement="scrollElement!"
+              class="text-sm"
+            />
+          </ClientOnly>
         </div>
-
-        <!-- 评论组件 -->
-        <CommentSection
-          :article-id="articleId"
-          @comment-count-change="handleCommentCountChange"
-        />
-      </footer>
+      </aside>
     </article>
   </UContainer>
 </template>
 
 <style scoped>
-.prose {
-  line-height: 1.75;
+:deep(.custom-md-preview) {
+  background-color: transparent;
+  --md-bk-color: transparent;
+}
+
+:deep(.md-editor-catalog-link span:hover) {
+  color: var(--ui-primary);
+}
+
+:deep(.md-editor-catalog-active > span) {
+  color: var(--ui-primary);
+  font-weight: 600;
 }
 </style>
