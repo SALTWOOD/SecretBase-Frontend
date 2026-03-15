@@ -105,6 +105,8 @@ const handleCommentCountChange = (count: number) => {
               editorId="article-content"
               :scrollElement="scrollElement!"
               class="text-sm"
+              :offsetTop="100"
+              :scrollElementOffsetTop="80"
             />
           </ClientOnly>
         </div>
