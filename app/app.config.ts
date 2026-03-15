@@ -26,6 +26,11 @@ export default defineAppConfig({
       slots: {
         root: 'rounded-lg bg-(--ui-bg-elevated)/50 border-(--ui-border) focus-within:ring-2 focus-within:ring-(--ui-primary)'
       }
+    },
+    textarea: {
+      slots: {
+        root: 'w-full'
+      }
     }
   }
 })

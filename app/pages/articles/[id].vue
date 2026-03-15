@@ -7,6 +7,10 @@ import 'md-editor-v3/lib/preview.css';
 const route = useRoute();
 const articleId = route.params.id as string;
 
+definePageMeta({
+  layout: 'background'
+})
+
 const scrollElement = ref<HTMLElement | null>(null);
 onMounted(() => {
   scrollElement.value = document.documentElement;
@@ -56,7 +60,7 @@ const handleCommentCountChange = (count: number) => {
       title="Article Not Found"
     />
 
-    <article v-else-if="article" class="grid grid-cols-1 lg:grid-cols-[1fr_200px] gap-8">
+    <article v-else-if="article" class="grid grid-cols-1 lg:grid-cols-[1fr_200px] gap-8 article-container">
       <div>
         <header class="mb-8">
           <UBreadcrumb
@@ -116,6 +120,21 @@ const handleCommentCountChange = (count: number) => {
 </template>
 
 <style scoped>
+@reference 'tailwindcss';
+
+.article-container {
+  @apply p-8 md:p-12 rounded-xl shadow-xl transition-colors duration-300;
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.dark .article-container {
+  background-color: rgba(23, 23, 23, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
 :deep(.custom-md-preview) {
   background-color: transparent;
   --md-bk-color: transparent;

@@ -177,7 +177,7 @@ onMounted(loadComments);
         <UTextarea
           v-model="newComment"
           placeholder="写下你的评论..."
-          :rows="3"
+          :rows="5"
           class="mb-3"
         />
         <div class="flex justify-end">
