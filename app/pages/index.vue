@@ -5,7 +5,7 @@
  */
 import {
   getArticles,
-  getSettingsHome,
+  getSettingsHomeBackground, getSettingsHomeBanner,
   getSettingsSeo,
 } from "@secret-base/api/src/sdk.gen";
 
@@ -18,9 +18,9 @@ const { data: seoMeta, pending: seoPending } = await useAsyncData(
   async () => (await getSettingsSeo()).data,
 );
 
-const { data: homeSettings, pending: homePending } = await useAsyncData(
-  "home-settings",
-  async () => (await getSettingsHome()).data,
+const { data: bannerSettings, pending: bannerPending } = await useAsyncData(
+  "home-banner",
+  async () => (await getSettingsHomeBanner()).data,
 );
 
 const { data: articles, pending: articlesPending } = await useAsyncData(
@@ -29,14 +29,14 @@ const { data: articles, pending: articlesPending } = await useAsyncData(
 );
 
 const isLoading = computed(
-  () => seoPending.value || homePending.value || articlesPending.value,
+  () => seoPending.value || bannerPending.value || articlesPending.value,
 );
 
 // Banner display logic
 const bannerDisplayMode = computed(
-  () => homeSettings.value?.bannerDisplayMode || "full",
+  () => bannerSettings.value?.displayMode || "full",
 );
-const bannerContent = computed(() => homeSettings.value?.bannerContent || "");
+const bannerContent = computed(() => bannerSettings.value?.content || "");
 const showBanner = computed(() => bannerDisplayMode.value !== "hidden");
 const isFullScreenMode = computed(() => bannerDisplayMode.value === "screen");
 const isMiniMode = computed(() => bannerDisplayMode.value === "mini");

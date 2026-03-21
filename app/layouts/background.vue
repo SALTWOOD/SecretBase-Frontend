@@ -2,15 +2,15 @@
 /**
  * @description 带有自定义动态背景的布局
  */
-import { getSettingsHome } from "@secret-base/api/src/sdk.gen";
+import { getSettingsHomeBackground } from "@secret-base/api/src/sdk.gen";
 
 const { data: homeSettings } = await useAsyncData(
   "home-settings-layout",
-  async () => (await getSettingsHome()).data,
+  async () => (await getSettingsHomeBackground()).data,
 );
 
 const mainStyle = computed(() => {
-  const image = homeSettings.value?.backgroundUrl;
+  const image = homeSettings.value?.url;
   if (!image) return {}; // 如果没图，就不应用样式
 
   return {
@@ -23,7 +23,7 @@ const mainStyle = computed(() => {
 });
 
 const backgroundStyle = computed(() => {
-  const blur = homeSettings.value?.backgroundBlur || 0;
+  const blur = homeSettings.value?.blur || 0;
   return {
     backdropFilter: `blur(${blur}px)`,
     minHeight: "100vh",

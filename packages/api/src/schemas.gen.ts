@@ -1145,13 +1145,13 @@ export const Fido2UserSchema = {
     }
 } as const;
 
-export const HomeAppearanceResponseSchema = {
+export const HomeBackgroundResponseSchema = {
     type: 'object',
     properties: {
-        backgroundUrl: {
+        url: {
             type: 'string'
         },
-        backgroundBlur: {
+        blur: {
             pattern: '^-?(?:0|[1-9]\\d*)$',
             type: [
                 'integer',
@@ -1159,18 +1159,24 @@ export const HomeAppearanceResponseSchema = {
             ],
             format: 'int32'
         },
-        backgroundOpacity: {
-            pattern: '^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$',
+        opacity: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
             type: [
-                'number',
+                'integer',
                 'string'
             ],
-            format: 'double'
-        },
-        bannerContent: {
+            format: 'int32'
+        }
+    }
+} as const;
+
+export const HomeBannerResponseSchema = {
+    type: 'object',
+    properties: {
+        content: {
             type: 'string'
         },
-        bannerDisplayMode: {
+        displayMode: {
             type: 'string'
         }
     }
@@ -2291,10 +2297,10 @@ export const SiteInitResponseSchema = {
     type: 'object',
     properties: {
         seo: {
-            $ref: '#/components/schemas/SeoMetaResponse'
+            type: 'object'
         },
         home: {
-            $ref: '#/components/schemas/HomeAppearanceResponse'
+            type: 'object'
         },
         registrationEnabled: {
             type: 'boolean'

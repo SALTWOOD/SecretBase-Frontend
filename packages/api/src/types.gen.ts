@@ -281,12 +281,15 @@ export type Fido2User = {
     displayName?: null | string;
 };
 
-export type HomeAppearanceResponse = {
-    backgroundUrl?: string;
-    backgroundBlur?: number | string;
-    backgroundOpacity?: number | string;
-    bannerContent?: string;
-    bannerDisplayMode?: string;
+export type HomeBackgroundResponse = {
+    url?: string;
+    blur?: number | string;
+    opacity?: number | string;
+};
+
+export type HomeBannerResponse = {
+    content?: string;
+    displayMode?: string;
 };
 
 export type HostString = {
@@ -604,8 +607,12 @@ export type SeoMetaResponse = {
 };
 
 export type SiteInitResponse = {
-    seo?: SeoMetaResponse;
-    home?: HomeAppearanceResponse;
+    seo?: {
+        [key: string]: unknown;
+    };
+    home?: {
+        [key: string]: unknown;
+    };
     registrationEnabled?: boolean;
 };
 
@@ -1121,21 +1128,37 @@ export type GetSettingsSeoResponses = {
 
 export type GetSettingsSeoResponse = GetSettingsSeoResponses[keyof GetSettingsSeoResponses];
 
-export type GetSettingsHomeData = {
+export type GetSettingsHomeBackgroundData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/settings/home';
+    url: '/settings/home/background';
 };
 
-export type GetSettingsHomeResponses = {
+export type GetSettingsHomeBackgroundResponses = {
     /**
      * OK
      */
-    200: HomeAppearanceResponse;
+    200: HomeBackgroundResponse;
 };
 
-export type GetSettingsHomeResponse = GetSettingsHomeResponses[keyof GetSettingsHomeResponses];
+export type GetSettingsHomeBackgroundResponse = GetSettingsHomeBackgroundResponses[keyof GetSettingsHomeBackgroundResponses];
+
+export type GetSettingsHomeBannerData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/settings/home/banner';
+};
+
+export type GetSettingsHomeBannerResponses = {
+    /**
+     * OK
+     */
+    200: HomeBannerResponse;
+};
+
+export type GetSettingsHomeBannerResponse = GetSettingsHomeBannerResponses[keyof GetSettingsHomeBannerResponses];
 
 export type GetSettingsInitData = {
     body?: never;
