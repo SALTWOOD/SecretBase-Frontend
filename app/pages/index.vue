@@ -5,7 +5,8 @@
  */
 import {
   getArticles,
-  getSettingsHomeBackground, getSettingsHomeBanner,
+  getSettingsHomeBackground,
+  getSettingsHomeBanner,
   getSettingsSeo,
 } from "@secret-base/api/src/sdk.gen";
 

@@ -3,21 +3,21 @@
  * Optimized Weierstrass Fractal Background
  * Engineering focus: Calculation caching & DOM efficiency.
  */
-import { ref, onMounted, onUnmounted } from 'vue';
-import { useResizeObserver } from '@vueuse/core'; // 推荐安装 @vueuse/core
+import { ref, onMounted, onUnmounted } from "vue";
+import { useResizeObserver } from "@vueuse/core"; // 推荐安装 @vueuse/core
 
 interface Props {
-  color?: string;     // 主色调 (rgb)
-  opacity?: number;   // 基础透明度
-  detail?: number;    // 采样精细度
-  speed?: number;     // 演化速度
+  color?: string; // 主色调 (rgb)
+  opacity?: number; // 基础透明度
+  detail?: number; // 采样精细度
+  speed?: number; // 演化速度
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  color: '99, 102, 241', // Indigo-500
+  color: "99, 102, 241", // Indigo-500
   opacity: 0.3,
-  detail: 2,             // 步长，越大性能越好
-  speed: 0.005
+  detail: 2, // 步长，越大性能越好
+  speed: 0.005,
 });
 
 const canvasRef = ref<HTMLCanvasElement | null>(null);
@@ -30,7 +30,7 @@ const iterations = 8; // 降低迭代次数，视觉差异微小但性能大幅�
 
 const draw = () => {
   const canvas = canvasRef.value;
-  const ctx = canvas?.getContext('2d', { alpha: true, desynchronized: true });
+  const ctx = canvas?.getContext("2d", { alpha: true, desynchronized: true });
   if (!canvas || !ctx || !containerRef.value) return;
 
   const { clientWidth: w, clientHeight: h } = containerRef.value;
@@ -63,7 +63,7 @@ const draw = () => {
   ctx.beginPath();
   ctx.lineWidth = 1.5;
   ctx.strokeStyle = `rgba(${props.color}, ${props.opacity})`;
-  ctx.lineJoin = 'round';
+  ctx.lineJoin = "round";
 
   const centerY = h / 2;
   const amplitude = h / 5;
@@ -108,11 +108,13 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div ref="containerRef" class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-    <canvas
-      ref="canvasRef"
-      class="w-full h-full block touch-none"
+  <div
+    ref="containerRef"
+    class="fixed inset-0 -z-10 overflow-hidden pointer-events-none"
+  >
+    <canvas ref="canvasRef" class="w-full h-full block touch-none" />
+    <div
+      class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] mix-blend-overlay"
     />
-    <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] mix-blend-overlay" />
   </div>
 </template>
