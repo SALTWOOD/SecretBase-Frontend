@@ -189,6 +189,12 @@ const allNavigationItems = computed<NavigationItem[]>(() => [
         icon: "i-lucide-settings",
         to: "/dash/admin/settings",
       },
+      {
+        label: "简码",
+        icon: "i-lucide-code",
+        to: "/dash/admin/shortcode",
+        exact: false
+      },
     ],
   },
   {

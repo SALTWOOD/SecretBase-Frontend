@@ -403,6 +403,8 @@ export type ISession = {
     keys?: null | Array<string>;
 };
 
+export type JsonElement = unknown;
+
 export type KeySizes = {
     minSize: number | string;
     maxSize: number | string;
@@ -604,6 +606,71 @@ export type SeoMetaResponse = {
     ogImage?: null | string;
     twitterCard?: string;
     robots?: string;
+};
+
+export type ShortcodeCreateModel = {
+    name: string;
+    displayName: string;
+    description?: null | string;
+    frontendCode: string;
+    backendCode: string;
+    permission?: ShortcodePermission;
+    allowedRoles?: null | Array<string>;
+    isEnabled?: boolean;
+};
+
+export type ShortcodeDetail = {
+    id?: number | string;
+    name?: string;
+    displayName?: string;
+    description?: null | string;
+    frontendCode?: string;
+    backendCode?: string;
+    permission?: ShortcodePermission;
+    allowedRoles?: null | Array<string>;
+    isEnabled?: boolean;
+    createdAt?: Date;
+    updatedAt?: Date;
+    createdByUserId?: number | string;
+    createdByUsername?: string;
+};
+
+export type ShortcodeError = {
+    code?: string;
+    message?: string;
+    details?: unknown;
+};
+
+export type ShortcodeExecutionResult = {
+    success?: boolean;
+    data?: unknown;
+    error?: null | ShortcodeError;
+};
+
+export type ShortcodeListItem = {
+    name?: string;
+    displayName?: string;
+    description?: null | string;
+};
+
+export type ShortcodeListResponse = {
+    shortcodes?: Array<ShortcodeListItem>;
+};
+
+export type ShortcodePermission = number;
+
+export type ShortcodeStatusModel = {
+    isEnabled: boolean;
+};
+
+export type ShortcodeUpdateModel = {
+    displayName?: null | string;
+    description?: null | string;
+    frontendCode?: null | string;
+    backendCode?: null | string;
+    permission?: null | ShortcodePermission;
+    allowedRoles?: null | Array<string>;
+    isEnabled?: null | boolean;
 };
 
 export type SiteInitResponse = {
@@ -1175,6 +1242,87 @@ export type GetSettingsInitResponses = {
 };
 
 export type GetSettingsInitResponse = GetSettingsInitResponses[keyof GetSettingsInitResponses];
+
+export type GetShortcodesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/shortcodes';
+};
+
+export type GetShortcodesResponses = {
+    /**
+     * OK
+     */
+    200: ShortcodeListResponse;
+};
+
+export type GetShortcodesResponse = GetShortcodesResponses[keyof GetShortcodesResponses];
+
+export type GetShortcodesByNameFrontendData = {
+    body?: never;
+    path: {
+        name: string;
+    };
+    query?: never;
+    url: '/shortcodes/{name}/frontend';
+};
+
+export type GetShortcodesByNameFrontendErrors = {
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+};
+
+export type GetShortcodesByNameFrontendError = GetShortcodesByNameFrontendErrors[keyof GetShortcodesByNameFrontendErrors];
+
+export type GetShortcodesByNameFrontendResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type PostShortcodesByNameHandlersByHandlerNameData = {
+    body: JsonElement;
+    path: {
+        name: string;
+        handlerName: string;
+    };
+    query?: never;
+    url: '/shortcodes/{name}/handlers/{handlerName}';
+};
+
+export type PostShortcodesByNameHandlersByHandlerNameErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ShortcodeExecutionResult;
+    /**
+     * Forbidden
+     */
+    403: ShortcodeExecutionResult;
+    /**
+     * Not Found
+     */
+    404: ShortcodeExecutionResult;
+    /**
+     * Internal Server Error
+     */
+    500: ShortcodeExecutionResult;
+};
+
+export type PostShortcodesByNameHandlersByHandlerNameError = PostShortcodesByNameHandlersByHandlerNameErrors[keyof PostShortcodesByNameHandlersByHandlerNameErrors];
+
+export type PostShortcodesByNameHandlersByHandlerNameResponses = {
+    /**
+     * OK
+     */
+    200: ShortcodeExecutionResult;
+};
+
+export type PostShortcodesByNameHandlersByHandlerNameResponse = PostShortcodesByNameHandlersByHandlerNameResponses[keyof PostShortcodesByNameHandlersByHandlerNameResponses];
 
 export type GetUserProfileData = {
     body?: never;
@@ -2095,6 +2243,210 @@ export type GetAdminInvitationsByIdUsersResponses = {
 };
 
 export type GetAdminInvitationsByIdUsersResponse = GetAdminInvitationsByIdUsersResponses[keyof GetAdminInvitationsByIdUsersResponses];
+
+export type GetAdminShortcodesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/admin/shortcodes';
+};
+
+export type GetAdminShortcodesErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+};
+
+export type GetAdminShortcodesError = GetAdminShortcodesErrors[keyof GetAdminShortcodesErrors];
+
+export type GetAdminShortcodesResponses = {
+    /**
+     * OK
+     */
+    200: Array<ShortcodeDetail>;
+};
+
+export type GetAdminShortcodesResponse = GetAdminShortcodesResponses[keyof GetAdminShortcodesResponses];
+
+export type PostAdminShortcodesData = {
+    body: ShortcodeCreateModel;
+    path?: never;
+    query?: never;
+    url: '/admin/shortcodes';
+};
+
+export type PostAdminShortcodesErrors = {
+    /**
+     * Bad Request
+     */
+    400: MessageResponse;
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+};
+
+export type PostAdminShortcodesError = PostAdminShortcodesErrors[keyof PostAdminShortcodesErrors];
+
+export type PostAdminShortcodesResponses = {
+    /**
+     * Created
+     */
+    201: ShortcodeDetail;
+};
+
+export type PostAdminShortcodesResponse = PostAdminShortcodesResponses[keyof PostAdminShortcodesResponses];
+
+export type DeleteAdminShortcodesByIdData = {
+    body?: never;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/admin/shortcodes/{id}';
+};
+
+export type DeleteAdminShortcodesByIdErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+};
+
+export type DeleteAdminShortcodesByIdError = DeleteAdminShortcodesByIdErrors[keyof DeleteAdminShortcodesByIdErrors];
+
+export type DeleteAdminShortcodesByIdResponses = {
+    /**
+     * No Content
+     */
+    204: unknown;
+};
+
+export type GetAdminShortcodesByIdData = {
+    body?: never;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/admin/shortcodes/{id}';
+};
+
+export type GetAdminShortcodesByIdErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+};
+
+export type GetAdminShortcodesByIdError = GetAdminShortcodesByIdErrors[keyof GetAdminShortcodesByIdErrors];
+
+export type GetAdminShortcodesByIdResponses = {
+    /**
+     * OK
+     */
+    200: ShortcodeDetail;
+};
+
+export type GetAdminShortcodesByIdResponse = GetAdminShortcodesByIdResponses[keyof GetAdminShortcodesByIdResponses];
+
+export type PutAdminShortcodesByIdData = {
+    body: ShortcodeUpdateModel;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/admin/shortcodes/{id}';
+};
+
+export type PutAdminShortcodesByIdErrors = {
+    /**
+     * Bad Request
+     */
+    400: MessageResponse;
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+};
+
+export type PutAdminShortcodesByIdError = PutAdminShortcodesByIdErrors[keyof PutAdminShortcodesByIdErrors];
+
+export type PutAdminShortcodesByIdResponses = {
+    /**
+     * OK
+     */
+    200: ShortcodeDetail;
+};
+
+export type PutAdminShortcodesByIdResponse = PutAdminShortcodesByIdResponses[keyof PutAdminShortcodesByIdResponses];
+
+export type PatchAdminShortcodesByIdStatusData = {
+    body: ShortcodeStatusModel;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/admin/shortcodes/{id}/status';
+};
+
+export type PatchAdminShortcodesByIdStatusErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+};
+
+export type PatchAdminShortcodesByIdStatusError = PatchAdminShortcodesByIdStatusErrors[keyof PatchAdminShortcodesByIdStatusErrors];
+
+export type PatchAdminShortcodesByIdStatusResponses = {
+    /**
+     * OK
+     */
+    200: ShortcodeDetail;
+};
+
+export type PatchAdminShortcodesByIdStatusResponse = PatchAdminShortcodesByIdStatusResponses[keyof PatchAdminShortcodesByIdStatusResponses];
 
 export type GetAdminUsersData = {
     body?: never;

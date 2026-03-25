@@ -1581,6 +1581,8 @@ export const ISessionSchema = {
     }
 } as const;
 
+export const JsonElementSchema = {} as const;
+
 export const KeySizesSchema = {
     required: [
         'minSize',
@@ -2289,6 +2291,256 @@ export const SeoMetaResponseSchema = {
         },
         robots: {
             type: 'string'
+        }
+    }
+} as const;
+
+export const ShortcodeCreateModelSchema = {
+    required: [
+        'name',
+        'displayName',
+        'frontendCode',
+        'backendCode'
+    ],
+    type: 'object',
+    properties: {
+        name: {
+            maxLength: 100,
+            type: 'string'
+        },
+        displayName: {
+            maxLength: 200,
+            type: 'string'
+        },
+        description: {
+            maxLength: 1000,
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        frontendCode: {
+            type: 'string'
+        },
+        backendCode: {
+            type: 'string'
+        },
+        permission: {
+            $ref: '#/components/schemas/ShortcodePermission'
+        },
+        allowedRoles: {
+            type: [
+                'null',
+                'array'
+            ],
+            items: {
+                type: 'string'
+            }
+        },
+        isEnabled: {
+            type: 'boolean'
+        }
+    }
+} as const;
+
+export const ShortcodeDetailSchema = {
+    type: 'object',
+    properties: {
+        id: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        name: {
+            type: 'string'
+        },
+        displayName: {
+            type: 'string'
+        },
+        description: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        frontendCode: {
+            type: 'string'
+        },
+        backendCode: {
+            type: 'string'
+        },
+        permission: {
+            $ref: '#/components/schemas/ShortcodePermission'
+        },
+        allowedRoles: {
+            type: [
+                'null',
+                'array'
+            ],
+            items: {
+                type: 'string'
+            }
+        },
+        isEnabled: {
+            type: 'boolean'
+        },
+        createdAt: {
+            type: 'string',
+            format: 'date-time'
+        },
+        updatedAt: {
+            type: 'string',
+            format: 'date-time'
+        },
+        createdByUserId: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        createdByUsername: {
+            type: 'string'
+        }
+    }
+} as const;
+
+export const ShortcodeErrorSchema = {
+    type: 'object',
+    properties: {
+        code: {
+            type: 'string'
+        },
+        message: {
+            type: 'string'
+        },
+        details: {}
+    }
+} as const;
+
+export const ShortcodeExecutionResultSchema = {
+    type: 'object',
+    properties: {
+        success: {
+            type: 'boolean'
+        },
+        data: {},
+        error: {
+            oneOf: [
+                {
+                    type: 'null'
+                },
+                {
+                    $ref: '#/components/schemas/ShortcodeError'
+                }
+            ]
+        }
+    }
+} as const;
+
+export const ShortcodeListItemSchema = {
+    type: 'object',
+    properties: {
+        name: {
+            type: 'string'
+        },
+        displayName: {
+            type: 'string'
+        },
+        description: {
+            type: [
+                'null',
+                'string'
+            ]
+        }
+    }
+} as const;
+
+export const ShortcodeListResponseSchema = {
+    type: 'object',
+    properties: {
+        shortcodes: {
+            type: 'array',
+            items: {
+                $ref: '#/components/schemas/ShortcodeListItem'
+            }
+        }
+    }
+} as const;
+
+export const ShortcodePermissionSchema = {
+    type: 'integer'
+} as const;
+
+export const ShortcodeStatusModelSchema = {
+    required: [
+        'isEnabled'
+    ],
+    type: 'object',
+    properties: {
+        isEnabled: {
+            type: 'boolean'
+        }
+    }
+} as const;
+
+export const ShortcodeUpdateModelSchema = {
+    type: 'object',
+    properties: {
+        displayName: {
+            maxLength: 200,
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        description: {
+            maxLength: 1000,
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        frontendCode: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        backendCode: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        permission: {
+            oneOf: [
+                {
+                    type: 'null'
+                },
+                {
+                    $ref: '#/components/schemas/ShortcodePermission'
+                }
+            ]
+        },
+        allowedRoles: {
+            type: [
+                'null',
+                'array'
+            ],
+            items: {
+                type: 'string'
+            }
+        },
+        isEnabled: {
+            type: [
+                'null',
+                'boolean'
+            ]
         }
     }
 } as const;
