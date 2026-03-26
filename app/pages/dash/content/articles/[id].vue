@@ -78,12 +78,10 @@ const handleSave = async () => {
       </div>
     </div>
 
-    <UCard class="overflow-hidden shadow-none">
-      <MarkdownEditor
-        v-model="formState.content"
-        :disabled="isLoading"
-        @save="handleSave"
-      />
-    </UCard>
+    <MarkdownEditor
+      v-model="formState.content"
+      :disabled="isLoading"
+      @save="handleSave"
+    />
   </UContainer>
 </template>
