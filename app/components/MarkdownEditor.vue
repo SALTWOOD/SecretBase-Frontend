@@ -104,7 +104,9 @@ function handleAction(tool: ToolConfig, payload?: string) {
             :title="tool.title"
             @click="handleAction(tool)"
           >
-            <Icon :name="tool.icon" />
+            <div class="flex items-center justify-center size-6">
+              <Icon :name="tool.icon" />
+            </div>
           </NormalToolbar>
 
           <DropdownToolbar
@@ -113,7 +115,9 @@ function handleAction(tool: ToolConfig, payload?: string) {
             :visible="tool.dropdownVisible"
             :onChange="(v) => tool.dropdownVisible = v"
           >
-            <Icon :name="tool.icon" />
+            <div class="flex items-center justify-center size-6">
+              <Icon :name="tool.icon" />
+            </div>
             <template #overlay>
               <div>
                 <ul class="md-editor-menu" role="menu">
