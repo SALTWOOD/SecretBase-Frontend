@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { getAdminStorageBucketByBucketNameFiles, type S3ObjectResponse } from "~~/packages/api/src";
+
 const route = useRoute()
 const router = useRouter()
 
@@ -26,13 +28,9 @@ const dropdownMenu = (row: any) => [[
   }
 ]];
 
-const allItems = ref([
-  { key: 'users/', type: 'directory', size: 0, lastModified: '2026-03-27T10:00:00Z', eTag: 'd1' },
-  { key: 'backups/', type: 'directory', size: 0, lastModified: '2026-03-27T10:00:00Z', eTag: 'd2' },
-  { key: 'config.json', type: 'file', size: 1024, contentType: 'application/json', lastModified: '2026-03-26T15:30:00Z', eTag: 'f1' },
-  { key: 'users/avatar_01.png', type: 'file', size: 524288, contentType: 'image/png', lastModified: '2026-03-27T11:00:00Z', eTag: 'f2' },
-  { key: 'users/docs/', type: 'directory', size: 0, lastModified: '2026-03-27T13:00:00Z', eTag: 'd3' }
-])
+type FileObject = S3ObjectResponse & { type: 'directory' | 'file' };
+
+const allItems = ref<FileObject[]>([]);
 
 const searchQuery = ref('')
 
@@ -69,15 +67,37 @@ const handleItemClick = (item: any) => {
   }
 }
 
-const formatSize = (bytes: number) => {
-  if (bytes === 0) return '--'
-  const k = 1024
-  const sizes = ['B', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+const formatSize = (bytes: bigint) => {
+  if (bytes <= 0n) return '--'
+
+  const k = 1024n
+  const sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+  const numBytes = Number(bytes)
+  const i = Math.floor(Math.log(numBytes) / Math.log(Number(k)))
+  const value = numBytes / Math.pow(Number(k), i)
+
+  return `${value.toFixed(2)} ${sizes[i]}`
+}
+
+const formatModified = (row: any) => {
+  return row.type === 'directory'
+    ? '--'
+    : new Date(row.lastModified).toLocaleString();
 }
 
 const getDisplayName = (key: string) => key.split('/').filter(Boolean).pop() || ''
+
+onMounted(async () => {
+  const response = await getAdminStorageBucketByBucketNameFiles({
+    path: { bucketName: bucketName.value },
+    query: { prefix: currentPath.value }
+  });
+  if (response.error || !response.data) return;
+  allItems.value = response.data.map((i: S3ObjectResponse) => ({
+    ...i,
+    type: i.key.endsWith('/') ? 'directory' : 'file',
+  }));
+})
 </script>
 
 <template>
@@ -131,11 +151,11 @@ const getDisplayName = (key: string) => key.split('/').filter(Boolean).pop() || 
       </template>
 
       <template #size-cell="{ row }">
-        <span class="text-sm font-mono text-gray-500">{{ formatSize(row.original.size) }}</span>
+        <span class="text-sm font-mono text-gray-500">{{ formatSize(row.original.size!) }}</span>
       </template>
 
       <template #modified-cell="{ row }">
-        <span class="text-sm text-gray-400">{{ new Date(row.original.lastModified).toLocaleString() }}</span>
+        <span class="text-sm text-gray-400">{{ formatModified(row.original) }}</span>
       </template>
 
       <template #actions-cell="{ row }">
