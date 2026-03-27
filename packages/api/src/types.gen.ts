@@ -2584,17 +2584,18 @@ export type GetAdminStorageBucketByBucketNameFilesResponses = {
 
 export type GetAdminStorageBucketByBucketNameFilesResponse = GetAdminStorageBucketByBucketNameFilesResponses[keyof GetAdminStorageBucketByBucketNameFilesResponses];
 
-export type DeleteAdminStorageBucketByBucketNameFilesByKeyData = {
+export type DeleteAdminStorageBucketByBucketNameFileData = {
     body?: never;
     path: {
-        key: string;
         bucketName: string;
     };
-    query?: never;
-    url: '/admin/storage/bucket/{bucketName}/files/{key}';
+    query?: {
+        key?: string;
+    };
+    url: '/admin/storage/bucket/{bucketName}/file';
 };
 
-export type DeleteAdminStorageBucketByBucketNameFilesByKeyErrors = {
+export type DeleteAdminStorageBucketByBucketNameFileErrors = {
     /**
      * Unauthorized
      */
@@ -2613,26 +2614,27 @@ export type DeleteAdminStorageBucketByBucketNameFilesByKeyErrors = {
     500: MessageResponse;
 };
 
-export type DeleteAdminStorageBucketByBucketNameFilesByKeyError = DeleteAdminStorageBucketByBucketNameFilesByKeyErrors[keyof DeleteAdminStorageBucketByBucketNameFilesByKeyErrors];
+export type DeleteAdminStorageBucketByBucketNameFileError = DeleteAdminStorageBucketByBucketNameFileErrors[keyof DeleteAdminStorageBucketByBucketNameFileErrors];
 
-export type DeleteAdminStorageBucketByBucketNameFilesByKeyResponses = {
+export type DeleteAdminStorageBucketByBucketNameFileResponses = {
     /**
      * No Content
      */
     204: unknown;
 };
 
-export type GetAdminStorageBucketByBucketNameFilesByKeyData = {
+export type GetAdminStorageBucketByBucketNameFileData = {
     body?: never;
     path: {
-        key: string;
         bucketName: string;
     };
-    query?: never;
-    url: '/admin/storage/bucket/{bucketName}/files/{key}';
+    query?: {
+        key?: string;
+    };
+    url: '/admin/storage/bucket/{bucketName}/file';
 };
 
-export type GetAdminStorageBucketByBucketNameFilesByKeyErrors = {
+export type GetAdminStorageBucketByBucketNameFileErrors = {
     /**
      * Unauthorized
      */
@@ -2651,16 +2653,16 @@ export type GetAdminStorageBucketByBucketNameFilesByKeyErrors = {
     500: MessageResponse;
 };
 
-export type GetAdminStorageBucketByBucketNameFilesByKeyError = GetAdminStorageBucketByBucketNameFilesByKeyErrors[keyof GetAdminStorageBucketByBucketNameFilesByKeyErrors];
+export type GetAdminStorageBucketByBucketNameFileError = GetAdminStorageBucketByBucketNameFileErrors[keyof GetAdminStorageBucketByBucketNameFileErrors];
 
-export type GetAdminStorageBucketByBucketNameFilesByKeyResponses = {
+export type GetAdminStorageBucketByBucketNameFileResponses = {
     /**
      * OK
      */
     200: S3ObjectMetadataResponse;
 };
 
-export type GetAdminStorageBucketByBucketNameFilesByKeyResponse = GetAdminStorageBucketByBucketNameFilesByKeyResponses[keyof GetAdminStorageBucketByBucketNameFilesByKeyResponses];
+export type GetAdminStorageBucketByBucketNameFileResponse = GetAdminStorageBucketByBucketNameFileResponses[keyof GetAdminStorageBucketByBucketNameFileResponses];
 
 export type PostAdminStorageBucketByBucketNamePresignUploadData = {
     body: PresignUploadRequest;
@@ -2697,19 +2699,19 @@ export type PostAdminStorageBucketByBucketNamePresignUploadResponses = {
 
 export type PostAdminStorageBucketByBucketNamePresignUploadResponse = PostAdminStorageBucketByBucketNamePresignUploadResponses[keyof PostAdminStorageBucketByBucketNamePresignUploadResponses];
 
-export type GetAdminStorageBucketByBucketNamePresignDownloadByKeyData = {
+export type GetAdminStorageBucketByBucketNamePresignDownloadData = {
     body?: never;
     path: {
-        key: string;
         bucketName: string;
     };
     query?: {
+        key?: string;
         expirationMinutes?: number | string;
     };
-    url: '/admin/storage/bucket/{bucketName}/presign-download/{key}';
+    url: '/admin/storage/bucket/{bucketName}/presign-download';
 };
 
-export type GetAdminStorageBucketByBucketNamePresignDownloadByKeyErrors = {
+export type GetAdminStorageBucketByBucketNamePresignDownloadErrors = {
     /**
      * Bad Request
      */
@@ -2724,16 +2726,16 @@ export type GetAdminStorageBucketByBucketNamePresignDownloadByKeyErrors = {
     403: ProblemDetails;
 };
 
-export type GetAdminStorageBucketByBucketNamePresignDownloadByKeyError = GetAdminStorageBucketByBucketNamePresignDownloadByKeyErrors[keyof GetAdminStorageBucketByBucketNamePresignDownloadByKeyErrors];
+export type GetAdminStorageBucketByBucketNamePresignDownloadError = GetAdminStorageBucketByBucketNamePresignDownloadErrors[keyof GetAdminStorageBucketByBucketNamePresignDownloadErrors];
 
-export type GetAdminStorageBucketByBucketNamePresignDownloadByKeyResponses = {
+export type GetAdminStorageBucketByBucketNamePresignDownloadResponses = {
     /**
      * OK
      */
     200: PresignedUrlResponse;
 };
 
-export type GetAdminStorageBucketByBucketNamePresignDownloadByKeyResponse = GetAdminStorageBucketByBucketNamePresignDownloadByKeyResponses[keyof GetAdminStorageBucketByBucketNamePresignDownloadByKeyResponses];
+export type GetAdminStorageBucketByBucketNamePresignDownloadResponse = GetAdminStorageBucketByBucketNamePresignDownloadResponses[keyof GetAdminStorageBucketByBucketNamePresignDownloadResponses];
 
 export type PostAdminStorageBucketByBucketNameFilesCopyData = {
     body: CopyFileRequest;

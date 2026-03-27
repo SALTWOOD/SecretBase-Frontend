@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import { getAdminStorageBucketByBucketNameFiles, type S3ObjectResponse } from "~~/packages/api/src";
+import {
+  getAdminStorageBucketByBucketNameFiles, getAdminStorageBucketByBucketNamePresignDownload,
+  type S3ObjectResponse
+} from "~~/packages/api/src";
 
 const route = useRoute()
 const router = useRouter()
@@ -57,13 +60,22 @@ const columns = [
   { id: 'actions', accessorKey: 'actions', header: '操作' }
 ]
 
-const handleItemClick = (item: any) => {
+const handleItemClick = async (item: any) => {
   if (item.type === 'directory') {
     const segments = [bucketName.value, ...item.key.split('/').filter(Boolean)]
     router.push(`/dash/content/storages/${segments.join('/')}`)
   } else {
-    console.log(`[Log] 🦀 下载文件: ${item.key}`)
-    // TODO: 调用后端 GetPresignedUrlAsync
+    const response = await getAdminStorageBucketByBucketNamePresignDownload({
+      path: {
+        bucketName: bucketName.value,
+      },
+      query: {
+        key: item.key
+      }
+    });
+    if (response.error || !response.data) return;
+    const url = response.data.url;
+    window.open(url);
   }
 }
 
