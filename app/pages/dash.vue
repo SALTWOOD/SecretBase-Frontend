@@ -142,16 +142,21 @@ const allNavigationItems = computed<NavigationItem[]>(() => [
         icon: "i-lucide-files",
         to: "/dash/content/articles",
       },
+      // {
+      //   label: "草稿箱",
+      //   icon: "i-lucide-file-clock",
+      //   to: "/dash/content/articles/drafts",
+      // },
+      // {
+      //   label: "分类目录",
+      //   icon: "i-lucide-layers",
+      //   to: "/dash/content/articles/categories",
+      // },
       {
-        label: "草稿箱",
-        icon: "i-lucide-file-clock",
-        to: "/dash/content/articles/drafts",
-      },
-      {
-        label: "分类目录",
+        label: "存储",
         icon: "i-lucide-layers",
-        to: "/dash/content/articles/categories",
-      },
+        to: "/dash/content/storages"
+      }
     ],
   },
   {

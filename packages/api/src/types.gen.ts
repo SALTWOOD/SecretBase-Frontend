@@ -164,6 +164,25 @@ export type AuthResponse = {
     data?: TokenRenewResponse;
 };
 
+export type BatchDeleteResponse = {
+    deletedKeys?: Array<string>;
+    failedKeys?: Array<string>;
+};
+
+export type BucketResponse = {
+    name: string;
+    creationDate?: Date;
+};
+
+export type BucketStatusResponse = {
+    bucketName: string;
+    region?: null | string;
+    objectCount?: number | string;
+    totalSizeBytes?: bigint | string;
+    isAccessible?: boolean;
+    errorMessage?: null | string;
+};
+
 export type CancellationToken = {
     isCancellationRequested?: boolean;
     canBeCanceled?: boolean;
@@ -229,6 +248,11 @@ export type ConnectionInfo = {
     localIpAddress?: null | IpAddress;
     localPort?: number | string;
     clientCertificate?: null | X509Certificate2;
+};
+
+export type CopyFileRequest = {
+    sourceKey: string;
+    destinationKey: string;
 };
 
 export type CreateAppRequest = {
@@ -549,6 +573,18 @@ export type PipeWriter = {
     unflushedBytes?: bigint | string;
 };
 
+export type PresignedUrlResponse = {
+    url: string;
+    key: string;
+    expiresAt?: Date;
+};
+
+export type PresignUploadRequest = {
+    key: string;
+    contentType?: null | string;
+    expirationMinutes?: null | number | string;
+};
+
 export type ProblemDetails = {
     type?: null | string;
     title?: null | string;
@@ -591,6 +627,25 @@ export type QueryString = {
 export type ReadOnlyMemoryOfbyte = string;
 
 export type ResidentKeyRequirement = unknown;
+
+export type S3ObjectMetadataResponse = {
+    key: string;
+    contentType?: null | string;
+    contentLength?: bigint | string;
+    lastModified?: Date;
+    eTag?: null | string;
+    metadata?: {
+        [key: string]: string;
+    };
+};
+
+export type S3ObjectResponse = {
+    key: string;
+    size?: bigint | string;
+    lastModified?: Date;
+    eTag?: null | string;
+    storageClass?: null | string;
+};
 
 export type SafeWaitHandle = {
     isInvalid?: boolean;
@@ -681,6 +736,14 @@ export type SiteInitResponse = {
         [key: string]: unknown;
     };
     registrationEnabled?: boolean;
+};
+
+export type StorageStatusResponse = {
+    isConnected?: boolean;
+    bucketCount?: number | string;
+    ownerId?: null | string;
+    ownerDisplayName?: null | string;
+    errorMessage?: null | string;
 };
 
 export type Stream = Blob | File;
@@ -2447,6 +2510,366 @@ export type PatchAdminShortcodesByIdStatusResponses = {
 };
 
 export type PatchAdminShortcodesByIdStatusResponse = PatchAdminShortcodesByIdStatusResponses[keyof PatchAdminShortcodesByIdStatusResponses];
+
+export type DeleteAdminStorageBucketByBucketNameFilesData = {
+    body: Array<string>;
+    path: {
+        bucketName: string;
+    };
+    query?: never;
+    url: '/admin/storage/bucket/{bucketName}/files';
+};
+
+export type DeleteAdminStorageBucketByBucketNameFilesErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Internal Server Error
+     */
+    500: MessageResponse;
+};
+
+export type DeleteAdminStorageBucketByBucketNameFilesError = DeleteAdminStorageBucketByBucketNameFilesErrors[keyof DeleteAdminStorageBucketByBucketNameFilesErrors];
+
+export type DeleteAdminStorageBucketByBucketNameFilesResponses = {
+    /**
+     * OK
+     */
+    200: BatchDeleteResponse;
+};
+
+export type DeleteAdminStorageBucketByBucketNameFilesResponse = DeleteAdminStorageBucketByBucketNameFilesResponses[keyof DeleteAdminStorageBucketByBucketNameFilesResponses];
+
+export type GetAdminStorageBucketByBucketNameFilesData = {
+    body?: never;
+    path: {
+        bucketName: string;
+    };
+    query?: {
+        prefix?: string;
+        maxKeys?: number | string;
+    };
+    url: '/admin/storage/bucket/{bucketName}/files';
+};
+
+export type GetAdminStorageBucketByBucketNameFilesErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Internal Server Error
+     */
+    500: MessageResponse;
+};
+
+export type GetAdminStorageBucketByBucketNameFilesError = GetAdminStorageBucketByBucketNameFilesErrors[keyof GetAdminStorageBucketByBucketNameFilesErrors];
+
+export type GetAdminStorageBucketByBucketNameFilesResponses = {
+    /**
+     * OK
+     */
+    200: Array<S3ObjectResponse>;
+};
+
+export type GetAdminStorageBucketByBucketNameFilesResponse = GetAdminStorageBucketByBucketNameFilesResponses[keyof GetAdminStorageBucketByBucketNameFilesResponses];
+
+export type DeleteAdminStorageBucketByBucketNameFilesByKeyData = {
+    body?: never;
+    path: {
+        key: string;
+        bucketName: string;
+    };
+    query?: never;
+    url: '/admin/storage/bucket/{bucketName}/files/{key}';
+};
+
+export type DeleteAdminStorageBucketByBucketNameFilesByKeyErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+    /**
+     * Internal Server Error
+     */
+    500: MessageResponse;
+};
+
+export type DeleteAdminStorageBucketByBucketNameFilesByKeyError = DeleteAdminStorageBucketByBucketNameFilesByKeyErrors[keyof DeleteAdminStorageBucketByBucketNameFilesByKeyErrors];
+
+export type DeleteAdminStorageBucketByBucketNameFilesByKeyResponses = {
+    /**
+     * No Content
+     */
+    204: unknown;
+};
+
+export type GetAdminStorageBucketByBucketNameFilesByKeyData = {
+    body?: never;
+    path: {
+        key: string;
+        bucketName: string;
+    };
+    query?: never;
+    url: '/admin/storage/bucket/{bucketName}/files/{key}';
+};
+
+export type GetAdminStorageBucketByBucketNameFilesByKeyErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+    /**
+     * Internal Server Error
+     */
+    500: MessageResponse;
+};
+
+export type GetAdminStorageBucketByBucketNameFilesByKeyError = GetAdminStorageBucketByBucketNameFilesByKeyErrors[keyof GetAdminStorageBucketByBucketNameFilesByKeyErrors];
+
+export type GetAdminStorageBucketByBucketNameFilesByKeyResponses = {
+    /**
+     * OK
+     */
+    200: S3ObjectMetadataResponse;
+};
+
+export type GetAdminStorageBucketByBucketNameFilesByKeyResponse = GetAdminStorageBucketByBucketNameFilesByKeyResponses[keyof GetAdminStorageBucketByBucketNameFilesByKeyResponses];
+
+export type PostAdminStorageBucketByBucketNamePresignUploadData = {
+    body: PresignUploadRequest;
+    path: {
+        bucketName: string;
+    };
+    query?: never;
+    url: '/admin/storage/bucket/{bucketName}/presign-upload';
+};
+
+export type PostAdminStorageBucketByBucketNamePresignUploadErrors = {
+    /**
+     * Bad Request
+     */
+    400: MessageResponse;
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+};
+
+export type PostAdminStorageBucketByBucketNamePresignUploadError = PostAdminStorageBucketByBucketNamePresignUploadErrors[keyof PostAdminStorageBucketByBucketNamePresignUploadErrors];
+
+export type PostAdminStorageBucketByBucketNamePresignUploadResponses = {
+    /**
+     * OK
+     */
+    200: PresignedUrlResponse;
+};
+
+export type PostAdminStorageBucketByBucketNamePresignUploadResponse = PostAdminStorageBucketByBucketNamePresignUploadResponses[keyof PostAdminStorageBucketByBucketNamePresignUploadResponses];
+
+export type GetAdminStorageBucketByBucketNamePresignDownloadByKeyData = {
+    body?: never;
+    path: {
+        key: string;
+        bucketName: string;
+    };
+    query?: {
+        expirationMinutes?: number | string;
+    };
+    url: '/admin/storage/bucket/{bucketName}/presign-download/{key}';
+};
+
+export type GetAdminStorageBucketByBucketNamePresignDownloadByKeyErrors = {
+    /**
+     * Bad Request
+     */
+    400: MessageResponse;
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+};
+
+export type GetAdminStorageBucketByBucketNamePresignDownloadByKeyError = GetAdminStorageBucketByBucketNamePresignDownloadByKeyErrors[keyof GetAdminStorageBucketByBucketNamePresignDownloadByKeyErrors];
+
+export type GetAdminStorageBucketByBucketNamePresignDownloadByKeyResponses = {
+    /**
+     * OK
+     */
+    200: PresignedUrlResponse;
+};
+
+export type GetAdminStorageBucketByBucketNamePresignDownloadByKeyResponse = GetAdminStorageBucketByBucketNamePresignDownloadByKeyResponses[keyof GetAdminStorageBucketByBucketNamePresignDownloadByKeyResponses];
+
+export type PostAdminStorageBucketByBucketNameFilesCopyData = {
+    body: CopyFileRequest;
+    path: {
+        bucketName: string;
+    };
+    query?: never;
+    url: '/admin/storage/bucket/{bucketName}/files/copy';
+};
+
+export type PostAdminStorageBucketByBucketNameFilesCopyErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+    /**
+     * Internal Server Error
+     */
+    500: MessageResponse;
+};
+
+export type PostAdminStorageBucketByBucketNameFilesCopyError = PostAdminStorageBucketByBucketNameFilesCopyErrors[keyof PostAdminStorageBucketByBucketNameFilesCopyErrors];
+
+export type PostAdminStorageBucketByBucketNameFilesCopyResponses = {
+    /**
+     * OK
+     */
+    200: MessageResponse;
+};
+
+export type PostAdminStorageBucketByBucketNameFilesCopyResponse = PostAdminStorageBucketByBucketNameFilesCopyResponses[keyof PostAdminStorageBucketByBucketNameFilesCopyResponses];
+
+export type GetAdminStorageBucketByBucketNameStatusData = {
+    body?: never;
+    path: {
+        bucketName: string;
+    };
+    query?: never;
+    url: '/admin/storage/bucket/{bucketName}/status';
+};
+
+export type GetAdminStorageBucketByBucketNameStatusErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Internal Server Error
+     */
+    500: MessageResponse;
+};
+
+export type GetAdminStorageBucketByBucketNameStatusError = GetAdminStorageBucketByBucketNameStatusErrors[keyof GetAdminStorageBucketByBucketNameStatusErrors];
+
+export type GetAdminStorageBucketByBucketNameStatusResponses = {
+    /**
+     * OK
+     */
+    200: BucketStatusResponse;
+};
+
+export type GetAdminStorageBucketByBucketNameStatusResponse = GetAdminStorageBucketByBucketNameStatusResponses[keyof GetAdminStorageBucketByBucketNameStatusResponses];
+
+export type GetAdminStorageBucketsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/admin/storage/buckets';
+};
+
+export type GetAdminStorageBucketsErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Internal Server Error
+     */
+    500: MessageResponse;
+};
+
+export type GetAdminStorageBucketsError = GetAdminStorageBucketsErrors[keyof GetAdminStorageBucketsErrors];
+
+export type GetAdminStorageBucketsResponses = {
+    /**
+     * OK
+     */
+    200: Array<BucketResponse>;
+};
+
+export type GetAdminStorageBucketsResponse = GetAdminStorageBucketsResponses[keyof GetAdminStorageBucketsResponses];
+
+export type GetAdminStorageStatusData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/admin/storage/status';
+};
+
+export type GetAdminStorageStatusErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+};
+
+export type GetAdminStorageStatusError = GetAdminStorageStatusErrors[keyof GetAdminStorageStatusErrors];
+
+export type GetAdminStorageStatusResponses = {
+    /**
+     * OK
+     */
+    200: StorageStatusResponse;
+};
+
+export type GetAdminStorageStatusResponse = GetAdminStorageStatusResponses[keyof GetAdminStorageStatusResponses];
 
 export type GetAdminUsersData = {
     body?: never;

@@ -648,6 +648,83 @@ export const AuthResponseSchema = {
     }
 } as const;
 
+export const BatchDeleteResponseSchema = {
+    type: 'object',
+    properties: {
+        deletedKeys: {
+            type: 'array',
+            items: {
+                type: 'string'
+            }
+        },
+        failedKeys: {
+            type: 'array',
+            items: {
+                type: 'string'
+            }
+        }
+    }
+} as const;
+
+export const BucketResponseSchema = {
+    required: [
+        'name'
+    ],
+    type: 'object',
+    properties: {
+        name: {
+            type: 'string'
+        },
+        creationDate: {
+            type: 'string',
+            format: 'date-time'
+        }
+    }
+} as const;
+
+export const BucketStatusResponseSchema = {
+    required: [
+        'bucketName'
+    ],
+    type: 'object',
+    properties: {
+        bucketName: {
+            type: 'string'
+        },
+        region: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        objectCount: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        totalSizeBytes: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int64'
+        },
+        isAccessible: {
+            type: 'boolean'
+        },
+        errorMessage: {
+            type: [
+                'null',
+                'string'
+            ]
+        }
+    }
+} as const;
+
 export const CancellationTokenSchema = {
     type: 'object',
     properties: {
@@ -942,6 +1019,22 @@ export const ConnectionInfoSchema = {
                     $ref: '#/components/schemas/X509Certificate2'
                 }
             ]
+        }
+    }
+} as const;
+
+export const CopyFileRequestSchema = {
+    required: [
+        'sourceKey',
+        'destinationKey'
+    ],
+    type: 'object',
+    properties: {
+        sourceKey: {
+            type: 'string'
+        },
+        destinationKey: {
+            type: 'string'
         }
     }
 } as const;
@@ -2102,6 +2195,53 @@ export const PipeWriterSchema = {
     }
 } as const;
 
+export const PresignedUrlResponseSchema = {
+    required: [
+        'url',
+        'key'
+    ],
+    type: 'object',
+    properties: {
+        url: {
+            type: 'string'
+        },
+        key: {
+            type: 'string'
+        },
+        expiresAt: {
+            type: 'string',
+            format: 'date-time'
+        }
+    }
+} as const;
+
+export const PresignUploadRequestSchema = {
+    required: [
+        'key'
+    ],
+    type: 'object',
+    properties: {
+        key: {
+            type: 'string'
+        },
+        contentType: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        expirationMinutes: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'null',
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        }
+    }
+} as const;
+
 export const ProblemDetailsSchema = {
     type: 'object',
     properties: {
@@ -2240,6 +2380,84 @@ export const ReadOnlyMemoryOfbyteSchema = {
 } as const;
 
 export const ResidentKeyRequirementSchema = {} as const;
+
+export const S3ObjectMetadataResponseSchema = {
+    required: [
+        'key'
+    ],
+    type: 'object',
+    properties: {
+        key: {
+            type: 'string'
+        },
+        contentType: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        contentLength: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int64'
+        },
+        lastModified: {
+            type: 'string',
+            format: 'date-time'
+        },
+        eTag: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        metadata: {
+            type: 'object',
+            additionalProperties: {
+                type: 'string'
+            }
+        }
+    }
+} as const;
+
+export const S3ObjectResponseSchema = {
+    required: [
+        'key'
+    ],
+    type: 'object',
+    properties: {
+        key: {
+            type: 'string'
+        },
+        size: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int64'
+        },
+        lastModified: {
+            type: 'string',
+            format: 'date-time'
+        },
+        eTag: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        storageClass: {
+            type: [
+                'null',
+                'string'
+            ]
+        }
+    }
+} as const;
 
 export const SafeWaitHandleSchema = {
     type: 'object',
@@ -2556,6 +2774,41 @@ export const SiteInitResponseSchema = {
         },
         registrationEnabled: {
             type: 'boolean'
+        }
+    }
+} as const;
+
+export const StorageStatusResponseSchema = {
+    type: 'object',
+    properties: {
+        isConnected: {
+            type: 'boolean'
+        },
+        bucketCount: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        ownerId: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        ownerDisplayName: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        errorMessage: {
+            type: [
+                'null',
+                'string'
+            ]
         }
     }
 } as const;
