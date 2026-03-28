@@ -305,6 +305,40 @@ export type Fido2User = {
     displayName?: null | string;
 };
 
+export type FileShareCreateRequest = {
+    bucket: string;
+    key: string;
+    fileName: string;
+    isPublic?: boolean;
+    expiresAt?: null | Date;
+};
+
+export type FileShareListResponse = {
+    items: Array<FileShareResponse>;
+    totalCount?: number | string;
+    page?: number | string;
+    pageSize?: number | string;
+};
+
+export type FileShareResponse = {
+    shortId: string;
+    bucket: string;
+    key: string;
+    fileName: string;
+    isPublic?: boolean;
+    isEnabled?: boolean;
+    ownerId?: number | string;
+    expiresAt?: null | Date;
+    createdAt?: Date;
+};
+
+export type FileShareUpdateRequest = {
+    isEnabled?: null | boolean;
+    isPublic?: null | boolean;
+    expiresAt?: null | Date;
+    fileName?: null | string;
+};
+
 export type HomeBackgroundResponse = {
     url?: string;
     blur?: number | string;
@@ -1242,6 +1276,32 @@ export type PutCommentsByIdResponses = {
 
 export type PutCommentsByIdResponse = PutCommentsByIdResponses[keyof PutCommentsByIdResponses];
 
+export type GetSharedByShortIdData = {
+    body?: never;
+    path: {
+        shortId: string;
+    };
+    query?: never;
+    url: '/shared/{shortId}';
+};
+
+export type GetSharedByShortIdErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+    /**
+     * Gone
+     */
+    410: MessageResponse;
+};
+
+export type GetSharedByShortIdError = GetSharedByShortIdErrors[keyof GetSharedByShortIdErrors];
+
 export type GetSettingsSeoData = {
     body?: never;
     path?: never;
@@ -2174,6 +2234,152 @@ export type PostAuthTwoFactorPolicyDisableResponses = {
 };
 
 export type PostAuthTwoFactorPolicyDisableResponse = PostAuthTwoFactorPolicyDisableResponses[keyof PostAuthTwoFactorPolicyDisableResponses];
+
+export type GetAdminFileSharesData = {
+    body?: never;
+    path?: never;
+    query?: {
+        page?: number | string;
+        pageSize?: number | string;
+        bucket?: string;
+        isEnabled?: boolean;
+    };
+    url: '/admin/file-shares';
+};
+
+export type GetAdminFileSharesErrors = {
+    /**
+     * Internal Server Error
+     */
+    500: MessageResponse;
+};
+
+export type GetAdminFileSharesError = GetAdminFileSharesErrors[keyof GetAdminFileSharesErrors];
+
+export type GetAdminFileSharesResponses = {
+    /**
+     * OK
+     */
+    200: FileShareListResponse;
+};
+
+export type GetAdminFileSharesResponse = GetAdminFileSharesResponses[keyof GetAdminFileSharesResponses];
+
+export type PostAdminFileSharesData = {
+    body: FileShareCreateRequest;
+    path?: never;
+    query?: never;
+    url: '/admin/file-shares';
+};
+
+export type PostAdminFileSharesErrors = {
+    /**
+     * Bad Request
+     */
+    400: MessageResponse;
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+    /**
+     * Internal Server Error
+     */
+    500: MessageResponse;
+};
+
+export type PostAdminFileSharesError = PostAdminFileSharesErrors[keyof PostAdminFileSharesErrors];
+
+export type PostAdminFileSharesResponses = {
+    /**
+     * Created
+     */
+    201: FileShareResponse;
+};
+
+export type PostAdminFileSharesResponse = PostAdminFileSharesResponses[keyof PostAdminFileSharesResponses];
+
+export type DeleteAdminFileSharesByShortIdData = {
+    body?: never;
+    path: {
+        shortId: string;
+    };
+    query?: never;
+    url: '/admin/file-shares/{shortId}';
+};
+
+export type DeleteAdminFileSharesByShortIdErrors = {
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+};
+
+export type DeleteAdminFileSharesByShortIdError = DeleteAdminFileSharesByShortIdErrors[keyof DeleteAdminFileSharesByShortIdErrors];
+
+export type DeleteAdminFileSharesByShortIdResponses = {
+    /**
+     * No Content
+     */
+    204: unknown;
+};
+
+export type GetAdminFileSharesByShortIdData = {
+    body?: never;
+    path: {
+        shortId: string;
+    };
+    query?: never;
+    url: '/admin/file-shares/{shortId}';
+};
+
+export type GetAdminFileSharesByShortIdErrors = {
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+};
+
+export type GetAdminFileSharesByShortIdError = GetAdminFileSharesByShortIdErrors[keyof GetAdminFileSharesByShortIdErrors];
+
+export type GetAdminFileSharesByShortIdResponses = {
+    /**
+     * OK
+     */
+    200: FileShareResponse;
+};
+
+export type GetAdminFileSharesByShortIdResponse = GetAdminFileSharesByShortIdResponses[keyof GetAdminFileSharesByShortIdResponses];
+
+export type PatchAdminFileSharesByShortIdData = {
+    body: FileShareUpdateRequest;
+    path: {
+        shortId: string;
+    };
+    query?: never;
+    url: '/admin/file-shares/{shortId}';
+};
+
+export type PatchAdminFileSharesByShortIdErrors = {
+    /**
+     * Bad Request
+     */
+    400: MessageResponse;
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+};
+
+export type PatchAdminFileSharesByShortIdError = PatchAdminFileSharesByShortIdErrors[keyof PatchAdminFileSharesByShortIdErrors];
+
+export type PatchAdminFileSharesByShortIdResponses = {
+    /**
+     * OK
+     */
+    200: FileShareResponse;
+};
+
+export type PatchAdminFileSharesByShortIdResponse = PatchAdminFileSharesByShortIdResponses[keyof PatchAdminFileSharesByShortIdResponses];
 
 export type GetAdminInvitationsData = {
     body?: never;

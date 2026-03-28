@@ -156,7 +156,12 @@ const allNavigationItems = computed<NavigationItem[]>(() => [
         label: "存储",
         icon: "i-lucide-layers",
         to: "/dash/content/storages"
-      }
+      },
+      {
+        label: "文件分享",
+        icon: "i-lucide-upload",
+        to: "/dash/content/file-shares"
+      },
     ],
   },
   {

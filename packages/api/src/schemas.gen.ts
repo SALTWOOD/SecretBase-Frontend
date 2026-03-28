@@ -1238,6 +1238,155 @@ export const Fido2UserSchema = {
     }
 } as const;
 
+export const FileShareCreateRequestSchema = {
+    required: [
+        'bucket',
+        'key',
+        'fileName'
+    ],
+    type: 'object',
+    properties: {
+        bucket: {
+            type: 'string'
+        },
+        key: {
+            type: 'string'
+        },
+        fileName: {
+            type: 'string'
+        },
+        isPublic: {
+            type: 'boolean'
+        },
+        expiresAt: {
+            type: [
+                'null',
+                'string'
+            ],
+            format: 'date-time'
+        }
+    }
+} as const;
+
+export const FileShareListResponseSchema = {
+    required: [
+        'items'
+    ],
+    type: 'object',
+    properties: {
+        items: {
+            type: 'array',
+            items: {
+                $ref: '#/components/schemas/FileShareResponse'
+            }
+        },
+        totalCount: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        page: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        pageSize: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        }
+    }
+} as const;
+
+export const FileShareResponseSchema = {
+    required: [
+        'shortId',
+        'bucket',
+        'key',
+        'fileName'
+    ],
+    type: 'object',
+    properties: {
+        shortId: {
+            type: 'string'
+        },
+        bucket: {
+            type: 'string'
+        },
+        key: {
+            type: 'string'
+        },
+        fileName: {
+            type: 'string'
+        },
+        isPublic: {
+            type: 'boolean'
+        },
+        isEnabled: {
+            type: 'boolean'
+        },
+        ownerId: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        expiresAt: {
+            type: [
+                'null',
+                'string'
+            ],
+            format: 'date-time'
+        },
+        createdAt: {
+            type: 'string',
+            format: 'date-time'
+        }
+    }
+} as const;
+
+export const FileShareUpdateRequestSchema = {
+    type: 'object',
+    properties: {
+        isEnabled: {
+            type: [
+                'null',
+                'boolean'
+            ]
+        },
+        isPublic: {
+            type: [
+                'null',
+                'boolean'
+            ]
+        },
+        expiresAt: {
+            type: [
+                'null',
+                'string'
+            ],
+            format: 'date-time'
+        },
+        fileName: {
+            type: [
+                'null',
+                'string'
+            ]
+        }
+    }
+} as const;
+
 export const HomeBackgroundResponseSchema = {
     type: 'object',
     properties: {
