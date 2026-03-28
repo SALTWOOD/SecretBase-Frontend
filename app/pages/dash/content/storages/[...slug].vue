@@ -150,11 +150,6 @@ const handleItemClick = async (item: FileObject) => {
     const segments = [bucketName.value, ...item.key.split("/").filter(Boolean)];
     router.push(`/dash/content/storages/${segments.join("/")}`);
   } else {
-    if (item.thumbnailUrl) {
-      window.open(item.thumbnailUrl);
-      return;
-    }
-
     const response = await getAdminStorageBucketByBucketNamePresignDownload({
       path: { bucketName: bucketName.value },
       query: { key: item.key },
