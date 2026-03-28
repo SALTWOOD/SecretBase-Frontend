@@ -833,6 +833,10 @@ export type UpdateUserStatusBody = {
     isBanned?: boolean;
 };
 
+export type UrlResponse = {
+    url?: string;
+};
+
 export type User = {
     id?: number | string;
     username?: string;
@@ -2872,6 +2876,47 @@ export type GetAdminStorageBucketByBucketNameFileResponses = {
 };
 
 export type GetAdminStorageBucketByBucketNameFileResponse = GetAdminStorageBucketByBucketNameFileResponses[keyof GetAdminStorageBucketByBucketNameFileResponses];
+
+export type GetAdminStorageBucketByBucketNameThumbnailData = {
+    body?: never;
+    path: {
+        bucketName: string;
+    };
+    query?: {
+        key?: string;
+    };
+    url: '/admin/storage/bucket/{bucketName}/thumbnail';
+};
+
+export type GetAdminStorageBucketByBucketNameThumbnailErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+    /**
+     * Internal Server Error
+     */
+    500: MessageResponse;
+};
+
+export type GetAdminStorageBucketByBucketNameThumbnailError = GetAdminStorageBucketByBucketNameThumbnailErrors[keyof GetAdminStorageBucketByBucketNameThumbnailErrors];
+
+export type GetAdminStorageBucketByBucketNameThumbnailResponses = {
+    /**
+     * OK
+     */
+    200: UrlResponse;
+};
+
+export type GetAdminStorageBucketByBucketNameThumbnailResponse = GetAdminStorageBucketByBucketNameThumbnailResponses[keyof GetAdminStorageBucketByBucketNameThumbnailResponses];
 
 export type PostAdminStorageBucketByBucketNamePresignUploadData = {
     body: PresignUploadRequest;

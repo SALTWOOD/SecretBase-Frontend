@@ -3144,6 +3144,15 @@ export const UpdateUserStatusBodySchema = {
     }
 } as const;
 
+export const UrlResponseSchema = {
+    type: 'object',
+    properties: {
+        url: {
+            type: 'string'
+        }
+    }
+} as const;
+
 export const UserSchema = {
     type: 'object',
     properties: {

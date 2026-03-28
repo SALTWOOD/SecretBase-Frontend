@@ -1,5 +1,11 @@
 <script setup lang="ts">
-import { MdEditor, NormalToolbar, DropdownToolbar, type Themes, type ToolbarNames } from "md-editor-v3";
+import {
+  MdEditor,
+  NormalToolbar,
+  DropdownToolbar,
+  type Themes,
+  type ToolbarNames,
+} from "md-editor-v3";
 import "md-editor-v3/lib/style.css";
 
 interface ToolConfig {
