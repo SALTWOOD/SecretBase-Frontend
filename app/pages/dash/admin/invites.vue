@@ -81,9 +81,9 @@
 
       <div class="mt-4 flex justify-center">
         <UPagination
-          v-model:page="page.page"
-          :total="page.total"
-          :items-per-page="page.size"
+          v-model:page="page"
+          :total="totalCount"
+          :items-per-page="pageSize"
         />
       </div>
     </UCard>
@@ -137,11 +137,9 @@ const invitationUsers = ref({
   },
 });
 
-const page = ref({
-  page: 1,
-  size: 20,
-  total: 0,
-});
+const page = ref(1);
+const pageSize = ref(20);
+const totalCount = ref(0);
 
 const form: Ref<FieldConfig[]> = ref([
   {
@@ -186,13 +184,13 @@ const columns = [
 const refresh = async () => {
   const response = await getAdminInvitations({
     query: {
-      page: page.value.page,
-      size: page.value.size,
+      page: page.value,
+      size: pageSize.value,
     },
   });
   if (!response.error && response.data) {
     inviteCodes.value = response.data;
-    page.value.total = parseInt(
+    totalCount.value = parseInt(
       response.response.headers.get("x-total-count") || "0",
       10,
     );
@@ -326,8 +324,8 @@ const getActionItems = (row: any) => [
 ];
 
 watch(
-  () => page.value.page,
-  () => refresh(),
+  () => page,
+  refresh,
 );
 onMounted(refresh);
 </script>
