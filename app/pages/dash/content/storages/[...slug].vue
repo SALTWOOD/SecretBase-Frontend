@@ -2,6 +2,7 @@
 import {
   getAdminStorageBucketByBucketNameFiles,
   getAdminStorageBucketByBucketNamePresignDownload,
+  getAdminStorageBucketByBucketNameThumbnail,
   type S3ObjectResponse,
 } from "~~/packages/api/src";
 
@@ -88,11 +89,10 @@ const preloadThumbnails = async (items: FileObject[]) => {
     await Promise.all(
       chunk.map(async (item) => {
         try {
-          const response =
-            await getAdminStorageBucketByBucketNamePresignDownload({
-              path: { bucketName: bucketName.value },
-              query: { key: item.key },
-            });
+          const response = await getAdminStorageBucketByBucketNameThumbnail({
+            path: { bucketName: bucketName.value },
+            query: { key: item.key },
+          });
           if (response.data?.url) {
             item.thumbnailUrl = response.data.url;
           }
