@@ -185,7 +185,7 @@ onMounted(() => {
     <UCard>
       <template #header>
         <div class="flex items-center justify-between">
-          <h2 class="text-xl font-semibold font-mono">文件分享</h2>
+          <h2 class="text-xl">文件分享</h2>
           <UButton
             icon="i-lucide-plus"
             label="创建新分享"
