@@ -16,7 +16,7 @@ const tfModal = ref();
 
 async function loadShortcodes() {
   const response = await getShortcodes();
-  if (response.error) throw (response.error as Error);
+  if (response.error) throw response.error as Error;
   if (!response.data) return;
   const list = response.data.shortcodes!;
 

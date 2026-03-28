@@ -1,23 +1,23 @@
 <script setup lang="ts">
 // Define props
 const props = defineProps<{
-  label?: string
-  icon?: string
-  color?: string
-  title?: string
-}>()
+  label?: string;
+  icon?: string;
+  color?: string;
+  title?: string;
+}>();
 
 // Define emits: returns true for confirm, false for cancel
 const emit = defineEmits<{
-  (e: 'confirm', value: boolean): void
-}>()
+  (e: "confirm", value: boolean): void;
+}>();
 
-const open = ref(false)
+const open = ref(false);
 
 const handleAction = (result: boolean) => {
-  open.value = false
-  emit('confirm', result)
-}
+  open.value = false;
+  emit("confirm", result);
+};
 </script>
 
 <template>
@@ -30,8 +30,12 @@ const handleAction = (result: boolean) => {
     />
 
     <template #content>
-      <div class="p-3 w-48 shadow-xl border border-default bg-(--ui-bg-elevated)">
-        <p class="text-sm font-medium mb-3">{{ title || 'Confirm this action?' }}</p>
+      <div
+        class="p-3 w-48 shadow-xl border border-default bg-(--ui-bg-elevated)"
+      >
+        <p class="text-sm font-medium mb-3">
+          {{ title || "Confirm this action?" }}
+        </p>
         <div class="flex justify-end gap-2">
           <UButton
             size="xs"

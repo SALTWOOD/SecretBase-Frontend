@@ -1,27 +1,36 @@
 <script setup lang="ts">
 // Defined interfaces based on your backend schema
-import { type BucketResponse, getAdminStorageBuckets } from "~~/packages/api/src";
+import {
+  type BucketResponse,
+  getAdminStorageBuckets,
+} from "~~/packages/api/src";
 
 const pending = ref(true);
 const buckets: Ref<BucketResponse[]> = ref([]);
 
 // Row actions generator
-const getActionItems = (row: BucketResponse) => [[
-  { label: '进入', icon: 'i-lucide-folder-open', onSelect: () => navigateTo(`storages/${row.name}`) },
-  { label: '设置', icon: 'i-lucide-settings' },
-  { label: '删除', icon: 'i-lucide-trash', color: 'error' }
-]];
+const getActionItems = (row: BucketResponse) => [
+  [
+    {
+      label: "进入",
+      icon: "i-lucide-folder-open",
+      onSelect: () => navigateTo(`storages/${row.name}`),
+    },
+    { label: "设置", icon: "i-lucide-settings" },
+    { label: "删除", icon: "i-lucide-trash", color: "error" },
+  ],
+];
 
 const columns = [
-  { id: 'name', accessorKey: 'key', header: '名称' },
-  { id: 'creation-date', accessorKey: 'creationDate', header: '创建日期' },
-  { id: 'actions', accessorKey: 'actions', header: '操作' },
-]
+  { id: "name", accessorKey: "key", header: "名称" },
+  { id: "creation-date", accessorKey: "creationDate", header: "创建日期" },
+  { id: "actions", accessorKey: "actions", header: "操作" },
+];
 
 const formatSize = (bytes: number) => {
-  if (bytes === 0) return '0 B';
+  if (bytes === 0) return "0 B";
   const k = 1024;
-  const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+  const sizes = ["B", "KB", "MB", "GB", "TB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
 };
@@ -34,7 +43,7 @@ onMounted(async () => {
   }
   buckets.value = response.data;
   pending.value = false;
-})
+});
 </script>
 
 <template>

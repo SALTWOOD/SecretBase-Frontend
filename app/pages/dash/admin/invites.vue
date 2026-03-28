@@ -323,10 +323,7 @@ const getActionItems = (row: any) => [
   },
 ];
 
-watch(
-  () => page,
-  refresh,
-);
+watch(() => page, refresh);
 onMounted(refresh);
 </script>
 

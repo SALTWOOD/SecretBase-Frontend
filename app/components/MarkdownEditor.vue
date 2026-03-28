@@ -8,7 +8,7 @@ interface ToolConfig {
   title: string;
   icon: string;
   dropdownVisible?: boolean;
-  type: 'button' | 'dropdown';
+  type: "button" | "dropdown";
   onClick: (payload?: string) => void;
   options?: ToolOption[];
 }
@@ -62,7 +62,9 @@ const customTools = ref<ToolConfig[]>([
   // },
 ]);
 
-const theme = computed<Themes>(() => (colorMode.value === "dark" ? "dark" : "light"));
+const theme = computed<Themes>(() =>
+  colorMode.value === "dark" ? "dark" : "light",
+);
 
 const content = computed({
   get: () => props.modelValue,
@@ -83,7 +85,6 @@ const toolbars = computed<ToolbarNames[]>(() => [
 function handleAction(tool: ToolConfig, payload?: string) {
   tool.onClick?.(payload);
 }
-
 </script>
 
 <template>
@@ -113,7 +114,7 @@ function handleAction(tool: ToolConfig, payload?: string) {
             v-else-if="tool.type === 'dropdown'"
             :title="tool.title"
             :visible="tool.dropdownVisible"
-            :onChange="(v) => tool.dropdownVisible = v"
+            :onChange="(v) => (tool.dropdownVisible = v)"
           >
             <div class="flex items-center justify-center size-6">
               <Icon :name="tool.icon" />

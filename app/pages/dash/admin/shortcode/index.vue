@@ -1,72 +1,79 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from "vue";
 import {
   getAdminShortcodes,
   deleteAdminShortcodesById,
   patchAdminShortcodesById,
-  type ShortcodeDetail, postAdminShortcodes
+  type ShortcodeDetail,
+  postAdminShortcodes,
 } from "~~/packages/api/src";
 
 // --- 状态管理 ---
-const shortcodes = ref<ShortcodeDetail[]>([])
-const isLoading = ref(true)
-const searchQuery = ref('')
-const isDeleting = ref<string | number | null>(null)
+const shortcodes = ref<ShortcodeDetail[]>([]);
+const isLoading = ref(true);
+const searchQuery = ref("");
+const isDeleting = ref<string | number | null>(null);
 
 // --- 数据获取 ---
 const fetchList = async () => {
-  isLoading.value = true
+  isLoading.value = true;
   try {
-    const { data } = await getAdminShortcodes()
-    shortcodes.value = data || []
-    console.log("[Log] Shortcodes fetched successfully.")
+    const { data } = await getAdminShortcodes();
+    shortcodes.value = data || [];
+    console.log("[Log] Shortcodes fetched successfully.");
   } catch (error) {
-    console.error("[Error] Failed to fetch shortcodes:", error)
+    console.error("[Error] Failed to fetch shortcodes:", error);
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
-}
+};
 
 // --- 搜索过滤 ---
 const filteredShortcodes = computed(() => {
-  if (!searchQuery.value) return shortcodes.value
-  const q = searchQuery.value.toLowerCase()
-  return shortcodes.value.filter(s =>
-    s.name?.toLowerCase().includes(q) ||
-    s.displayName?.toLowerCase().includes(q)
-  )
-})
+  if (!searchQuery.value) return shortcodes.value;
+  const q = searchQuery.value.toLowerCase();
+  return shortcodes.value.filter(
+    (s) =>
+      s.name?.toLowerCase().includes(q) ||
+      s.displayName?.toLowerCase().includes(q),
+  );
+});
 
 // --- 动作逻辑 (待实现) ---
 const handleToggleStatus = async (item: ShortcodeDetail) => {
   // TODO: 调用 patchAdminShortcodesById 修改 isEnabled
-  console.log("[Log] Toggle status for:", item.id)
-}
+  console.log("[Log] Toggle status for:", item.id);
+};
 
 const handleDelete = async (id: string | number) => {
   // TODO: 调用 deleteAdminShortcodesById
-  isDeleting.value = id
-  console.log("[Log] Deleting shortcode:", id)
-}
+  isDeleting.value = id;
+  console.log("[Log] Deleting shortcode:", id);
+};
 
 const handleEdit = (id: string | number) => {
-  navigateTo(`shortcode/editor?id=${id}`)
-}
+  navigateTo(`shortcode/editor?id=${id}`);
+};
 
 onMounted(() => {
-  fetchList()
-})
+  fetchList();
+});
 </script>
 
 <template>
   <UContainer class="py-8">
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+    <div
+      class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8"
+    >
       <div>
         <h1 class="text-2xl font-bold text-gray-100 flex items-center gap-2">
           <UIcon name="i-heroicons-cpu-chip" class="text-primary" />
           管理简码
         </h1>
-        <p class="text-sm text-gray-500 mt-1">简码由前端浏览器直接执行的客户端代码和后端通过 Jint 引擎执行的后端代码组成。</p>
+        <p class="text-sm text-gray-500 mt-1">
+          简码由前端浏览器直接执行的客户端代码和后端通过 Jint
+          引擎执行的后端代码组成。
+        </p>
       </div>
 
       <div class="flex items-center gap-3">
@@ -84,11 +91,17 @@ onMounted(() => {
       </div>
     </div>
 
-    <div v-if="isLoading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div
+      v-if="isLoading"
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+    >
       <USkeleton v-for="i in 6" :key="i" class="h-40 w-full bg-gray-800/50" />
     </div>
 
-    <div v-else-if="filteredShortcodes.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div
+      v-else-if="filteredShortcodes.length > 0"
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+    >
       <UCard
         v-for="item in filteredShortcodes"
         :key="item.id"
@@ -97,17 +110,25 @@ onMounted(() => {
         <template #header>
           <div class="flex items-start justify-between">
             <div class="overflow-hidden">
-              <h3 class="font-bold text-gray-200 truncate">{{ item.displayName || item.name }}</h3>
-              <p class="text-[10px] font-mono text-gray-500 truncate">{{ item.name }}</p>
+              <h3 class="font-bold text-gray-200 truncate">
+                {{ item.displayName || item.name }}
+              </h3>
+              <p class="text-[10px] font-mono text-gray-500 truncate">
+                {{ item.name }}
+              </p>
             </div>
-            <UBadge :color="item.isEnabled ? 'success' : 'primary'" variant="subtle" size="sm">
-              {{ item.isEnabled ? 'Active' : 'Disabled' }}
+            <UBadge
+              :color="item.isEnabled ? 'success' : 'primary'"
+              variant="subtle"
+              size="sm"
+            >
+              {{ item.isEnabled ? "Active" : "Disabled" }}
             </UBadge>
           </div>
         </template>
 
         <p class="text-sm text-gray-400 line-clamp-2 min-h-[40px]">
-          {{ item.description || 'No description provided.' }}
+          {{ item.description || "No description provided." }}
         </p>
 
         <template #footer>
@@ -157,7 +178,10 @@ onMounted(() => {
       </UCard>
     </div>
 
-    <div v-else class="flex flex-col items-center justify-center py-24 bg-[#21252b] rounded-xl border-2 border-dashed border-gray-700">
+    <div
+      v-else
+      class="flex flex-col items-center justify-center py-24 bg-[#21252b] rounded-xl border-2 border-dashed border-gray-700"
+    >
       <UIcon name="i-heroicons-inbox" class="h-12 w-12 text-gray-600 mb-4" />
       <p class="text-gray-400">没有任何简码</p>
       <UButton variant="link" label="Clear search" @click="searchQuery = ''" />
@@ -168,6 +192,6 @@ onMounted(() => {
 <style scoped>
 /* 保持与编辑器一致的 JetBrains Mono 风格 */
 .font-mono {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
 }
 </style>
