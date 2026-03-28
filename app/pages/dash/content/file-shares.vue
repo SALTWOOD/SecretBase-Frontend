@@ -1,10 +1,10 @@
 <script setup lang="ts">
-
 import {
   deleteAdminFileSharesByShortId,
   type FileShareResponse,
   getAdminFileShares,
-  patchAdminFileSharesByShortId, postAdminFileShares
+  patchAdminFileSharesByShortId,
+  postAdminFileShares
 } from "~~/packages/api/src";
 import type { FieldConfig } from "~/types/field-config";
 import ConfirmButton from "~/components/ConfirmButton.vue";
@@ -63,18 +63,18 @@ const formConfig: Ref<FieldConfig[]> = ref([
       { label: "1h", value: 1 },
       { label: "1d", value: 24 },
       { label: "7d", value: 168 },
+      { label: "30d", value: 720 },
       { label: "永久", value: 0 },
     ],
   },
 ]);
 
-// 表单响应式状态
 const formState = ref({
   bucket: "",
   key: "",
   fileName: "",
   isPublic: true,
-  expiresInHours: 24,
+  hoursValid: 24,
   isEnabled: true
 });
 
@@ -82,32 +82,72 @@ const isOpen = ref(false)
 const isLoading = ref(false)
 const isEditMode = ref(false);
 const isSubmitting = ref(false);
-const fileShares: Ref<FileShareResponse[]> = ref([]) // Logic to be implemented by user
+const currentEditId = ref<string | null>(null);
+const fileShares: Ref<FileShareResponse[]> = ref([])
 const totalCount = ref(0)
 const page = ref(1)
 const pageSize = ref(20)
 const toast = useToast()
 
+const openForm = (edit: boolean, row?: FileShareResponse) => {
+  isEditMode.value = edit;
+  if (edit && row) {
+    currentEditId.value = row.shortId;
+    formState.value = {
+      bucket: row.bucket ?? "",
+      key: row.key ?? "",
+      fileName: row.fileName ?? "",
+      isPublic: row.isPublic ?? true,
+      hoursValid: 0,
+      isEnabled: row.isEnabled ?? true
+    };
+  } else {
+    currentEditId.value = null;
+    formState.value = {
+      bucket: "",
+      key: "",
+      fileName: "",
+      isPublic: true,
+      hoursValid: 24,
+      isEnabled: true
+    };
+  }
+  isOpen.value = true;
+};
+
 const handleFormSubmit = async (data: Record<string, any>) => {
   isSubmitting.value = true;
   try {
-    const response = await postAdminFileShares({
-      body: {
-        key: data.key,
-        bucket: data.bucket,
-        fileName: data.fileName,
-        isPublic: data.isPublic,
-        expiresAt: data.hoursValid ? new Date(Date.now() + data.hoursValid * 60 * 60 * 1000) : undefined
-      }
-    });
-
-    if (response.error) throw new Error(response.error.message);
-
-    toast.add({ title: 'Success', description: 'File share created.', color: 'success' });
+    if (isEditMode.value && currentEditId.value) {
+      const response = await patchAdminFileSharesByShortId({
+        path: { shortId: currentEditId.value },
+        body: {
+          key: data.key,
+          bucket: data.bucket,
+          fileName: data.fileName,
+          isPublic: data.isPublic,
+          isEnabled: data.isEnabled
+        }
+      });
+      if (response.error) throw new Error(response.error.message);
+      toast.add({ title: 'Success', description: 'Changes saved.', color: 'success' });
+    } else {
+      const response = await postAdminFileShares({
+        body: {
+          key: data.key,
+          bucket: data.bucket,
+          fileName: data.fileName,
+          isPublic: data.isPublic,
+          expiresAt: data.hoursValid ? new Date(Date.now() + data.hoursValid * 60 * 60 * 1000) : undefined
+        }
+      });
+      if (response.error) throw new Error(response.error.message);
+      toast.add({ title: 'Success', description: 'File share created.', color: 'success' });
+    }
     isOpen.value = false;
     await fetchData();
   } catch (e: any) {
-    toast.add({ title: 'Error', description: e.message || 'Failed to create', color: 'error' });
+    toast.add({ title: 'Error', description: e.message || 'Operation failed', color: 'error' });
   } finally {
     isSubmitting.value = false;
   }
@@ -189,7 +229,7 @@ onMounted(() => {
           <UButton
             icon="i-lucide-plus"
             label="创建新分享"
-            @click="isOpen = true"
+            @click="openForm(false)"
           />
         </div>
       </template>
@@ -252,6 +292,12 @@ onMounted(() => {
               color="secondary"
               @click="copyLink(row.original.shortId)"
             />
+            <UButton
+              icon="i-lucide-pencil"
+              variant="ghost"
+              color="neutral"
+              @click="openForm(true, row.original)"
+            />
             <ConfirmButton
               icon="i-lucide-trash"
               color="error"
@@ -264,7 +310,7 @@ onMounted(() => {
 
       <template #footer>
         <div class="flex justify-center">
-          <UPagination v-model="page" :total="totalCount" :page-count="pageSize" />
+          <UPagination v-model:page="page" :total="totalCount" :items-per-page="pageSize" />
         </div>
       </template>
     </UCard>
