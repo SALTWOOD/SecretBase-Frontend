@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {
-  getAdminStorageBucketByBucketNameFiles, getAdminStorageBucketByBucketNamePresignDownload,
+  getAdminStorageBucketByBucketNameFiles,
+  getAdminStorageBucketByBucketNamePresignDownload,
   type S3ObjectResponse
 } from "~~/packages/api/src";
 
@@ -34,23 +35,62 @@ const dropdownMenu = (row: any) => [[
 type FileObject = S3ObjectResponse & { type: 'directory' | 'file' };
 
 const allItems = ref<FileObject[]>([]);
-
 const searchQuery = ref('')
+const isRecursiveSearch = ref(false)
+let searchTimer: number | null = null
+
+// 数据获取
+const fetchItems = async (isSearch: boolean = false) => {
+  const response = await getAdminStorageBucketByBucketNameFiles({
+    path: { bucketName: bucketName.value },
+    query: {
+      prefix: currentPath.value,
+      recursive: isSearch && isRecursiveSearch.value
+    }
+  });
+
+  if (response.error || !response.data) return;
+
+  allItems.value = response.data.map((i: S3ObjectResponse) => ({
+    ...i,
+    type: i.key.endsWith('/') ? 'directory' : 'file',
+  }));
+}
+
+const triggerSearch = () => {
+  if (searchTimer) clearTimeout(searchTimer)
+  fetchItems(!!searchQuery.value)
+}
+
+watch(searchQuery, (val) => {
+  if (searchTimer) clearTimeout(searchTimer)
+  if (!val) {
+    triggerSearch()
+    return
+  }
+  searchTimer = setTimeout(() => {
+    triggerSearch()
+  }, 1500)
+})
+
+const onSearchEnter = () => {
+  triggerSearch()
+}
 
 const displayedItems = computed(() => {
-  let filtered = allItems.value
-  if (!searchQuery.value) {
-    filtered = filtered.filter(item => {
+  const q = searchQuery.value.trim().toLowerCase()
+  if (!q) {
+    return allItems.value.filter(item => {
       const path = currentPath.value
       if (!item.key.startsWith(path) || item.key === path) return false
       const relativeKey = item.key.substring(path.length)
-      const parts = relativeKey.split('/').filter(Boolean)
-      return parts.length === 1
+      return !relativeKey.includes('/') || relativeKey.endsWith('/')
     })
-  } else {
-    filtered = filtered.filter(item => item.key.toLowerCase().includes(searchQuery.value.toLowerCase()))
   }
-  return filtered
+
+  return allItems.value.filter(item =>
+    getDisplayName(item.key).toLowerCase().includes(q)
+  )
 })
 
 const columns = [
@@ -66,49 +106,48 @@ const handleItemClick = async (item: any) => {
     router.push(`/dash/content/storages/${segments.join('/')}`)
   } else {
     const response = await getAdminStorageBucketByBucketNamePresignDownload({
-      path: {
-        bucketName: bucketName.value,
-      },
-      query: {
-        key: item.key
-      }
+      path: { bucketName: bucketName.value },
+      query: { key: item.key }
     });
     if (response.error || !response.data) return;
-    const url = response.data.url;
-    window.open(url);
+    window.open(response.data.url);
   }
 }
 
 const formatSize = (bytes: bigint) => {
   if (bytes <= 0n) return '--'
-
   const k = 1024n
-  const sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+  const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
   const numBytes = Number(bytes)
   const i = Math.floor(Math.log(numBytes) / Math.log(Number(k)))
   const value = numBytes / Math.pow(Number(k), i)
-
   return `${value.toFixed(2)} ${sizes[i]}`
 }
 
 const formatModified = (row: any) => {
-  return row.type === 'directory'
+  return row.type === 'directory' || !row.lastModified
     ? '--'
     : new Date(row.lastModified).toLocaleString();
 }
 
 const getDisplayName = (key: string) => key.split('/').filter(Boolean).pop() || ''
 
-onMounted(async () => {
-  const response = await getAdminStorageBucketByBucketNameFiles({
-    path: { bucketName: bucketName.value },
-    query: { prefix: currentPath.value }
-  });
-  if (response.error || !response.data) return;
-  allItems.value = response.data.map((i: S3ObjectResponse) => ({
-    ...i,
-    type: i.key.endsWith('/') ? 'directory' : 'file',
-  }));
+// 初始化加载
+onMounted(() => {
+  fetchItems(false)
+})
+
+// 监听路径变化：清空搜索并重载
+watch(currentPath, () => {
+  searchQuery.value = ''
+  fetchItems(false)
+})
+
+// 监听递归搜索选项
+watch(isRecursiveSearch, () => {
+  if (searchQuery.value) {
+    triggerSearch()
+  }
 })
 </script>
 
@@ -133,14 +172,25 @@ onMounted(async () => {
         </div>
 
         <div class="flex items-center gap-3">
-          <UInput v-model="searchQuery" icon="i-lucide-search" placeholder="搜索当前桶..." class="w-64" clearable />
+          <div class="flex items-center gap-2 mr-2">
+            <UCheckbox v-model="isRecursiveSearch" size="sm" />
+            <span class="text-xs text-gray-500">包含子目录</span>
+          </div>
+          <UInput
+            v-model="searchQuery"
+            icon="i-lucide-search"
+            placeholder="在当前位置搜索..."
+            class="w-64"
+            clearable
+            @keydown.enter="onSearchEnter"
+          />
           <UButton icon="i-lucide-plus" label="新建文件夹" color="secondary" variant="ghost" />
           <UButton icon="i-lucide-upload" label="上传文件" color="primary" />
         </div>
       </div>
     </header>
 
-    <div v-if="currentPath" class="mb-4">
+    <div v-if="currentPath && !searchQuery" class="mb-4">
       <UButton icon="i-lucide-arrow-left" variant="link" label="返回上一级" @click="router.back()" />
     </div>
 

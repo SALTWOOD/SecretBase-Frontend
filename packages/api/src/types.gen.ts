@@ -2554,6 +2554,7 @@ export type GetAdminStorageBucketByBucketNameFilesData = {
     query?: {
         prefix?: string;
         maxKeys?: number | string;
+        recursive?: boolean;
     };
     url: '/admin/storage/bucket/{bucketName}/files';
 };
