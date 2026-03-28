@@ -309,7 +309,10 @@ watch(isVisible, (val) => {
                     <span class="truncate">{{ getDisplayName(item.key) }}</span>
                   </td>
                   <td class="p-3 text-gray-500 dark:text-zinc-500 truncate">
-                    {{ item.lastModified ? new Date(item.lastModified).toLocaleString() : '--' }}
+                    {{ item.type === 'directory'
+                        ? '--'
+                        : (item.lastModified?.toLocaleString() ?? '--')
+                    }}
                   </td>
                   <td class="p-3 text-gray-500 dark:text-zinc-500 truncate">{{ item.type === 'directory' ? '文件夹' : '文件' }}</td>
                   <td class="p-3 text-right text-gray-500 dark:text-zinc-500 font-mono">{{ formatSize(item.size as bigint) }}</td>
