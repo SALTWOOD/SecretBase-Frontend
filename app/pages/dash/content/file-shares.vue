@@ -221,8 +221,8 @@ onMounted(() => {
         </template>
 
         <template #is-public-cell="{ row }">
-          <UBadge :color="row.original.isPublic ? 'success' : 'info'" size="sm">
-            {{ row.original.isPublic ? 'Public' : 'Private' }}
+          <UBadge :color="row.original.isPublic ? 'success' : 'info'" size="md">
+            {{ row.original.isPublic ? '公开' : '私有' }}
           </UBadge>
         </template>
 
