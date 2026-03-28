@@ -1,9 +1,15 @@
 <script setup lang="ts">
-import { ref, computed, nextTick, watch } from 'vue'
+import { ref, computed, nextTick, watch, onMounted } from 'vue'
 import {
   X, Search, Folder, ChevronRight, CornerDownLeft,
-  Database, File
+  Database, File, Loader2
 } from 'lucide-vue-next'
+import {
+  getAdminStorageBuckets,
+  getAdminStorageBucketByBucketNameFiles,
+  type S3ObjectResponse,
+  type BucketResponse
+} from "~~/packages/api/src";
 
 interface Props {
   selectionMode?: 'file' | 'directory' | 'both'
@@ -16,12 +22,12 @@ const props = withDefaults(defineProps<Props>(), {
 const isVisible = defineModel<boolean>({ default: false })
 const emit = defineEmits<{ (e: 'select', s3Url: string): void }>()
 
-const buckets = ref([
-  { name: 'media-assets', region: 'ap-east-1' },
-  { name: 'user-uploads', region: 'ap-east-1' }
-])
+const buckets = ref<BucketResponse[]>([])
+const allFiles = ref<(S3ObjectResponse & { type: 'directory' | 'file' })[]>([])
+const isLoading = ref(false)
+const searchQuery = ref('')
 
-const selectedBucket = ref(buckets.value[0]?.name)
+const selectedBucket = ref('')
 const currentPath = ref('')
 const selectedFileKey = ref('')
 
@@ -30,32 +36,51 @@ const isEditingPath = ref(false)
 const pathInputRef = ref<HTMLInputElement | null>(null)
 const pathInputValue = ref('')
 
-// 数据
-const allFiles = ref([
-  { key: 'projects/', type: 'directory', size: '-', date: '2026-03-28 19:00' },
-  { key: 'projects/secret-base/', type: 'directory', size: '-', date: '2026-03-28 19:05' },
-  { key: 'projects/logo.png', type: 'file', size: '120 KB', date: '2026-03-28 19:10' },
-  { key: 'logo-final.png', type: 'file', size: '512.0 KB', date: '2026-03-28 19:00' },
-  { key: 'readme.md', type: 'file', size: '1.2 KB', date: '2026-03-28 20:00' }
-])
+// 获取所有存储桶
+const fetchBuckets = async () => {
+  const response = await getAdminStorageBuckets();
+  if (response.data) {
+    buckets.value = response.data;
+    if (response.data.length > 0 && !selectedBucket.value) {
+      selectedBucket.value = response.data[0]?.name!;
+    }
+  }
+}
+
+// 获取当前路径下的文件
+const fetchFiles = async () => {
+  if (!selectedBucket.value) return;
+
+  isLoading.value = true;
+  const response = await getAdminStorageBucketByBucketNameFiles({
+    path: { bucketName: selectedBucket.value },
+    query: {
+      prefix: currentPath.value,
+      recursive: false
+    }
+  });
+
+  if (response.data) {
+    allFiles.value = response.data.map(i => ({
+      ...i,
+      type: i.key.endsWith('/') ? 'directory' : 'file'
+    }));
+  }
+  isLoading.value = false;
+}
 
 const displayedItems = computed(() => {
-  const prefix = currentPath.value
+  const q = searchQuery.value.trim().toLowerCase();
 
-  return allFiles.value
-    .filter(item => {
-      if (!item.key.startsWith(prefix) || item.key === prefix) return false
-      const relativePath = item.key.slice(prefix.length)
-      const parts = relativePath.split('/')
-      return parts.length === 1 || (parts.length === 2 && parts[1] === '')
-    })
-    .map(item => {
-      let displayName = item.key.slice(prefix.length)
-      if (item.type === 'directory' && displayName.endsWith('/')) {
-        displayName = displayName.slice(0, -1)
-      }
-      return { ...item, displayName }
-    })
+  // 只显示同目录的东西
+  let items = allFiles.value.filter(item => item.key !== currentPath.value);
+
+  if (q) {
+    items = items.filter(item =>
+      getDisplayName(item.key).toLowerCase().includes(q)
+    );
+  }
+  return items;
 })
 
 const breadcrumbs = computed(() => {
@@ -72,7 +97,21 @@ const canConfirm = computed(() => {
   return true
 })
 
-// 交互
+const getDisplayName = (key: string) => {
+  const parts = key.split('/').filter(Boolean);
+  return parts.pop() || '';
+}
+
+const formatSize = (bytes?: bigint) => {
+  if (!bytes || bytes <= 0n) return '--'
+  const k = 1024n
+  const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
+  const numBytes = Number(bytes)
+  const i = Math.floor(Math.log(numBytes) / Math.log(Number(k)))
+  const value = numBytes / Math.pow(Number(k), i)
+  return `${value.toFixed(2)} ${sizes[i]}`
+}
+
 const navigateToBreadcrumb = (index: number) => {
   const parts = breadcrumbs.value.slice(0, index + 1)
   currentPath.value = parts.join('/') + '/'
@@ -92,11 +131,10 @@ const togglePathEdit = () => {
 }
 
 const handleItemClick = (item: { key: string, type: string }) => {
-  if (props.selectionMode === 'both') {
-    selectedFileKey.value = item.key
-  } else if (item.type === props.selectionMode) {
-    selectedFileKey.value = item.key
-  } else if (item.type === 'directory') {
+  if (props.selectionMode === 'both'
+    || item.type === props.selectionMode
+    || item.type === 'directory'
+  ) {
     selectedFileKey.value = item.key
   }
 }
@@ -105,7 +143,7 @@ const handleItemDbClick = (item: { key: string, type: string }) => {
   if (item.type === 'directory') {
     currentPath.value = item.key
     selectedFileKey.value = ''
-  } else if (item.type === 'file') {
+  } else {
     if (props.selectionMode === 'file' || props.selectionMode === 'both') {
       selectedFileKey.value = item.key
       confirm()
@@ -143,9 +181,20 @@ const confirm = () => {
   }
 }
 
+onMounted(() => {
+  fetchBuckets()
+})
+
+watch([selectedBucket, currentPath], () => {
+  fetchFiles()
+})
+
 watch(isVisible, (val) => {
   if (typeof window !== 'undefined') {
     document.body.style.overflow = val ? 'hidden' : ''
+  }
+  if (val && buckets.value.length === 0) {
+    fetchBuckets()
   }
 })
 </script>
@@ -156,7 +205,7 @@ watch(isVisible, (val) => {
       <div v-if="isVisible" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
            @click.self="isVisible = false">
         <div
-          class="flex h-[600px] w-[960px] flex-col border border-gray-200 bg-white shadow-2xl dark:border-zinc-800 dark:bg-zinc-950">
+          class="flex h-150 w-240 flex-col border border-gray-200 bg-white shadow-2xl dark:border-zinc-800 dark:bg-zinc-950 overflow-hidden">
 
           <header
             class="flex h-10 items-center justify-between border-b border-gray-100 bg-gray-50/50 px-4 dark:border-zinc-800 dark:bg-zinc-900/50">
@@ -172,7 +221,7 @@ watch(isVisible, (val) => {
 
           <nav class="flex h-12 items-center gap-3 border-b border-gray-100 px-3 dark:border-zinc-800">
             <button class="rounded p-1.5 text-gray-500 hover:bg-gray-100 disabled:opacity-30 dark:hover:bg-zinc-800"
-                    :disabled="!currentPath"
+                    :disabled="!currentPath || isLoading"
                     title="返回上级"
                     @click="navigateBack"
             >
@@ -188,7 +237,7 @@ watch(isVisible, (val) => {
                   class="cursor-pointer text-xs font-semibold text-primary-600 hover:underline dark:text-primary-400"
                   @click="currentPath = ''; selectedFileKey = ''"
                 >
-                  {{ selectedBucket }}
+                  {{ selectedBucket || '选择存储桶' }}
                 </span>
                 <template v-for="(crumb, index) in breadcrumbs" :key="index">
                   <ChevronRight :size="12" class="mx-0.5 text-gray-300"/>
@@ -199,6 +248,7 @@ watch(isVisible, (val) => {
                   {{ crumb }}
                 </span>
                 </template>
+                <Loader2 v-if="isLoading" :size="12" class="ml-auto animate-spin text-gray-400" />
               </template>
               <input
                 v-else
@@ -213,13 +263,13 @@ watch(isVisible, (val) => {
             <div
               class="flex h-8 w-60 items-center gap-2 border border-gray-200 bg-gray-50 px-2 dark:border-zinc-700 dark:bg-zinc-900">
               <Search :size="14" class="text-gray-400"/>
-              <input type="text" placeholder="搜索文件..."
+              <input v-model="searchQuery" type="text" placeholder="搜索文件..."
                      class="w-full bg-transparent text-xs outline-none text-gray-900 dark:text-zinc-100"/>
             </div>
           </nav>
 
           <section class="flex flex-1 overflow-hidden">
-            <aside class="w-52 border-r border-gray-100 bg-gray-50/30 dark:border-zinc-800 dark:bg-zinc-900/20">
+            <aside class="w-52 border-r border-gray-100 bg-gray-50/30 dark:border-zinc-800 dark:bg-zinc-900/20 overflow-y-auto">
               <div class="p-4">
                 <h3 class="mb-3 text-[10px] font-bold uppercase tracking-wider text-gray-400">Buckets</h3>
                 <div
@@ -234,15 +284,15 @@ watch(isVisible, (val) => {
               </div>
             </aside>
 
-            <main class="flex-1 overflow-y-auto bg-white dark:bg-zinc-950">
-              <table class="w-full text-left text-xs">
+            <main class="flex-1 overflow-y-auto bg-white dark:bg-zinc-950 relative">
+              <table class="w-full text-left text-xs table-fixed">
                 <thead
                   class="sticky top-0 z-10 border-b border-gray-100 bg-white/80 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/80">
                 <tr class="text-gray-400 uppercase tracking-tighter">
-                  <th class="p-3 font-medium">名称</th>
-                  <th class="p-3 font-medium">修改日期</th>
-                  <th class="p-3 font-medium">类型</th>
-                  <th class="p-3 font-medium text-right">大小</th>
+                  <th class="p-3 font-medium w-[50%]">名称</th>
+                  <th class="p-3 font-medium">最后修改</th>
+                  <th class="p-3 font-medium w-20">类型</th>
+                  <th class="p-3 font-medium text-right w-24">大小</th>
                 </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-50 dark:divide-zinc-900">
@@ -253,17 +303,26 @@ watch(isVisible, (val) => {
                   @click="handleItemClick(item)"
                   @dblclick="handleItemDbClick(item)"
                 >
-                  <td class="flex items-center gap-3 p-3 font-medium text-gray-700 dark:text-zinc-200">
-                    <Folder v-if="item.type === 'directory'" :size="18" class="text-primary-500 fill-primary-500/20"/>
-                    <File v-else :size="18" class="text-gray-400"/>
-                    {{ item.displayName }}
+                  <td class="flex items-center gap-3 p-3 font-medium text-gray-700 dark:text-zinc-200 overflow-hidden">
+                    <Folder v-if="item.type === 'directory'" :size="18" class="text-primary-500 fill-primary-500/20 shrink-0"/>
+                    <File v-else :size="18" class="text-gray-400 shrink-0"/>
+                    <span class="truncate">{{ getDisplayName(item.key) }}</span>
                   </td>
-                  <td class="p-3 text-gray-500 dark:text-zinc-500">{{ item.date }}</td>
-                  <td class="p-3 text-gray-500 dark:text-zinc-500">{{ item.type === 'directory' ? '文件夹' : '文件' }}</td>
-                  <td class="p-3 text-right text-gray-500 dark:text-zinc-500">{{ item.size }}</td>
+                  <td class="p-3 text-gray-500 dark:text-zinc-500 truncate">
+                    {{ item.lastModified ? new Date(item.lastModified).toLocaleString() : '--' }}
+                  </td>
+                  <td class="p-3 text-gray-500 dark:text-zinc-500 truncate">{{ item.type === 'directory' ? '文件夹' : '文件' }}</td>
+                  <td class="p-3 text-right text-gray-500 dark:text-zinc-500 font-mono">{{ formatSize(item.size as bigint) }}</td>
+                </tr>
+                <tr v-if="displayedItems.length === 0 && !isLoading">
+                  <td colspan="4" class="p-10 text-center text-gray-400 italic">此目录下没有文件</td>
                 </tr>
                 </tbody>
               </table>
+
+              <div v-if="isLoading" class="absolute inset-0 bg-white/50 dark:bg-zinc-950/50 flex items-center justify-center z-20">
+                <Loader2 :size="24" class="animate-spin text-primary-500" />
+              </div>
             </main>
           </section>
 
@@ -301,13 +360,11 @@ watch(isVisible, (val) => {
 ::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; }
 .dark ::-webkit-scrollbar-thumb { background: #3f3f46; }
 
-/* 防止表格内容及导航文字在双击时被选中 */
 table, nav .group, aside .cursor-pointer {
   user-select: none;
   -webkit-user-select: none;
 }
 
-/* 恢复输入框的文字选择功能 */
 input {
   user-select: text !important;
   -webkit-user-select: text !important;
