@@ -1359,6 +1359,18 @@ export const FileShareResponseSchema = {
 export const FileShareUpdateRequestSchema = {
     type: 'object',
     properties: {
+        key: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        bucket: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
         isEnabled: {
             type: [
                 'null',

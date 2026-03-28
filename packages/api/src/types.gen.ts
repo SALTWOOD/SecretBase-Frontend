@@ -333,6 +333,8 @@ export type FileShareResponse = {
 };
 
 export type FileShareUpdateRequest = {
+    key?: null | string;
+    bucket?: null | string;
     isEnabled?: null | boolean;
     isPublic?: null | boolean;
     expiresAt?: null | Date;
