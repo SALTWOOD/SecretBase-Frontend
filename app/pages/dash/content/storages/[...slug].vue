@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {
+  deleteAdminStorageBucketByBucketNameFile,
   getAdminStorageBucketByBucketNameFiles,
   getAdminStorageBucketByBucketNamePresignDownload,
   getAdminStorageBucketByBucketNameThumbnail,
@@ -166,16 +167,24 @@ const displayedItems = computed(() => {
 const handleItemClick = async (item: FileObject) => {
   if (item.type === "directory") {
     const segments = [bucketName.value, ...item.key.split("/").filter(Boolean)];
-    router.push(`/dash/content/storages/${segments.join("/")}`);
-  } else {
-    const response = await getAdminStorageBucketByBucketNamePresignDownload({
-      path: { bucketName: bucketName.value },
-      query: { key: item.key },
-    });
-    if (response.error || !response.data) return;
-    window.open(response.data.url);
-  }
+    await router.push(`/dash/content/storages/${segments.join("/")}`);
+  } else await handleDownload(item);
 };
+
+const handleDownload = async (item: FileObject, download: boolean = false) => {
+  const url = await getPresignDownload(item, download);
+  if (!url) return;
+  window.open(url);
+}
+
+const getPresignDownload = async (item: FileObject, download: boolean = false) => {
+  const response = await getAdminStorageBucketByBucketNamePresignDownload({
+    path: { bucketName: bucketName.value },
+    query: { key: item.key, download },
+  });
+  if (response.error || !response.data) return null;
+  return response.data.url;
+}
 
 const handleUploadClick = () => {
   fileInput.value?.click();
@@ -264,6 +273,7 @@ const dropdownMenu = (row: FileObject) => [
       label: "下载",
       icon: "i-lucide-download",
       disabled: row.type === "directory",
+      onSelect: () => handleDownload(row, true),
     },
     {
       label: "重命名",
@@ -273,6 +283,10 @@ const dropdownMenu = (row: FileObject) => [
       label: "删除",
       icon: "i-lucide-trash",
       color: "error",
+      onSelect: () => deleteAdminStorageBucketByBucketNameFile({
+        path: { bucketName: bucketName.value },
+        query: { key: row.key }
+      }),
     },
   ],
 ];

@@ -2960,6 +2960,7 @@ export type GetAdminStorageBucketByBucketNamePresignDownloadData = {
     };
     query?: {
         key?: string;
+        download?: boolean;
         expirationMinutes?: number | string;
     };
     url: '/admin/storage/bucket/{bucketName}/presign-download';
