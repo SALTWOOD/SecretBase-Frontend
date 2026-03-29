@@ -3,7 +3,6 @@
 const props = defineProps<{
   label?: string;
   icon?: string;
-  color?: string;
   title?: string;
 }>();
 
@@ -25,7 +24,7 @@ const handleAction = (result: boolean) => {
     <UButton
       :icon="icon"
       :label="label"
-      :color="(color as any) || 'primary'"
+      color="primary"
       variant="ghost"
     />
 
@@ -39,14 +38,14 @@ const handleAction = (result: boolean) => {
         <div class="flex justify-end gap-2">
           <UButton
             size="xs"
-            color="neutral"
+            color="info"
             variant="ghost"
             label="Cancel"
             @click="handleAction(false)"
           />
           <UButton
             size="xs"
-            :color="(color as any) || 'primary'"
+            color="primary"
             label="Confirm"
             @click="handleAction(true)"
           />
