@@ -94,7 +94,7 @@ const formState = ref({
   isEnabled: true,
 });
 
-const dropdownMenu = [
+const dropdownMenu = (row: any) => [
   [
     { label: '复制链接', icon: 'i-lucide-clipboard', onSelect: () => copyLink(row.original.shortId) },
     { label: '编辑', icon: 'i-lucide-pencil', onSelect: () => openForm(true, row.original) },
@@ -372,7 +372,7 @@ onMounted(() => {
 
         <template #actions-cell="{ row }">
           <UDropdownMenu
-            :items="dropdownMenu"
+            :items="dropdownMenu(row)"
           >
             <UButton icon="i-lucide-more-horizontal" variant="ghost" color="neutral" />
           </UDropdownMenu>
