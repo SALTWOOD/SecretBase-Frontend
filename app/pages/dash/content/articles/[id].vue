@@ -11,6 +11,11 @@ const router = useRouter();
 const articleId = route.params.id as string;
 const isEdit = computed(() => articleId !== "create");
 const toast = useToast();
+const isFileSelectVisible = ref(false);
+
+const fillCoverUrl = (s3Url: string) => {
+  formState.coverUrl = s3Url;
+}
 
 const formState = reactive({
   title: "",
@@ -94,7 +99,11 @@ const handleSave = async () => {
       </div>
 
       <div class="flex items-center gap-3">
-        <UIcon name="i-lucide-image" class="size-4 text-muted shrink-0" />
+        <UButton
+          icon="i-lucide-image"
+          variant="ghost"
+          @click="isFileSelectVisible = true"
+        />
         <UInput
           v-model="formState.coverUrl"
           variant="outline"
@@ -105,11 +114,11 @@ const handleSave = async () => {
       </div>
 
       <div
-        v-if="previewCover || formState.coverUrl"
+        v-if="previewCover"
         class="relative w-full h-40 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800"
       >
         <img
-          :src="previewCover || formState.coverUrl"
+          :src="previewCover"
           alt="封面预览"
           class="w-full h-full object-cover"
           @error="($event.target as HTMLImageElement).style.display = 'none'"
@@ -131,4 +140,9 @@ const handleSave = async () => {
       @save="handleSave"
     />
   </UContainer>
+
+  <StorageFileSelect
+    @select="fillCoverUrl"
+    v-model="isFileSelectVisible"
+  />
 </template>
