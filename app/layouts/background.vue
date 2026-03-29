@@ -11,7 +11,7 @@ const { data: homeSettings } = await useAsyncData(
 
 const mainStyle = computed(() => {
   const image = homeSettings.value?.url;
-  if (!image) return {}; // 如果没图，就不应用样式
+  if (!image) return {};
 
   return {
     backgroundImage: `url('${image}')`,

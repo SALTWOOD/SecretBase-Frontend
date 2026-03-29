@@ -705,6 +705,13 @@ export type SeoMetaResponse = {
     robots?: string;
 };
 
+export type SettingListItem = {
+    key?: string;
+    type?: string;
+    defaultValue?: unknown;
+    currentValue?: unknown;
+};
+
 export type ShortcodeCreateModel = {
     name: string;
     displayName: string;
@@ -833,6 +840,10 @@ export type UpdateProfileModel = {
     newPassword?: null | string;
     username?: null | string;
     oldPassword?: null | string;
+};
+
+export type UpdateSettingBody = {
+    value?: unknown;
 };
 
 export type UpdateUserStatusBody = {
@@ -2540,6 +2551,103 @@ export type GetAdminInvitationsByIdUsersResponses = {
 };
 
 export type GetAdminInvitationsByIdUsersResponse = GetAdminInvitationsByIdUsersResponses[keyof GetAdminInvitationsByIdUsersResponses];
+
+export type GetAdminSettingsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/admin/settings';
+};
+
+export type GetAdminSettingsResponses = {
+    /**
+     * OK
+     */
+    200: Array<SettingListItem>;
+};
+
+export type GetAdminSettingsResponse = GetAdminSettingsResponses[keyof GetAdminSettingsResponses];
+
+export type DeleteAdminSettingsByKeyData = {
+    body?: never;
+    path: {
+        key: string;
+    };
+    query?: never;
+    url: '/admin/settings/{key}';
+};
+
+export type DeleteAdminSettingsByKeyErrors = {
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+};
+
+export type DeleteAdminSettingsByKeyError = DeleteAdminSettingsByKeyErrors[keyof DeleteAdminSettingsByKeyErrors];
+
+export type DeleteAdminSettingsByKeyResponses = {
+    /**
+     * No Content
+     */
+    204: unknown;
+};
+
+export type GetAdminSettingsByKeyData = {
+    body?: never;
+    path: {
+        key: string;
+    };
+    query?: never;
+    url: '/admin/settings/{key}';
+};
+
+export type GetAdminSettingsByKeyErrors = {
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+};
+
+export type GetAdminSettingsByKeyError = GetAdminSettingsByKeyErrors[keyof GetAdminSettingsByKeyErrors];
+
+export type GetAdminSettingsByKeyResponses = {
+    /**
+     * OK
+     */
+    200: SettingListItem;
+};
+
+export type GetAdminSettingsByKeyResponse = GetAdminSettingsByKeyResponses[keyof GetAdminSettingsByKeyResponses];
+
+export type PutAdminSettingsByKeyData = {
+    body: UpdateSettingBody;
+    path: {
+        key: string;
+    };
+    query?: never;
+    url: '/admin/settings/{key}';
+};
+
+export type PutAdminSettingsByKeyErrors = {
+    /**
+     * Bad Request
+     */
+    400: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+};
+
+export type PutAdminSettingsByKeyError = PutAdminSettingsByKeyErrors[keyof PutAdminSettingsByKeyErrors];
+
+export type PutAdminSettingsByKeyResponses = {
+    /**
+     * No Content
+     */
+    204: unknown;
+};
 
 export type GetAdminShortcodesData = {
     body?: never;

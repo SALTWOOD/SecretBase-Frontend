@@ -2711,6 +2711,20 @@ export const SeoMetaResponseSchema = {
     }
 } as const;
 
+export const SettingListItemSchema = {
+    type: 'object',
+    properties: {
+        key: {
+            type: 'string'
+        },
+        type: {
+            type: 'string'
+        },
+        defaultValue: {},
+        currentValue: {}
+    }
+} as const;
+
 export const ShortcodeCreateModelSchema = {
     required: [
         'name',
@@ -3169,6 +3183,13 @@ export const UpdateProfileModelSchema = {
                 'string'
             ]
         }
+    }
+} as const;
+
+export const UpdateSettingBodySchema = {
+    type: 'object',
+    properties: {
+        value: {}
     }
 } as const;
 
