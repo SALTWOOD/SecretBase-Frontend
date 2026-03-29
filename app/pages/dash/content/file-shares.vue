@@ -8,6 +8,7 @@ import {
 } from "~~/packages/api/src";
 import type { FieldConfig } from "~/types/field-config";
 import ConfirmButton from "~/components/ConfirmButton.vue";
+import { getDisplayValue } from "@nuxt/ui/utils";
 
 const columns = [
   { accessorKey: "short-id", header: "分享 ID" },
@@ -45,7 +46,7 @@ const formConfig: Ref<FieldConfig[]> = ref([
       icon: "i-lucide-file-plus-corner",
       tooltip: "选择 S3 存储中的文件",
       onClick: () => {
-
+        isFileSelectVisible.value = true;
       }
     }
 
@@ -90,12 +91,24 @@ const isOpen = ref(false);
 const isLoading = ref(false);
 const isEditMode = ref(false);
 const isSubmitting = ref(false);
+const isFileSelectVisible = ref(false);
 const currentEditId = ref<string | null>(null);
 const fileShares: Ref<FileShareResponse[]> = ref([]);
 const totalCount = ref(0);
 const page = ref(1);
 const pageSize = ref(20);
 const toast = useToast();
+
+const getDisplayName = (key: string): string =>
+  key.split("/").filter(Boolean).pop() || "";
+
+const fillFileField = (s3Url: string) => {
+  const url = new URL(s3Url);
+  const path = decodeURI(url.pathname);
+  formState.value.bucket = url.hostname;
+  formState.value.key = path;
+  formState.value.fileName = getDisplayName(path);
+}
 
 const openForm = (edit: boolean, row?: FileShareResponse) => {
   isEditMode.value = edit;
@@ -365,6 +378,11 @@ onMounted(() => {
       :loading="isSubmitting"
       :title="isEditMode ? '编辑分享链接' : '生成分享链接'"
       @success="handleFormSubmit"
+    />
+    <StorageFileSelect
+      v-model="isFileSelectVisible"
+      selectionMode="file"
+      @select="fillFileField"
     />
   </UContainer>
 </template>
