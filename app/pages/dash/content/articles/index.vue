@@ -44,7 +44,6 @@ onMounted(refresh);
       >发布新文章</UButton>
     </div>
 
-    <!-- 文章卡片列表 -->
     <div v-if="articles.length" class="grid gap-4">
       <article
         v-for="article in articles"
@@ -65,47 +64,47 @@ onMounted(refresh);
           <div class="flex items-start justify-between gap-4">
             <div class="min-w-0">
               <h2 class="text-lg font-semibold text-highlighted truncate">
-                {{ title }}
+                {{ article.title }}
               </h2>
               <p class="text-sm text-muted mt-1 line-clamp-2">
-                {{ content?.replace(/[#*`\->]/g, "").slice(0, 120) || "无内容" }}...
+                {{ article.content?.replace(/[#*`\->]/g, "").slice(0, 120) || "无内容" }}...
               </p>
             </div>
             <UBadge
-              :color="isPublished ? 'success' : 'neutral'"
+              :color="article.isPublished ? 'success' : 'neutral'"
               variant="subtle"
               size="sm"
             >
-              {{ isPublished ? "已发布" : "草稿" }}
+              {{ article.isPublished ? "已发布" : "草稿" }}
             </UBadge>
           </div>
 
           <div class="flex items-center justify-between mt-3">
             <div class="flex items-center gap-4 text-xs text-muted">
-              <span v-if="authorUsername" class="flex items-center gap-1">
+              <span v-if="article.authorUsername" class="flex items-center gap-1">
                 <UIcon name="i-lucide-user" class="size-3" />
-                {{ authorUsername }}
+                {{ article.authorUsername }}
               </span>
-              <span v-if="createdAt" class="flex items-center gap-1">
+              <span v-if="article.createdAt" class="flex items-center gap-1">
                 <UIcon name="i-lucide-calendar" class="size-3" />
-                {{ formatDate(createdAt) }}
+                {{ formatDate(article.createdAt) }}
               </span>
-              <span v-if="commentCount" class="flex items-center gap-1">
+              <span v-if="article.commentCount" class="flex items-center gap-1">
                 <UIcon name="i-lucide-message-circle" class="size-3" />
-                {{ commentCount }}
+                {{ article.commentCount }}
               </span>
             </div>
 
             <div class="flex items-center gap-2">
               <UButton
-                :to="`/articles/${id}`"
+                :to="`/articles/${article.id}`"
                 variant="ghost"
                 size="sm"
                 icon="i-lucide-eye"
                 color="neutral"
               />
               <UButton
-                :to="`/dash/content/articles/${id}`"
+                :to="`/dash/content/articles/${article.id}`"
                 variant="ghost"
                 size="sm"
                 icon="i-lucide-pencil"
@@ -115,7 +114,7 @@ onMounted(refresh);
                 variant="ghost"
                 size="sm"
                 icon="i-lucide-trash"
-                @click="id && deleteArticle(id)"
+                @click="article.id && deleteArticle(article.id)"
               />
             </div>
           </div>
@@ -123,7 +122,6 @@ onMounted(refresh);
       </article>
     </div>
 
-    <!-- 空状态 -->
     <div
       v-else
       class="flex flex-col items-center justify-center py-20 text-center"
