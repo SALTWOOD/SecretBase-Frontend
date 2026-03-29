@@ -103,6 +103,16 @@ const isImage = (key: string): boolean => {
   return !!ext && imageExtensions.has(ext);
 };
 
+const navigateToEdit = (item: FileObject) => {
+  router.push({
+    path: "/dash/content/storages/edit",
+    query: {
+      bucket: bucketName.value,
+      key: item.key,
+    },
+  });
+};
+
 const preloadThumbnails = async (items: FileObject[]) => {
   const imageItems = items.filter(
     (item) => item.type === "file" && isImage(item.key) && !item.thumbnailUrl,
@@ -306,6 +316,12 @@ const dropdownMenu = (row: FileObject) => [
       onSelect: () => handleDownload(row, true),
     },
     {
+      label: "编辑",
+      icon: "i-lucide-file-edit",
+      disabled: row.type === "directory",
+      onSelect: () => navigateToEdit(row),
+    },
+    {
       label: "重命名",
       icon: "i-lucide-pencil",
     },
@@ -400,10 +416,17 @@ onMounted(() => {
           <nav
             class="flex items-center gap-1 text-sm text-gray-500 mt-2 font-mono"
           >
+            <NuxtLink
+              to="/dash/content/storages"
+              class="hover:text-primary underline decoration-dotted"
+            >
+              存储
+            </NuxtLink>
+            <span class="text-gray-400">/</span>
             <span
               class="hover:text-primary cursor-pointer underline decoration-dotted"
               @click="router.push(`/dash/content/storages/${bucketName}`)"
-              >root</span
+              >{{ bucketName }}</span
             >
             <template v-for="(part, i) in slug.slice(1)" :key="i">
               <span class="text-gray-400">/</span>
