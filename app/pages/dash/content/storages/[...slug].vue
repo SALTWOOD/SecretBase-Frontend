@@ -3,11 +3,13 @@ import {
   getAdminStorageBucketByBucketNameFiles,
   getAdminStorageBucketByBucketNamePresignDownload,
   getAdminStorageBucketByBucketNameThumbnail,
+  postAdminStorageBucketByBucketNamePresignUpload,
   type S3ObjectResponse,
 } from "~~/packages/api/src";
 
 const route = useRoute();
 const router = useRouter();
+const toast = useToast();
 
 const slug = computed(() => (route.params.slug as string[]) || []);
 const bucketName = computed(() => slug.value[0] || "");
@@ -20,6 +22,7 @@ const viewMode = ref<"list" | "grid">("list");
 const allItems = ref<FileObject[]>([]);
 const searchQuery = ref("");
 const isRecursiveSearch = ref(false);
+const fileInput = ref<HTMLInputElement | null>(null);
 let searchTimer: number | null = null;
 
 type FileObject = S3ObjectResponse & {
@@ -37,19 +40,19 @@ const imageExtensions = new Set([
   "bmp",
 ]);
 
-  const iconMap: Record<string, string> = {
+const iconMap: Record<string, string> = {
   // 文档 (Lucide)
-    pdf: "i-lucide-file-text",
-    doc: "i-lucide-file-text",
-    docx: "i-lucide-file-text",
-    txt: "i-lucide-file-text",
-    md: "i-lucide-file-text",
+  pdf: "i-lucide-file-text",
+  doc: "i-lucide-file-text",
+  docx: "i-lucide-file-text",
+  txt: "i-lucide-file-text",
+  md: "i-lucide-file-text",
 
   // 压缩包 (Lucide)
-    zip: "i-lucide-file-archive",
-    rar: "i-lucide-file-archive",
-    "7z": "i-lucide-file-archive",
-    tar: "i-lucide-file-archive",
+  zip: "i-lucide-file-archive",
+  rar: "i-lucide-file-archive",
+  "7z": "i-lucide-file-archive",
+  tar: "i-lucide-file-archive",
 
   // 编程语言 (Simple Icons)
   py: "i-simple-icons-python",
@@ -72,14 +75,14 @@ const imageExtensions = new Set([
   json: "i-simple-icons-json",
 
   // 视频 (Lucide)
-    mp4: "i-lucide-file-video",
-    mkv: "i-lucide-file-video",
-    avi: "i-lucide-file-video",
+  mp4: "i-lucide-file-video",
+  mkv: "i-lucide-file-video",
+  avi: "i-lucide-file-video",
 
   // 音频 (Lucide)
-    mp3: "i-lucide-file-audio",
-    wav: "i-lucide-file-audio",
-  };
+  mp3: "i-lucide-file-audio",
+  wav: "i-lucide-file-audio",
+};
 
 const getFileIcon = (key: string, type: "directory" | "file"): string => {
   if (type === "directory") return "i-lucide-folder";
@@ -171,6 +174,87 @@ const handleItemClick = async (item: FileObject) => {
     });
     if (response.error || !response.data) return;
     window.open(response.data.url);
+  }
+};
+
+const handleUploadClick = () => {
+  fileInput.value?.click();
+};
+
+const onFileChange = (e: Event) => {
+  const target = e.target as HTMLInputElement;
+  const file = target.files?.[0];
+  if (file) {
+    handleUpload(file);
+    target.value = '';
+  }
+};
+
+const uploadWithProgress = (url: string, file: File, onProgress: (p: number) => void) => {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('PUT', url);
+    xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) {
+        onProgress(Math.round((e.loaded / e.total) * 100));
+      }
+    };
+    xhr.onload = () => (xhr.status >= 200 && xhr.status < 300 ? resolve(xhr.response) : reject(new Error(xhr.statusText)));
+    xhr.onerror = () => reject(new Error('Network Error'));
+    xhr.send(file);
+  });
+};
+
+const handleUpload = async (file: File) => {
+  if (!file || !bucketName.value) return;
+
+  const fileKey = `${currentPath.value}${file.name}`;
+  const toastId = `upload-${Date.now()}`;
+
+  toast.add({
+    id: toastId,
+    title: `准备上传文件`,
+    description: "正在获取上传授权...",
+    color: "info",
+    duration: 0
+  });
+
+  try {
+    const { data } = await postAdminStorageBucketByBucketNamePresignUpload({
+      path: { bucketName: bucketName.value },
+      body: { key: fileKey }
+    });
+
+    if (!data?.url) throw new Error("无法获取上传授权地址");
+    toast.update(toastId, {
+      title: `正在上传文件`,
+      color: "info",
+    });
+
+    await uploadWithProgress(data.url, file, (percent) => {
+      toast.update(toastId ,{
+        description: `已完成 ${percent}%`
+      })
+    });
+
+    toast.remove(toastId);
+    toast.add({
+      title: "上传成功",
+      description: `文件 ${file.name} 已上传至存储桶`,
+      color: "success"
+    });
+
+    await fetchItems(false);
+
+  } catch (error: any) {
+    console.error("Upload failed:", error);
+    toast.add({
+      id: toastId,
+      title: "上传失败",
+      description: error.message || "文件传输中断",
+      color: "error",
+    });
   }
 };
 
@@ -270,7 +354,7 @@ onMounted(() => {
             <span
               class="hover:text-primary cursor-pointer underline decoration-dotted"
               @click="router.push(`/dash/content/storages/${bucketName}`)"
-              >root</span
+            >root</span
             >
             <template v-for="(part, i) in slug.slice(1)" :key="i">
               <span class="text-gray-400">/</span>
@@ -278,7 +362,7 @@ onMounted(() => {
                 class="hover:text-primary cursor-pointer underline decoration-dotted"
                 @click="
                   router.push(
-                    `/dash/content/storages/${slug.slice(0, i + 2).join('/')}`,
+                  `/dash/content/storages/${slug.slice(0, i + 2).join('/')}`,
                   )
                 "
               >
@@ -302,12 +386,13 @@ onMounted(() => {
             @keydown.enter="triggerSearch"
           />
           <UButton
-            icon="i-lucide-plus"
+           icon="i-lucide-plus"
             label="新建文件夹"
             color="secondary"
-            variant="ghost"
+             variant="ghost"
           />
-          <UButton icon="i-lucide-upload" label="上传文件" color="primary" />
+          <UButton icon="i-lucide-upload" label="上传文件" color="primary" @click="handleUploadClick" />
+          <input ref="fileInput" type="file" class="hidden" @change="onFileChange" />
 
           <div
             class="flex items-center border border-gray-200 dark:border-gray-800 rounded-md overflow-hidden ml-2"
@@ -355,8 +440,8 @@ onMounted(() => {
             :name="getFileIcon(row.original.key, row.original.type)"
             :class="[
               row.original.type === 'directory'
-                ? 'text-blue-500'
-                : 'text-gray-400',
+              ? 'text-blue-500'
+              : 'text-gray-400',
               isImage(row.original.key) ? 'text-green-500' : '',
             ]"
             class="w-5 h-5 shrink-0"
@@ -373,14 +458,14 @@ onMounted(() => {
 
       <template #size-cell="{ row }">
         <span class="text-sm font-mono text-gray-500">{{
-          formatSize(row.original.size!)
+          formatSize(row.original.size as bigint)
         }}</span>
       </template>
 
       <template #modified-cell="{ row }">
         <span class="text-sm text-gray-400">{{
-          formatModified(row.original)
-        }}</span>
+           formatModified(row.original)
+          }}</span>
       </template>
 
       <template #actions-cell="{ row }">
@@ -405,9 +490,7 @@ onMounted(() => {
         class="group relative border border-gray-200 dark:border-gray-800 rounded-lg bg-white dark:bg-gray-900 p-3 flex flex-col items-center text-center transition-all hover:border-primary-300 hover:shadow-md cursor-pointer"
         @click="handleItemClick(item)"
       >
-        <div
-          class="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition-opacity z-10"
-        >
+        <div class="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition-opacity z-10">
           <UDropdownMenu :items="dropdownMenu(item)">
             <UButton
               color="secondary"
@@ -419,20 +502,14 @@ onMounted(() => {
           </UDropdownMenu>
         </div>
 
-        <div
-          class="w-full aspect-square flex items-center justify-center mb-3 relative overflow-hidden rounded"
-        >
+        <div class="w-full aspect-square flex items-center justify-center mb-3 relative overflow-hidden rounded">
           <img
-            v-if="
-              item.type === 'file' && isImage(item.key) && item.thumbnailUrl
-            "
+            v-if="item.type === 'file' && isImage(item.key) && item.thumbnailUrl"
             :src="item.thumbnailUrl"
             :alt="getDisplayName(item.key)"
             class="max-w-full max-h-full object-contain transition-transform group-hover:scale-105"
             loading="lazy"
-            @error="
-              (e) => ((e.target as HTMLImageElement).style.display = 'none')
-            "
+            @error="(e) => ((e.target as HTMLImageElement).style.display = 'none')"
           />
           <UIcon
             v-else
@@ -451,20 +528,10 @@ onMounted(() => {
         >
           {{ getDisplayName(item.key) }}
         </span>
-        <span
-          v-if="item.type === 'file'"
-          class="text-[10px] text-gray-400 mt-1 font-mono"
-        >
+        <span v-if="item.type === 'file'" class="text-[10px] text-gray-400 mt-1 font-mono">
           {{ formatSize(item.size as bigint) }}
         </span>
       </div>
-    </div>
-
-    <div
-      v-if="displayedItems.length === 0"
-      class="text-center py-20 text-gray-400 italic border rounded-lg border-gray-100 dark:border-gray-800 mt-4"
-    >
-      此目录下没有文件或文件夹
     </div>
   </UContainer>
 </template>
@@ -472,8 +539,8 @@ onMounted(() => {
 <style scoped>
 .line-clamp-2 {
   display: -webkit-box;
-  line-clamp: 2;
-  box-orient: vertical;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
 }
 </style>
