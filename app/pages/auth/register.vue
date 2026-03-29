@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen flex items-center justify-center bg-background p-4">
     <UCard
-      class="w-full max-w-md bg-white/5 dark:bg-black/20 backdrop-blur-xl border-default shadow-2xl"
+      class="w-full max-w-md backdrop-blur-xl border-default shadow-2xl bg-gray-50/50 dark:bg-gray-900/50"
     >
       <template #header>
         <div class="text-center">

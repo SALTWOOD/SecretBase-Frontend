@@ -12,9 +12,7 @@
       </UButton>
     </div>
 
-    <UCard
-      class="glass-card bg-(--ui-bg-elevated)/40 border border-default shadow-xl overflow-hidden"
-    >
+    <UCard>
       <UTable :data="inviteCodes" :columns="columns">
         <template #code-cell="{ row }">
           <div class="flex items-center gap-2 group">
@@ -329,8 +327,4 @@ onMounted(refresh);
 
 <style scoped>
 @reference "~/assets/css/main.css";
-
-.glass-card {
-  @apply backdrop-blur-xl transition-all duration-300;
-}
 </style>

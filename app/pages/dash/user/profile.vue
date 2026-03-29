@@ -5,9 +5,7 @@
       <p class="text-muted text-sm">管理你的账户信息与安全设置</p>
     </div>
 
-    <UCard
-      class="glass-card bg-(--ui-bg-elevated)/40 border border-default shadow-xl"
-    >
+    <UCard>
       <template #header>
         <h3 class="font-bold text-highlighted">基本信息</h3>
       </template>
@@ -92,10 +90,6 @@ onMounted(async () => {
 
 <style scoped>
 @reference "~/assets/css/main.css";
-
-.glass-card {
-  @apply backdrop-blur-xl transition-all duration-300;
-}
 
 :deep(.u-form-field-label) {
   @apply text-highlighted font-semibold;

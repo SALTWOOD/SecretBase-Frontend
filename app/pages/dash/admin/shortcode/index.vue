@@ -105,7 +105,7 @@ onMounted(() => {
       <UCard
         v-for="item in filteredShortcodes"
         :key="item.id"
-        class="group hover:ring-1 hover:ring-primary/50 transition-all bg-[#21252b] border-gray-700"
+        class="group hover:ring-1 hover:ring-primary/50 transition-all"
       >
         <template #header>
           <div class="flex items-start justify-between">

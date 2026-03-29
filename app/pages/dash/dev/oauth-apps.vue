@@ -58,7 +58,7 @@
       <UCard
         v-for="app in apps"
         :key="app.id"
-        class="hover:shadow-lg transition-shadow duration-200 border border-default bg-(--ui-bg-elevated)/50"
+        class="hover:shadow-lg transition-shadow duration-200"
       >
         <template #header>
           <div class="flex items-start justify-between">

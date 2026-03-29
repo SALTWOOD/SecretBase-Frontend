@@ -8,7 +8,7 @@
     </div>
 
     <div class="space-y-6">
-      <UCard class="glass-card bg-(--ui-bg-elevated)/40 border border-default">
+      <UCard>
         <template #header>
           <div class="flex items-center gap-2">
             <UIcon name="i-lucide-globe" class="text-primary w-5 h-5" />
@@ -38,7 +38,7 @@
         </div>
       </UCard>
 
-      <UCard class="glass-card bg-(--ui-bg-elevated)/40 border border-default">
+      <UCard>
         <template #header>
           <div class="flex items-center gap-2">
             <UIcon name="i-lucide-shield-check" class="text-primary w-5 h-5" />
@@ -73,7 +73,7 @@
         </div>
       </UCard>
 
-      <UCard class="glass-card bg-(--ui-bg-elevated)/40 border border-error/20">
+      <UCard>
         <template #header>
           <div class="flex items-center gap-2">
             <UIcon name="i-lucide-lock" class="text-error w-5 h-5" />
@@ -145,10 +145,6 @@ const reset = () => {
 
 <style scoped>
 @reference "~/assets/css/main.css";
-
-.glass-card {
-  @apply backdrop-blur-xl shadow-lg transition-all duration-300;
-}
 
 :deep(.u-form-field-label) {
   @apply text-highlighted font-semibold;

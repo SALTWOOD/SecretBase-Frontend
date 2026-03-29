@@ -15,10 +15,7 @@
       </UButton>
     </div>
 
-    <UCard
-      class="glass-card bg-(--ui-bg-elevated)/40 border border-default shadow-xl"
-      :ui="{ body: 'p-0' }"
-    >
+    <UCard :ui="{ body: 'p-0' }">
       <div v-if="messages.length === 0" class="p-12 text-center text-muted">
         <UIcon
           name="i-lucide-inbox"
@@ -94,8 +91,4 @@ const markAllAsRead = () => {
 
 <style scoped>
 @reference "~/assets/css/main.css";
-
-.glass-card {
-  @apply backdrop-blur-xl overflow-hidden;
-}
 </style>

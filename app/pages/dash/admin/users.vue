@@ -24,7 +24,7 @@
       </div>
     </div>
 
-    <UCard class="mb-6 bg-(--ui-bg-elevated)/50 border border-default">
+    <UCard class="mb-6">
       <div class="flex flex-wrap items-center gap-4">
         <UInput
           v-model="search"
@@ -51,9 +51,7 @@
       </div>
     </UCard>
 
-    <UCard
-      class="glass-card overflow-hidden bg-(--ui-bg-elevated)/40 border border-default backdrop-blur-xl shadow-xl"
-    >
+    <UCard>
       <UTable :data="filteredUsers" :columns="columns" :loading="loading">
         <template #username-cell="{ row }">
           <UserCell
@@ -245,10 +243,6 @@ onMounted(refresh);
 
 <style scoped>
 @reference "~/assets/css/main.css";
-
-.glass-card {
-  @apply backdrop-blur-xl border border-default shadow-xl;
-}
 
 :deep(table) {
   @apply text-sm;

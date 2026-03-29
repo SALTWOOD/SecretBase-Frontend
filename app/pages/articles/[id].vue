@@ -46,7 +46,7 @@ const handleCommentCountChange = (count: number) => {
   <UContainer class="py-10 relative">
     <div v-if="isLoading" class="space-y-6">
       <USkeleton class="h-12 w-3/4 rounded-lg" />
-      <UCard class="article-card shadow-xl">
+      <UCard>
         <div class="space-y-4">
           <USkeleton class="h-4 w-full" />
           <USkeleton class="h-4 w-5/6" />
@@ -65,7 +65,7 @@ const handleCommentCountChange = (count: number) => {
     />
 
     <div v-else-if="article" class="flex flex-col gap-8">
-      <UCard class="article-card shadow-xl overflow-visible">
+      <UCard>
         <article class="grid grid-cols-1 lg:grid-cols-[1fr_260px] gap-12">
           <div class="min-w-0">
             <header class="mb-10">
@@ -137,7 +137,7 @@ const handleCommentCountChange = (count: number) => {
         </article>
       </UCard>
 
-      <UCard class="article-card shadow-xl">
+      <UCard>
         <template #header>
           <div class="flex items-center gap-2">
             <UIcon
