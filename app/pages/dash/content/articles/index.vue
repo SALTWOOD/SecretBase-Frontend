@@ -11,6 +11,16 @@ const refresh = async () => {
   }
 };
 
+const failedCovers = ref(new Set<string | number | undefined>());
+
+const handleImageError = (id: string | number | undefined) => {
+  if (id) failedCovers.value.add(id);
+};
+
+const isCoverValid = (id: string | number | undefined, cover: string | null | undefined) => {
+  return cover && !failedCovers.value.has(id);
+};
+
 const deleteArticle = async (id: string | number) => {
   try {
     await deleteArticlesById({
@@ -52,16 +62,16 @@ onMounted(refresh);
         :key="id"
         class="group flex gap-4 p-4 rounded-xl bg-white dark:bg-gray-900 border border-default hover:border-primary/50 transition-colors"
       >
-        <div class="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
-          <img
-            v-if="cover"
-            :src="cover"
-            :alt="title"
-            class="w-full h-full object-cover"
-          />
-          <div v-else class="w-full h-full flex items-center justify-center">
-            <UIcon name="i-lucide-file-text" class="size-8 text-gray-400" />
-          </div>
+        <div class="shrink-0 w-24 h-24 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+          <template v-if="isCoverValid(id, cover)">
+            <img
+              :src="cover!"
+              :alt="title"
+              class="w-full h-full object-cover"
+              @error="handleImageError(id)"
+            />
+          </template>
+          <UIcon v-else name="i-lucide-file-text" class="size-8 text-gray-400" />
         </div>
 
         <div class="flex-1 min-w-0">

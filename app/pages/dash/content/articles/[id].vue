@@ -21,6 +21,7 @@ const formState = reactive({
   title: "",
   content: "",
   coverUrl: "",
+  isPublished: false,
 });
 
 const { data: articleData, pending: isLoading } = await useAsyncData(
@@ -39,6 +40,7 @@ watch(
       formState.title = newData.title || "";
       formState.content = newData.content || "";
       formState.coverUrl = newData.coverUrl || "";
+      formState.isPublished = newData.isPublished ?? false;
     }
   },
   { immediate: true },
@@ -60,6 +62,7 @@ const handleSave = async () => {
         title: formState.title,
         content: formState.content,
         coverUrl: formState.coverUrl || null,
+        isPublished: formState.isPublished,
       },
     };
 
@@ -111,6 +114,19 @@ const handleSave = async () => {
           class="flex-1"
           :disabled="isLoading"
         />
+      </div>
+
+      <div class="flex items-center justify-between py-2">
+        <div class="flex items-center gap-2">
+          <UIcon
+            :name="formState.isPublished ? 'i-lucide-eye' : 'i-lucide-eye-off'"
+            class="size-4 text-muted"
+          />
+          <span class="text-sm text-muted">
+            {{ formState.isPublished ? "已发布" : "草稿" }}
+          </span>
+        </div>
+        <USwitch v-model="formState.isPublished" :disabled="isLoading" />
       </div>
 
       <div
