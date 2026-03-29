@@ -37,39 +37,54 @@ const imageExtensions = new Set([
   "bmp",
 ]);
 
-const getFileIcon = (key: string, type: "directory" | "file"): string => {
-  if (type === "directory") return "i-lucide-folder";
-
-  const ext = key.split(".").pop()?.toLowerCase();
-  if (!ext) return "i-lucide-file-text";
-
   const iconMap: Record<string, string> = {
-    // 文档
+  // 文档 (Lucide)
     pdf: "i-lucide-file-text",
     doc: "i-lucide-file-text",
     docx: "i-lucide-file-text",
     txt: "i-lucide-file-text",
     md: "i-lucide-file-text",
-    // 压缩包
+
+  // 压缩包 (Lucide)
     zip: "i-lucide-file-archive",
     rar: "i-lucide-file-archive",
     "7z": "i-lucide-file-archive",
     tar: "i-lucide-file-archive",
-    // 代码
-    js: "i-lucide-file-code",
-    ts: "i-lucide-file-code",
-    vue: "i-lucide-file-code",
-    html: "i-lucide-file-code",
-    json: "i-lucide-file-code",
-    // 视频
+
+  // 编程语言 (Simple Icons)
+  py: "i-simple-icons-python",
+  java: "i-simple-icons-openjdk",
+  js: "i-simple-icons-javascript",
+  ts: "i-simple-icons-typescript",
+  c: "i-simple-icons-c",
+  cpp: "i-simple-icons-cplusplus",
+  cs: "i-simple-icons-dotnet",
+  fs: "i-simple-icons-fsharp",
+  fsx: "i-simple-icons-fsharp",
+
+  go: "i-simple-icons-go",
+  rs: "i-simple-icons-rust",
+  php: "i-simple-icons-php",
+  rb: "i-simple-icons-ruby",
+
+  vue: "i-simple-icons-vuedotjs",
+  html: "i-simple-icons-html5",
+  json: "i-simple-icons-json",
+
+  // 视频 (Lucide)
     mp4: "i-lucide-file-video",
     mkv: "i-lucide-file-video",
     avi: "i-lucide-file-video",
-    // 音频
+
+  // 音频 (Lucide)
     mp3: "i-lucide-file-audio",
     wav: "i-lucide-file-audio",
   };
 
+const getFileIcon = (key: string, type: "directory" | "file"): string => {
+  if (type === "directory") return "i-lucide-folder";
+  const ext = key.split(".").pop()?.toLowerCase();
+  if (!ext) return "i-lucide-file-text";
   return iconMap[ext] || "i-lucide-file-text";
 };
 
