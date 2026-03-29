@@ -102,6 +102,17 @@
                   />
                 </UTooltip>
               </div>
+              <div v-if="field.presets?.length" class="flex flex-wrap gap-1.5">
+                <UButton
+                  v-for="p in field.presets"
+                  :key="p.value"
+                  :label="p.label"
+                  size="xs"
+                  variant="subtle"
+                  color="primary"
+                  @click="formData[field.key] = p.value"
+                />
+              </div>
             </template>
           </div>
         </UFormField>
