@@ -435,12 +435,6 @@ onMounted(() => {
             @keydown.enter="triggerSearch"
           />
           <UButton
-            icon="i-lucide-plus"
-            label="新建文件夹"
-            color="secondary"
-            variant="ghost"
-          />
-          <UButton
             icon="i-lucide-upload"
             label="上传文件"
             color="primary"
