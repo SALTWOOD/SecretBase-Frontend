@@ -42,6 +42,9 @@ const showBanner = computed(() => bannerDisplayMode.value !== "hidden");
 const isFullScreenMode = computed(() => bannerDisplayMode.value === "screen");
 const isMiniMode = computed(() => bannerDisplayMode.value === "mini");
 
+// 瀑布流列数配置
+const masonryColumns = "columns-1 md:columns-2 lg:columns-3";
+
 const formatDate = (dateStr: string | Date) => {
   const date = typeof dateStr === "string" ? new Date(dateStr) : dateStr;
   return date.toLocaleDateString("zh-CN", {
@@ -111,7 +114,7 @@ useSeoMeta({
 
         <div
           v-if="isLoading"
-          class="columns-1 md:columns-2 lg:columns-3 gap-8 pb-20 space-y-8"
+          :class="[masonryColumns, 'gap-8 pb-20 space-y-8']"
         >
           <USkeleton v-for="i in 6" :key="i" class="h-64 w-full rounded-2xl break-inside-avoid" />
         </div>
@@ -119,13 +122,26 @@ useSeoMeta({
         <template v-else>
           <div
             v-if="articles?.length"
-            class="columns-1 md:columns-2 lg:columns-3 gap-8 pb-20 space-y-8"
+            :class="[masonryColumns, 'gap-8 pb-20 space-y-8']"
           >
             <article
               v-for="article in articles"
               :key="article.id"
               class="article-card break-inside-avoid"
             >
+              <!-- 封面图片 -->
+              <NuxtLink
+                v-if="article.coverUrl"
+                :to="`/articles/${article.id}`"
+                class="block mb-4 -mx-6 -mt-6 overflow-hidden rounded-t-2xl"
+              >
+                <img
+                  :src="article.coverUrl"
+                  :alt="article.title"
+                  class="w-full h-48 object-cover transition-transform duration-300 hover:scale-105"
+                />
+              </NuxtLink>
+
               <div class="flex items-center gap-2 mb-4">
                 <UBadge
                   :color="article.isPublished ? 'primary' : 'neutral'"

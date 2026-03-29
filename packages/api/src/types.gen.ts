@@ -11,6 +11,7 @@ export type Algorithm = number;
 export type ArticleCreateModel = {
     title: string;
     content: string;
+    coverUrl?: null | string;
     isPublished?: boolean;
 };
 
@@ -23,12 +24,14 @@ export type ArticleResponse = {
     createdAt?: Date;
     updatedAt?: Date;
     isPublished?: boolean;
+    coverUrl?: null | string;
     commentCount?: number | string;
 };
 
 export type ArticleUpdateModel = {
     title: string;
     content: string;
+    coverUrl?: null | string;
     isPublished?: boolean;
 };
 

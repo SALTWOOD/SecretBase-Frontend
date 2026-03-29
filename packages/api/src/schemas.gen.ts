@@ -23,6 +23,13 @@ export const ArticleCreateModelSchema = {
             maxLength: 10000,
             type: 'string'
         },
+        coverUrl: {
+            maxLength: 500,
+            type: [
+                'null',
+                'string'
+            ]
+        },
         isPublished: {
             type: 'boolean'
         }
@@ -71,6 +78,12 @@ export const ArticleResponseSchema = {
         isPublished: {
             type: 'boolean'
         },
+        coverUrl: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
         commentCount: {
             pattern: '^-?(?:0|[1-9]\\d*)$',
             type: [
@@ -96,6 +109,13 @@ export const ArticleUpdateModelSchema = {
         content: {
             maxLength: 10000,
             type: 'string'
+        },
+        coverUrl: {
+            maxLength: 500,
+            type: [
+                'null',
+                'string'
+            ]
         },
         isPublished: {
             type: 'boolean'
