@@ -6,6 +6,6 @@ import type { ArticleResponse } from "~~/packages/api/src/types.gen";
  * @returns string | null - 返回封面 URL，null 表示没有封面
  */
 export function getArticleCover(article: ArticleResponse | null | undefined): string | null {
-  if (article?.cover) return `/api/v1/articles/${article.id}/cover`;
+  if (article?.coverUrl) return `/api/v1/articles/${article.id}/cover`;
   else return null;
 }
