@@ -27,24 +27,33 @@
             <label class="block text-sm font-medium text-muted mb-2">{{
               label
             }}</label>
-            <div class="relative">
-              <input
-                :value="text"
-                type="text"
-                readonly
-                class="w-full px-4 py-3 pr-12 bg-default/50 border border-default rounded-lg font-mono text-sm text-highlighted focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-              <UButton
-                icon="i-lucide-copy"
-                variant="ghost"
-                color="neutral"
-                size="sm"
-                class="absolute right-2 top-1/2 -translate-y-1/2"
-                @click="copyText"
+            <template v-if="!withCopyButton">
+              <span
+                class="block w-full px-4 py-3 bg-default/50 border border-default rounded-lg font-mono text-sm text-highlighted break-all"
               >
-                {{ copied ? "已复制" : "复制" }}
-              </UButton>
-            </div>
+                {{ text }}
+              </span>
+            </template>
+            <template v-else>
+              <div class="relative">
+                <input
+                  :value="text"
+                  type="text"
+                  readonly
+                  class="w-full px-4 py-3 pr-12 bg-default/50 border border-default rounded-lg font-mono text-sm text-highlighted focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+                <UButton
+                  icon="i-lucide-copy"
+                  variant="ghost"
+                  color="neutral"
+                  size="sm"
+                  class="absolute right-2 top-1/2 -translate-y-1/2"
+                  @click="copyText"
+                >
+                  {{ copied ? "已复制" : "复制" }}
+                </UButton>
+              </div>
+            </template>
           </div>
         </div>
 
@@ -66,6 +75,7 @@ interface Props {
   description?: string;
   label?: string;
   buttonText?: string;
+  withCopyButton?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -73,6 +83,7 @@ const props = withDefaults(defineProps<Props>(), {
   description: "",
   label: "内容",
   buttonText: "关闭",
+  withCopyButton: false,
 });
 
 const isOpen = ref(false);

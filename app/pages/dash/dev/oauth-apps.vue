@@ -159,6 +159,7 @@
       description="请妥善保管您的密钥"
       label="客户端密钥"
       buttonText="我已妥善保管"
+      with-copy-button
     />
   </div>
 </template>

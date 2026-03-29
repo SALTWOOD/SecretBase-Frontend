@@ -1255,6 +1255,12 @@ export const FileShareCreateRequestSchema = {
         fileName: {
             type: 'string'
         },
+        remarks: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
         isPublic: {
             type: 'boolean'
         },
@@ -1328,6 +1334,12 @@ export const FileShareResponseSchema = {
         fileName: {
             type: 'string'
         },
+        remarks: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
         isPublic: {
             type: 'boolean'
         },
@@ -1366,6 +1378,12 @@ export const FileShareUpdateRequestSchema = {
             ]
         },
         bucket: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        remarks: {
             type: [
                 'null',
                 'string'

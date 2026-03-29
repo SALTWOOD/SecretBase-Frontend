@@ -45,7 +45,7 @@ const handleFileSelected = async (s3Url: string) => {
       bucket,
       key,
       fileName,
-      remarks: `Auto-Uploaded by MarkdownEditor at ${new Date().toLocaleString()}`
+      remarks: `Auto-shared by MarkdownEditor at ${new Date().toLocaleString()}`
     }
   });
 

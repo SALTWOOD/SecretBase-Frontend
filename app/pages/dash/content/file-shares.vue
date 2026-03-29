@@ -7,6 +7,7 @@ import {
   postAdminFileShares,
 } from "~~/packages/api/src";
 import type { FieldConfig } from "~/types/field-config";
+import TextDisplayModal from "~/components/TextDisplayModal.vue";
 
 const columns = [
   { accessorKey: "short-id", header: "分享 ID" },
@@ -16,6 +17,7 @@ const columns = [
   { accessorKey: "is-enabled", header: "状态" },
   { accessorKey: "expires-at", header: "失效日期" },
   { accessorKey: "created-at", header: "创建日期" },
+  { accessorKey: "remarks", header: "备注" },
   { accessorKey: "actions", header: "操作" },
 ];
 
@@ -47,7 +49,13 @@ const formConfig: Ref<FieldConfig[]> = ref([
         isFileSelectVisible.value = true;
       }
     }
-
+  },
+  {
+    key: "remarks",
+    label: "备注",
+    description: "设置备注",
+    type: "text",
+    icon: "i-lucide-type",
   },
   {
     key: "isPublic",
@@ -80,6 +88,7 @@ const formState = ref({
   bucket: "",
   key: "",
   fileName: "",
+  remarks: "",
   isPublic: true,
   hoursValid: 24,
   isEnabled: true,
@@ -96,6 +105,11 @@ const totalCount = ref(0);
 const page = ref(1);
 const pageSize = ref(20);
 const toast = useToast();
+const remarksModal = ref<InstanceType<typeof TextDisplayModal>>();
+
+const openRemarks = (remarks: string) => {
+  remarksModal.value?.open(remarks)
+};
 
 const getDisplayName = (key: string): string =>
   key.split("/").filter(Boolean).pop() || "";
@@ -116,6 +130,7 @@ const openForm = (edit: boolean, row?: FileShareResponse) => {
       bucket: row.bucket ?? "",
       key: row.key ?? "",
       fileName: row.fileName ?? "",
+      remarks: row?.remarks ?? "",
       isPublic: row.isPublic ?? true,
       hoursValid: 0,
       isEnabled: row.isEnabled ?? true,
@@ -126,6 +141,7 @@ const openForm = (edit: boolean, row?: FileShareResponse) => {
       bucket: "",
       key: "",
       fileName: "",
+      remarks: row?.remarks ?? "",
       isPublic: true,
       hoursValid: 24,
       isEnabled: true,
@@ -144,6 +160,7 @@ const handleFormSubmit = async (data: Record<string, any>) => {
           key: data.key,
           bucket: data.bucket,
           fileName: data.fileName,
+          remarks: data.remarks,
           isPublic: data.isPublic,
           isEnabled: data.isEnabled,
         },
@@ -334,6 +351,15 @@ onMounted(() => {
           <span v-else class="text-gray-400 italic text-sm">Never</span>
         </template>
 
+        <template #remarks-cell="{ row }">
+          <UButton
+            icon="i-lucide-eye"
+            variant="ghost"
+            color="secondary"
+            @click="openRemarks(row.original.remarks!)"
+          />
+        </template>
+
         <template #actions-cell="{ row }">
           <div class="flex gap-2">
             <UButton
@@ -380,6 +406,10 @@ onMounted(() => {
       v-model="isFileSelectVisible"
       selectionMode="file"
       @select="fillFileField"
+    />
+    <TextDisplayModal
+      title="查看备注"
+      ref="remarksModal"
     />
   </UContainer>
 </template>

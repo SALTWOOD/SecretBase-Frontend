@@ -309,6 +309,7 @@ export type FileShareCreateRequest = {
     bucket: string;
     key: string;
     fileName: string;
+    remarks?: null | string;
     isPublic?: boolean;
     expiresAt?: null | Date;
 };
@@ -325,6 +326,7 @@ export type FileShareResponse = {
     bucket: string;
     key: string;
     fileName: string;
+    remarks?: null | string;
     isPublic?: boolean;
     isEnabled?: boolean;
     ownerId?: number | string;
@@ -335,6 +337,7 @@ export type FileShareResponse = {
 export type FileShareUpdateRequest = {
     key?: null | string;
     bucket?: null | string;
+    remarks?: null | string;
     isEnabled?: null | boolean;
     isPublic?: null | boolean;
     expiresAt?: null | Date;
