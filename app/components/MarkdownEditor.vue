@@ -2,27 +2,13 @@
 import {
   MdEditor,
   NormalToolbar,
-  DropdownToolbar,
   type Themes,
   type ToolbarNames,
+  type ExposeParam
 } from "md-editor-v3";
 import "md-editor-v3/lib/style.css";
-
-interface ToolConfig {
-  id: number;
-  name: string;
-  title: string;
-  icon: string;
-  dropdownVisible?: boolean;
-  type: "button" | "dropdown";
-  onClick: (payload?: string) => void;
-  options?: ToolOption[];
-}
-
-interface ToolOption {
-  label: string;
-  value: string;
-}
+import type { EditorPlugin } from "~/types/editor-plugins/base";
+import { StorageSelectPlugin } from "~/types/editor-plugins/storage-select";
 
 const props = defineProps<{
   modelValue: string;
@@ -36,40 +22,33 @@ const emit = defineEmits<{
 }>();
 
 const colorMode = useColorMode();
+const editorRef = ref<ExposeParam | null>(null);
+const fileSelectState = ref(false);
 
-const customTools = ref<ToolConfig[]>([
-  // {
-  //   id: 0,
-  //   name: 'ai-optimize',
-  //   title: 'AI 润色',
-  //   icon: 'i-lucide-sparkles',
-  //   type: 'button',
-  //   onClick: () => alert("你润你妈呢")
-  // },
-  // {
-  //   id: 1,
-  //   name: 'ai-rewrite',
-  //   title: 'AI 深度重写',
-  //   icon: 'i-lucide-refresh-cw',
-  //   type: 'dropdown',
-  //   onClick: (payload) => {
-  //     const messages: Record<string, string> = {
-  //       'complain': '别写了，这垃圾文章没救了。',
-  //       'professional': '经过 AI 的深度分析，建议您转行。',
-  //       'shorten': '删了吧，一个字都别留。'
-  //     };
-  //     alert(messages[payload!] || "你在点什么呢？");
-  //   },
-  //   options: [
-  //     { label: '抱怨模式', value: 'complain' },
-  //     { label: '专业建议', value: 'professional' },
-  //     { label: '极简压缩', value: 'shorten' }
-  //   ]
-  // },
+const plugins = ref<EditorPlugin[]>([
+  new StorageSelectPlugin(() => {
+    fileSelectState.value = true;
+  }),
 ]);
 
+const handleFileSelected = (s3Url: string) => {
+  if (!s3Url || !editorRef.value) return;
+
+  const isImage = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(s3Url);
+  const insertText = isImage ? `![image](${s3Url})` : `[文件](${s3Url})`;
+
+  editorRef.value.insert(() => ({
+    targetValue: insertText,
+    select: true,
+    deviationStart: 0,
+    deviationEnd: 0,
+  }));
+
+  fileSelectState.value = false;
+};
+
 const theme = computed<Themes>(() =>
-  colorMode.value === "dark" ? "dark" : "light",
+  colorMode.value === "dark" ? "dark" : "light"
 );
 
 const content = computed({
@@ -82,20 +61,17 @@ const toolbars = computed<ToolbarNames[]>(() => [
   'title', 'strikeThrough', 'sub', 'sup', 'quote', 'unorderedList', 'orderedList', 'task', '-',
   'codeRow', 'code', 'link', 'image', 'table', 'mermaid', 'katex', '-',
   'revoke', 'next', 'save',
-  '-', // For custom tools, insert below this line
-  ...customTools.value.map(i => i.id as ToolbarNames),
+  '-',
+  ...Array.from({ length: plugins.value.length }, (_, i) => i as ToolbarNames),
   '=',
   'pageFullscreen', 'fullscreen', 'preview', 'previewOnly', 'htmlPreview', 'catalog', 'github',
 ]);
-
-function handleAction(tool: ToolConfig, payload?: string) {
-  tool.onClick?.(payload);
-}
 </script>
 
 <template>
   <ClientOnly>
     <MdEditor
+      ref="editorRef"
       v-model="content"
       :theme="theme"
       :disabled="disabled"
@@ -105,43 +81,15 @@ function handleAction(tool: ToolConfig, payload?: string) {
       @on-save="emit('save')"
     >
       <template #defToolbars>
-        <template v-for="tool in customTools" :key="tool.id">
+        <template v-for="(plugin, index) in plugins" :key="index">
           <NormalToolbar
-            v-if="tool.type === 'button'"
-            :title="tool.title"
-            @click="handleAction(tool)"
+            :title="plugin.title"
+            @click="plugin.execute(editorRef)"
           >
             <div class="flex items-center justify-center size-6">
-              <Icon :name="tool.icon" />
+              <UIcon :name="plugin.icon" class="size-4" />
             </div>
           </NormalToolbar>
-
-          <DropdownToolbar
-            v-else-if="tool.type === 'dropdown'"
-            :title="tool.title"
-            :visible="tool.dropdownVisible"
-            :onChange="(v) => (tool.dropdownVisible = v)"
-          >
-            <div class="flex items-center justify-center size-6">
-              <Icon :name="tool.icon" />
-            </div>
-            <template #overlay>
-              <div>
-                <ul class="md-editor-menu" role="menu">
-                  <li
-                    v-for="opt in tool.options"
-                    :key="opt.value"
-                    class="md-editor-menu-item"
-                    role="menuitem"
-                    tabindex="0"
-                    @click="handleAction(tool, opt.value)"
-                  >
-                    <span>{{ opt.label }}</span>
-                  </li>
-                </ul>
-              </div>
-            </template>
-          </DropdownToolbar>
         </template>
       </template>
     </MdEditor>
@@ -155,4 +103,10 @@ function handleAction(tool: ToolConfig, payload?: string) {
       </div>
     </template>
   </ClientOnly>
+
+  <StorageFileSelect
+    v-model:open="fileSelectState"
+    selectionMode="file"
+    @select="handleFileSelected"
+  />
 </template>
