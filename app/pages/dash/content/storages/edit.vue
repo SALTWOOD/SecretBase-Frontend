@@ -6,323 +6,335 @@ import {
   type S3ObjectMetadataResponse,
 } from "~~/packages/api/src";
 
+// Constants
+const ROW_HEIGHT = 32;
+const VISIBLE_ROWS = 22;
+const BUFFER_ROWS = 5;
+
 const route = useRoute();
 const router = useRouter();
 const toast = useToast();
+const containerRef = ref<HTMLElement | null>(null);
+const scrollTop = ref(0);
 
 const bucket = computed(() => route.query.bucket as string);
 const fileKey = computed(() => route.query.key as string);
+const slug = computed(() => fileKey.value.split("/"));
 
-const MAX_FILE_SIZE = 1024 * 1024;
-const WARNING_FILE_SIZE = 512 * 1024;
-
-// 状态
+// UI States
+const viewMode = ref<'text' | 'markdown' | 'hex'>('text');
 const isLoading = ref(true);
 const isSaving = ref(false);
 const error = ref<string | null>(null);
-const isTooLarge = ref(false);
-const showSizeWarning = ref(false);
+const editLock = ref<'none' | 'text' | 'hex'>('none');
+
+// Data
+const rawBytes = ref<Uint8Array>(new Uint8Array(0));
 const content = ref("");
-const originalContent = ref("");
 const fileMetadata = ref<S3ObjectMetadataResponse | null>(null);
 
-// 计算属性
-const hasChanges = computed(() => content.value !== originalContent.value);
 const fileName = computed(() => fileKey.value.split("/").pop() || fileKey.value);
-const fileSize = computed(() => {
-  if (!fileMetadata.value?.contentLength) return 0;
-  return Number(fileMetadata.value.contentLength);
+const hasChanges = computed(() => editLock.value !== 'none');
+
+// Hex Virtual Scroll Logic
+const totalRows = computed(() => Math.ceil(rawBytes.value.length / 16));
+const scrollHeight = computed(() => totalRows.value * ROW_HEIGHT);
+
+// Start index calculation
+const startIndex = computed(() => {
+  return Math.max(0, Math.floor(scrollTop.value / ROW_HEIGHT) - BUFFER_ROWS);
 });
 
-// 格式化文件大小
-const formatSize = (bytes: number): string => {
-  if (bytes === 0) return "0 B";
-  const k = 1024;
-  const sizes = ["B", "KB", "MB", "GB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
+// Visible rows slice
+const visibleHexRows = computed(() => {
+  if (viewMode.value !== 'hex' || rawBytes.value.length === 0) return [];
+
+  const start = startIndex.value;
+  const end = Math.min(totalRows.value, start + VISIBLE_ROWS + BUFFER_ROWS * 2);
+  const rows = [];
+
+  for (let i = start; i < end; i++) {
+    const offset = i * 16;
+    const chunk = rawBytes.value.slice(offset, offset + 16);
+    rows.push({
+      index: i,
+      address: offset.toString(16).padStart(8, "0").toUpperCase(),
+      bytes: Array.from(chunk).map((b, j) => ({
+        globalIndex: offset + j,
+        hex: b.toString(16).padStart(2, "0").toUpperCase(),
+        value: b
+      }))
+    });
+  }
+  return rows;
+});
+
+// Vertical offset for the table
+const offsetY = computed(() => startIndex.value * ROW_HEIGHT);
+
+// Handlers
+const handleScroll = (e: Event) => {
+  const target = e.target as HTMLElement;
+  if (target) {
+    scrollTop.value = target.scrollTop;
+  }
 };
 
-// 加载文件内容
-const loadFile = async () => {
-  if (!bucket.value || !fileKey.value) {
-    error.value = "缺少必要参数";
-    isLoading.value = false;
-    return;
+watch(viewMode, async (newMode) => {
+  if (newMode === 'hex') {
+    await nextTick();
+    if (containerRef.value) {
+      // Manually trigger a scroll calculation to wake up the virtual list
+      scrollTop.value = containerRef.value.scrollTop;
+    }
   }
+});
 
+const updateByte = (index: number, event: Event) => {
+  if (editLock.value === 'text') return;
+  const el = event.target as HTMLSpanElement;
+  let val = el.innerText.trim().replace(/[^0-9a-fA-F]/g, "");
+  if (val.length > 2) val = val.substring(0, 2);
+
+  if (val) {
+    const byteValue = parseInt(val, 16);
+    if (rawBytes.value[index] !== byteValue) {
+      rawBytes.value[index] = byteValue;
+      if (editLock.value === 'none') editLock.value = 'hex';
+    }
+  }
+  // Force reset text to current value
+  el.innerText = rawBytes.value[index]?.toString(16).padStart(2, "0").toUpperCase()!;
+};
+
+const handleHexKeyDown = (index: number, event: KeyboardEvent) => {
+  const keys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+  if (!keys.includes(event.key)) return;
+
+  event.preventDefault();
+  let nextIndex = index;
+  if (event.key === 'ArrowUp') nextIndex -= 16;
+  else if (event.key === 'ArrowDown') nextIndex += 16;
+  else if (event.key === 'ArrowLeft') nextIndex -= 1;
+  else if (event.key === 'ArrowRight') nextIndex += 1;
+
+  if (nextIndex >= 0 && nextIndex < rawBytes.value.length) {
+    nextTick(() => {
+      const target = document.querySelector(`[data-byte-index="${nextIndex}"]`) as HTMLElement;
+      target?.focus();
+    });
+  }
+};
+
+const onTextUpdate = () => {
+  if (editLock.value === 'none') editLock.value = 'text';
+};
+
+// Lifecycle & API
+const loadFile = async () => {
+  isLoading.value = true;
+  editLock.value = 'none';
   try {
-    // 获取文件元数据
-    const metaResponse = await getAdminStorageBucketByBucketNameFile({
+    const meta = await getAdminStorageBucketByBucketNameFile({
+      path: { bucketName: bucket.value },
+      query: { key: fileKey.value },
+    });
+    fileMetadata.value = meta.data!;
+
+    const presign = await getAdminStorageBucketByBucketNamePresignDownload({
       path: { bucketName: bucket.value },
       query: { key: fileKey.value },
     });
 
-    if (metaResponse.error || !metaResponse.data) {
-      error.value = "无法获取文件信息";
-      isLoading.value = false;
-      return;
+    const res = await fetch(presign.data!.url);
+    const buffer = await res.arrayBuffer();
+    rawBytes.value = new Uint8Array(buffer);
+    content.value = new TextDecoder().decode(rawBytes.value);
+
+    // Auto-detect binary
+    if (rawBytes.value.slice(0, 4096).some(b => b === 0)) {
+      viewMode.value = 'hex';
     }
-
-    fileMetadata.value = metaResponse.data;
-
-    // 检查文件大小
-    const fileSizeNum = Number(metaResponse.data.contentLength || 0);
-    if (fileSizeNum > MAX_FILE_SIZE) {
-      isTooLarge.value = true;
-      error.value = `文件过大（${formatSize(fileSizeNum)}），最大支持 ${formatSize(MAX_FILE_SIZE)}`;
-      isLoading.value = false;
-      return;
-    }
-
-    if (fileSizeNum > WARNING_FILE_SIZE) {
-      showSizeWarning.value = true;
-    }
-
-    // 获取预签名下载 URL
-    const presignResponse = await getAdminStorageBucketByBucketNamePresignDownload({
-      path: { bucketName: bucket.value },
-      query: { key: fileKey.value },
-    });
-
-    if (presignResponse.error || !presignResponse.data) {
-      error.value = "无法获取下载授权";
-      isLoading.value = false;
-      return;
-    }
-
-    // 下载文件内容
-    const fileResponse = await fetch(presignResponse.data.url);
-    if (!fileResponse.ok) {
-      error.value = "下载文件失败";
-      isLoading.value = false;
-      return;
-    }
-
-    content.value = await fileResponse.text();
-    originalContent.value = content.value;
   } catch (e: any) {
-    error.value = e.message || "加载文件时发生错误";
+    error.value = e.message;
   } finally {
     isLoading.value = false;
   }
 };
 
-// 保存文件
 const handleSave = async () => {
-  if (!bucket.value || !fileKey.value || isSaving.value) return;
-
   isSaving.value = true;
-  const toastId = "save-file";
-
   try {
-    toast.add({
-      id: toastId,
-      title: "正在保存",
-      description: "获取上传授权...",
-      color: "info",
-      duration: 0,
-    });
+    const payload = editLock.value === 'text'
+      ? new TextEncoder().encode(content.value)
+      : rawBytes.value;
 
-    // 获取预签名上传 URL
-    const presignResponse = await postAdminStorageBucketByBucketNamePresignUpload({
+    const presign = await postAdminStorageBucketByBucketNamePresignUpload({
       path: { bucketName: bucket.value },
       body: { key: fileKey.value },
     });
 
-    if (presignResponse.error || !presignResponse.data) {
-      throw new Error("无法获取上传授权");
-    }
-
-    toast.update(toastId, { description: "正在上传文件..." });
-
-    // 上传文件内容
-    const uploadResponse = await fetch(presignResponse.data.url, {
+    await fetch(presign.data!.url, {
       method: "PUT",
-      headers: {
-        "Content-Type": "text/plain; charset=utf-8",
-      },
-      body: content.value,
+      headers: { "Content-Type": "application/octet-stream" },
+      body: payload,
     });
 
-    if (!uploadResponse.ok) {
-      throw new Error("上传文件失败");
-    }
-
-    originalContent.value = content.value;
-    toast.remove(toastId);
-    toast.add({
-      title: "保存成功",
-      description: `文件 ${fileName.value} 已保存`,
-      color: "success",
-    });
+    // Refresh baselines
+    rawBytes.value = new Uint8Array(payload);
+    content.value = new TextDecoder().decode(payload);
+    editLock.value = 'none';
+    toast.add({ title: "Saved successfully", color: "success" });
   } catch (e: any) {
-    toast.remove(toastId);
-    toast.add({
-      title: "保存失败",
-      description: e.message,
-      color: "error",
-    });
+    toast.add({ title: "Save failed", description: e.message, color: "error" });
   } finally {
     isSaving.value = false;
   }
 };
 
-// 返回上一页
-const goBack = () => {
-  if (hasChanges.value) {
-    if (!confirm("有未保存的修改，确定要离开吗？")) {
-      return;
-    }
-  }
-  router.back();
+onMounted(() => loadFile());
+
+// Helpers
+const toAscii = (bytes: any[]) => {
+  return bytes.map(b => (b.value >= 32 && b.value <= 126 ? String.fromCharCode(b.value) : ".")).join('');
 };
 
-// 键盘快捷键
-const handleKeydown = (e: KeyboardEvent) => {
-  if ((e.ctrlKey || e.metaKey) && e.key === "s") {
-    e.preventDefault();
-    handleSave();
-  }
+const formatSize = (bytes: number) => {
+  if (bytes === 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 };
-
-// 页面离开确认
-onBeforeRouteLeave((to, from, next) => {
-  if (hasChanges.value) {
-    if (confirm("有未保存的修改，确定要离开吗？")) {
-      next();
-    } else {
-      next(false);
-    }
-  } else {
-    next();
-  }
-});
-
-// 加载文件
-onMounted(() => {
-  loadFile();
-});
 </script>
 
 <template>
   <UContainer class="py-6">
-    <!-- 页面头部 -->
     <header class="mb-6">
-      <div class="flex items-center gap-2 text-sm text-gray-500 mb-2">
-        <NuxtLink
-          to="/dash/content/storages"
-          class="hover:text-primary underline decoration-dotted"
-        >
-          存储
-        </NuxtLink>
-        <span class="text-gray-400">/</span>
-        <NuxtLink
-          :to="`/dash/content/storages/${bucket}`"
-          class="hover:text-primary underline decoration-dotted"
-        >
-          {{ bucket }}
-        </NuxtLink>
-        <span class="text-gray-400">/</span>
-        <span class="text-gray-600">{{ fileName }}</span>
-      </div>
-
-      <div class="flex justify-between items-center">
+      <div class="flex justify-between items-end mb-4">
         <div>
           <h1 class="text-2xl font-bold flex items-center gap-2">
-            <UIcon name="i-lucide-file-edit" class="text-primary" />
-            编辑文件
+            <UIcon name="i-lucide-database" class="text-primary" />
+            {{ fileName }}
           </h1>
-          <p v-if="fileMetadata" class="text-sm text-gray-500 mt-1">
-            {{ formatSize(fileSize) }}
-            <span v-if="fileMetadata.contentType" class="ml-2">
-              · {{ fileMetadata.contentType }}
+          <nav class="flex items-center gap-1 text-sm text-gray-500 mt-2 font-mono">
+            <NuxtLink
+              to="/dash/content/storages"
+              class="hover:text-primary underline decoration-dotted"
+            >
+              存储
+            </NuxtLink>
+            <span class="text-gray-400">/</span>
+            <span
+              class="hover:text-primary cursor-pointer underline decoration-dotted"
+              @click="router.push(`/dash/content/storages/${bucket}`)"
+            >
+              {{ bucket }}
             </span>
-          </p>
+            <template v-for="(part, i) in slug.slice(1)" :key="i">
+              <span class="text-gray-400">/</span>
+              <span
+                class="hover:text-primary cursor-pointer underline decoration-dotted"
+                @click="router.push(`/dash/content/storages/${slug.slice(0, i + 2).join('/')}`)"
+              >
+                {{ part }}
+              </span>
+            </template>
+          </nav>
         </div>
 
-        <div class="flex gap-3">
-          <UButton
-            color="neutral"
-            variant="ghost"
-            icon="i-lucide-arrow-left"
-            @click="goBack"
-          >
-            返回
-          </UButton>
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-1 bg-zinc-100 dark:bg-zinc-800 p-1 rounded-md border border-zinc-200 dark:border-zinc-700">
+            <UButton :variant="viewMode === 'text' ? 'solid' : 'ghost'" size="xs" color="neutral" icon="i-lucide-type" @click="viewMode = 'text'" />
+            <UButton :variant="viewMode === 'markdown' ? 'solid' : 'ghost'" size="xs" color="neutral" icon="i-lucide-hash" @click="viewMode = 'markdown'" />
+            <UButton :variant="viewMode === 'hex' ? 'solid' : 'ghost'" size="xs" color="neutral" icon="i-lucide-binary" @click="viewMode = 'hex'" />
+          </div>
           <UButton
             color="primary"
-            icon="i-lucide-save"
+            size="sm"
+            label="Save"
             :loading="isSaving"
             :disabled="!hasChanges"
             @click="handleSave"
-          >
-            保存
-          </UButton>
+          />
         </div>
       </div>
     </header>
 
-    <!-- 加载状态 -->
-    <div
-      v-if="isLoading"
-      class="flex items-center justify-center py-20"
-    >
-      <UIcon name="i-lucide-refresh-cw" class="animate-spin size-8 text-primary" />
+    <div v-if="isLoading" class="flex flex-col items-center justify-center py-24">
+      <UIcon name="i-lucide-loader-2" class="animate-spin size-8 text-primary/50" />
     </div>
 
-    <!-- 错误状态 -->
-    <div
-      v-else-if="error"
-      class="space-y-4"
-    >
+    <div v-else class="space-y-4">
       <UAlert
-        color="error"
-        icon="i-lucide-alert-circle"
-        :title="isTooLarge ? '文件过大' : '加载失败'"
-        :description="error"
+        v-if="editLock !== 'none'"
+        :color="editLock === 'hex' ? 'warning' : 'primary'"
+        variant="subtle"
+        icon="i-lucide-lock"
+        :title="editLock === 'hex' ? 'HEX Mode Locked' : 'Text Mode Locked'"
+        :description="editLock === 'hex' ? 'Changes made in HEX mode. Text editing is disabled.' : 'Changes made in Text mode. HEX editing is disabled.'"
       />
-      <UButton
-        color="neutral"
-        variant="ghost"
-        icon="i-lucide-arrow-left"
-        @click="goBack"
-      >
-        返回
-      </UButton>
-    </div>
 
-    <!-- 文件大小警告 -->
-    <div v-else-if="showSizeWarning" class="mb-4">
-      <UAlert
-        color="warning"
-        icon="i-lucide-alert-triangle"
-        title="文件较大"
-        description="此文件较大，编辑可能会影响性能。建议下载后使用本地编辑器编辑。"
-      />
-    </div>
-
-    <!-- 编辑器 -->
-    <div v-if="!isLoading && !error" class="space-y-4">
-      <div class="relative">
+      <div class="relative border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden bg-white dark:bg-zinc-950">
         <textarea
+          v-if="viewMode === 'text'"
           v-model="content"
-          class="w-full h-[70vh] p-4 font-mono text-sm bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg resize-y focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-          placeholder="文件内容..."
+          :readonly="editLock === 'hex'"
+          class="w-full h-[70vh] p-4 font-mono text-[13px] bg-transparent outline-none resize-none dark:text-zinc-300"
           spellcheck="false"
-          @keydown="handleKeydown"
+          @input="onTextUpdate"
         />
-        <div
-          class="absolute bottom-3 right-3 text-xs text-gray-400 bg-white/80 dark:bg-gray-900/80 px-2 py-1 rounded"
-        >
-          {{ content.length.toLocaleString() }} 字符
-          <span v-if="hasChanges" class="ml-2 text-amber-500">· 未保存</span>
-        </div>
-      </div>
 
-      <div class="flex justify-between items-center text-sm text-gray-500">
-        <span>提示：按 Ctrl+S 保存</span>
-        <span v-if="hasChanges" class="text-amber-500">有未保存的修改</span>
+        <div v-else-if="viewMode === 'markdown'" class="w-full h-[70vh] p-4 overflow-auto prose dark:prose-invert max-w-none">
+          <MarkdownEditor v-model="content" :disabled="editLock === 'hex'" @input="onTextUpdate" />
+        </div>
+
+        <div
+          v-else-if="viewMode === 'hex'"
+          ref="containerRef"
+          class="w-full h-[70vh] overflow-auto font-mono text-[12px] bg-zinc-50 dark:bg-zinc-900/20"
+          style="will-change: transform;"
+          @scroll="handleScroll"
+        >
+          <div :style="{ height: `${scrollHeight}px` }" class="relative w-full">
+            <table
+              class="w-full border-collapse absolute top-0 left-0"
+              :style="{ transform: `translate3d(0, ${offsetY}px, 0)` }"
+            >
+              <tbody>
+              <tr v-for="row in visibleHexRows" :key="row.index" :style="{ height: `${ROW_HEIGHT}px` }" class="border-b border-zinc-100 dark:border-zinc-800/50 hover:bg-primary-500/5 transition-colors">
+                <td class="px-4 text-zinc-400 select-none w-24 text-right pr-6">{{ row.address }}</td>
+                <td class="px-2 flex gap-x-2 leading-[32px]">
+                    <span
+                      v-for="byte in row.bytes"
+                      :key="byte.globalIndex"
+                      :data-byte-index="byte.globalIndex"
+                      :contenteditable="editLock !== 'text'"
+                      class="px-0.5 rounded outline-none min-w-[1.2rem] text-center uppercase focus:bg-primary-500 focus:text-white"
+                      :class="editLock === 'text' ? 'opacity-50 pointer-events-none' : 'hover:bg-primary-500/20 cursor-text'"
+                      @blur="updateByte(byte.globalIndex, $event)"
+                      @keydown="handleHexKeyDown(byte.globalIndex, $event)"
+                    >{{ byte.hex }}</span>
+                </td>
+                <td class="px-6 text-zinc-500 border-l border-zinc-100 dark:border-zinc-800 whitespace-pre">
+                  {{ toAscii(row.bytes) }}
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="px-3 py-1.5 flex justify-between items-center text-[10px] text-zinc-400 bg-zinc-50/50 dark:bg-zinc-900/50 border-t border-zinc-100 dark:border-zinc-800">
+          <div class="flex gap-4">
+            <span class="flex items-center gap-1"><UIcon name="i-lucide-hard-drive" /> {{ formatSize(Number(fileMetadata?.contentLength || 0)) }}</span>
+            <span class="uppercase">Mode: {{ viewMode }}</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span v-if="hasChanges" class="text-amber-500 font-bold italic">UNSAVED CHANGES</span>
+            <span>ENCODING: UTF-8</span>
+          </div>
+        </div>
       </div>
     </div>
   </UContainer>
