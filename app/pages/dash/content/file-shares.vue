@@ -94,6 +94,16 @@ const formState = ref({
   isEnabled: true,
 });
 
+const dropdownMenu = [
+  [
+    { label: '复制链接', icon: 'i-lucide-clipboard', onSelect: () => copyLink(row.original.shortId) },
+    { label: '编辑', icon: 'i-lucide-pencil', onSelect: () => openForm(true, row.original) },
+  ],
+  [
+    { label: '删除', icon: 'i-lucide-trash', color: 'error', onSelect: () => deleteShare(row.original.shortId) },
+  ],
+];
+
 const isOpen = ref(false);
 const isLoading = ref(false);
 const isEditMode = ref(false);
@@ -361,25 +371,11 @@ onMounted(() => {
         </template>
 
         <template #actions-cell="{ row }">
-          <div class="flex gap-2">
-            <UButton
-              icon="i-lucide-clipboard"
-              variant="ghost"
-              color="secondary"
-              @click="copyLink(row.original.shortId)"
-            />
-            <UButton
-              icon="i-lucide-pencil"
-              variant="ghost"
-              color="neutral"
-              @click="openForm(true, row.original)"
-            />
-            <ConfirmButton
-              icon="i-lucide-trash"
-              title="确认删除吗？"
-              @confirm="(yes) => yes && deleteShare(row.original.shortId)"
-            />
-          </div>
+          <UDropdownMenu
+            :items="dropdownMenu"
+          >
+            <UButton icon="i-lucide-more-horizontal" variant="ghost" color="neutral" />
+          </UDropdownMenu>
         </template>
       </UTable>
 
