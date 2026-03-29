@@ -129,14 +129,13 @@ useSeoMeta({
               :key="article.id"
               class="article-card break-inside-avoid"
             >
-              <!-- 封面图片 -->
               <NuxtLink
-                v-if="article.cover"
+                v-if="article.coverUrl"
                 :to="`/articles/${article.id}`"
                 class="block mb-4 -mx-6 -mt-6 overflow-hidden rounded-t-2xl"
               >
                 <img
-                  :src="article.cover"
+                  :src="article.cover!"
                   :alt="article.title"
                   class="w-full h-48 object-cover transition-transform duration-300 hover:scale-105"
                 />
