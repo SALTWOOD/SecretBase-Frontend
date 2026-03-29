@@ -7,6 +7,7 @@ import {
   postAdminStorageBucketByBucketNamePresignUpload,
   type S3ObjectResponse,
 } from "~~/packages/api/src";
+import ConfirmButton from "~/components/ConfirmButton.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -24,6 +25,11 @@ const allItems = ref<FileObject[]>([]);
 const searchQuery = ref("");
 const isRecursiveSearch = ref(false);
 const fileInput = ref<HTMLInputElement | null>(null);
+
+const isDeleteModalOpen = ref(false);
+const isDeleting = ref(false);
+const itemToDelete = ref<FileObject | null>(null);
+
 let searchTimer: number | null = null;
 
 type FileObject = S3ObjectResponse & {
@@ -143,9 +149,7 @@ const fetchItems = async (isSearch: boolean = false) => {
 
   allItems.value = newItems;
 
-  if (viewMode.value === "grid") {
-    preloadThumbnails(newItems);
-  }
+  if (viewMode.value === "grid") preloadThumbnails(newItems);
 };
 
 const displayedItems = computed(() => {
@@ -158,7 +162,6 @@ const displayedItems = computed(() => {
       return !relativeKey.includes("/") || relativeKey.endsWith("/");
     });
   }
-
   return allItems.value.filter((item) =>
     getDisplayName(item.key).toLowerCase().includes(q),
   );
@@ -175,16 +178,19 @@ const handleDownload = async (item: FileObject, download: boolean = false) => {
   const url = await getPresignDownload(item, download);
   if (!url) return;
   window.open(url);
-}
+};
 
-const getPresignDownload = async (item: FileObject, download: boolean = false) => {
+const getPresignDownload = async (
+  item: FileObject,
+  download: boolean = false,
+) => {
   const response = await getAdminStorageBucketByBucketNamePresignDownload({
     path: { bucketName: bucketName.value },
     query: { key: item.key, download },
   });
   if (response.error || !response.data) return null;
   return response.data.url;
-}
+};
 
 const handleUploadClick = () => {
   fileInput.value?.click();
@@ -195,75 +201,99 @@ const onFileChange = (e: Event) => {
   const file = target.files?.[0];
   if (file) {
     handleUpload(file);
-    target.value = '';
+    target.value = "";
   }
 };
 
-const uploadWithProgress = (url: string, file: File, onProgress: (p: number) => void) => {
+const uploadWithProgress = (
+  url: string,
+  file: File,
+  onProgress: (p: number) => void,
+) => {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
-    xhr.open('PUT', url);
-    xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
+    xhr.open("PUT", url);
+    xhr.setRequestHeader(
+      "Content-Type",
+      file.type || "application/octet-stream",
+    );
     xhr.upload.onprogress = (e) => {
       if (e.lengthComputable) {
         onProgress(Math.round((e.loaded / e.total) * 100));
       }
     };
-    xhr.onload = () => (xhr.status >= 200 && xhr.status < 300 ? resolve(xhr.response) : reject(new Error(xhr.statusText)));
-    xhr.onerror = () => reject(new Error('Network Error'));
+    xhr.onload = () =>
+      xhr.status >= 200 && xhr.status < 300
+        ? resolve(xhr.response)
+        : reject(new Error(xhr.statusText));
+    xhr.onerror = () => reject(new Error("Network Error"));
     xhr.send(file);
   });
 };
 
 const handleUpload = async (file: File) => {
   if (!file || !bucketName.value) return;
-
   const fileKey = `${currentPath.value}${file.name}`;
   const toastId = `upload-${Date.now()}`;
-
   toast.add({
     id: toastId,
     title: `准备上传文件`,
     description: "正在获取上传授权...",
     color: "info",
-    duration: 0
+    duration: 0,
   });
-
   try {
     const { data } = await postAdminStorageBucketByBucketNamePresignUpload({
       path: { bucketName: bucketName.value },
-      body: { key: fileKey }
+      body: { key: fileKey },
     });
-
     if (!data?.url) throw new Error("无法获取上传授权地址");
-    toast.update(toastId, {
-      title: `正在上传文件`,
-      color: "info",
-    });
-
+    toast.update(toastId, { title: `正在上传文件`, color: "info" });
     await uploadWithProgress(data.url, file, (percent) => {
-      toast.update(toastId ,{
-        description: `已完成 ${percent}%`
-      })
+      toast.update(toastId, { description: `已完成 ${percent}%` });
     });
-
     toast.remove(toastId);
     toast.add({
       title: "上传成功",
-      description: `文件 ${file.name} 已上传至存储桶`,
-      color: "success"
+      description: `文件 ${file.name} 已上传`,
+      color: "success",
     });
-
     await fetchItems(false);
-
   } catch (error: any) {
-    console.error("Upload failed:", error);
     toast.add({
       id: toastId,
       title: "上传失败",
-      description: error.message || "文件传输中断",
+      description: error.message,
       color: "error",
     });
+  }
+};
+
+const openDeleteConfirm = (item: FileObject) => {
+  itemToDelete.value = item;
+  isDeleteModalOpen.value = true;
+};
+
+const executeDelete = async () => {
+  if (!itemToDelete.value) return;
+  isDeleting.value = true;
+  try {
+    const response = await deleteAdminStorageBucketByBucketNameFile({
+      path: { bucketName: bucketName.value },
+      query: { key: itemToDelete.value.key },
+    });
+    if (response.error) throw new Error("后端服务请求失败");
+    toast.add({
+      title: "删除成功",
+      icon: "i-lucide-check-circle",
+      color: "success",
+    });
+    isDeleteModalOpen.value = false;
+    await fetchItems(false);
+  } catch (e: any) {
+    toast.add({ title: "删除失败", description: e.message, color: "error" });
+  } finally {
+    isDeleting.value = false;
   }
 };
 
@@ -283,10 +313,7 @@ const dropdownMenu = (row: FileObject) => [
       label: "删除",
       icon: "i-lucide-trash",
       color: "error",
-      onSelect: () => deleteAdminStorageBucketByBucketNameFile({
-        path: { bucketName: bucketName.value },
-        query: { key: row.key }
-      }),
+      onSelect: () => openDeleteConfirm(row),
     },
   ],
 ];
@@ -314,8 +341,20 @@ const formatModified = (row: FileObject) => {
     : new Date(row.lastModified).toLocaleString();
 };
 
-const getDisplayName = (key: string) =>
-  key.split("/").filter(Boolean).pop() || "";
+const getDisplayName = (
+  key: string,
+  truncate: boolean = false,
+  maxLength: number = 16,
+): string => {
+  const name = key.split("/").filter(Boolean).pop() || "";
+
+  if (!truncate || name.length <= maxLength) {
+    return name;
+  }
+
+  const effectiveLength = Math.max(0, maxLength - 3);
+  return `${name.slice(0, effectiveLength)}...`;
+};
 
 const triggerSearch = () => {
   if (searchTimer) clearTimeout(searchTimer);
@@ -337,15 +376,11 @@ watch(currentPath, () => {
   searchQuery.value = "";
   fetchItems(false);
 });
-
 watch(isRecursiveSearch, () => {
   if (searchQuery.value) triggerSearch();
 });
-
 watch(viewMode, (mode) => {
-  if (mode === "grid") {
-    preloadThumbnails(allItems.value);
-  }
+  if (mode === "grid") preloadThumbnails(allItems.value);
 });
 
 onMounted(() => {
@@ -368,7 +403,7 @@ onMounted(() => {
             <span
               class="hover:text-primary cursor-pointer underline decoration-dotted"
               @click="router.push(`/dash/content/storages/${bucketName}`)"
-            >root</span
+              >root</span
             >
             <template v-for="(part, i) in slug.slice(1)" :key="i">
               <span class="text-gray-400">/</span>
@@ -376,7 +411,7 @@ onMounted(() => {
                 class="hover:text-primary cursor-pointer underline decoration-dotted"
                 @click="
                   router.push(
-                  `/dash/content/storages/${slug.slice(0, i + 2).join('/')}`,
+                    `/dash/content/storages/${slug.slice(0, i + 2).join('/')}`,
                   )
                 "
               >
@@ -400,13 +435,23 @@ onMounted(() => {
             @keydown.enter="triggerSearch"
           />
           <UButton
-           icon="i-lucide-plus"
+            icon="i-lucide-plus"
             label="新建文件夹"
             color="secondary"
-             variant="ghost"
+            variant="ghost"
           />
-          <UButton icon="i-lucide-upload" label="上传文件" color="primary" @click="handleUploadClick" />
-          <input ref="fileInput" type="file" class="hidden" @change="onFileChange" />
+          <UButton
+            icon="i-lucide-upload"
+            label="上传文件"
+            color="primary"
+            @click="handleUploadClick"
+          />
+          <input
+            ref="fileInput"
+            type="file"
+            class="hidden"
+            @change="onFileChange"
+          />
 
           <div
             class="flex items-center border border-gray-200 dark:border-gray-800 rounded-md overflow-hidden ml-2"
@@ -446,7 +491,7 @@ onMounted(() => {
       v-if="viewMode === 'list'"
       :data="displayedItems"
       :columns="columns"
-      class="border rounded-lg border-gray-200 dark:border-gray-800"
+      class="border rounded-lg border-gray-200 dark:border-gray-800 relative"
     >
       <template #name-cell="{ row }">
         <div class="flex items-center gap-3 py-1">
@@ -454,8 +499,8 @@ onMounted(() => {
             :name="getFileIcon(row.original.key, row.original.type)"
             :class="[
               row.original.type === 'directory'
-              ? 'text-blue-500'
-              : 'text-gray-400',
+                ? 'text-blue-500'
+                : 'text-gray-400',
               isImage(row.original.key) ? 'text-green-500' : '',
             ]"
             class="w-5 h-5 shrink-0"
@@ -478,8 +523,8 @@ onMounted(() => {
 
       <template #modified-cell="{ row }">
         <span class="text-sm text-gray-400">{{
-           formatModified(row.original)
-          }}</span>
+          formatModified(row.original)
+        }}</span>
       </template>
 
       <template #actions-cell="{ row }">
@@ -496,7 +541,7 @@ onMounted(() => {
 
     <div
       v-else
-      class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 border border-gray-100 dark:border-gray-800 rounded-lg p-5 bg-gray-50/50 dark:bg-gray-950/50"
+      class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 border border-gray-100 dark:border-gray-800 rounded-lg p-5 bg-gray-50/50 dark:bg-gray-950/50 relative"
     >
       <div
         v-for="item in displayedItems"
@@ -504,7 +549,9 @@ onMounted(() => {
         class="group relative border border-gray-200 dark:border-gray-800 rounded-lg bg-white dark:bg-gray-900 p-3 flex flex-col items-center text-center transition-all hover:border-primary-300 hover:shadow-md cursor-pointer"
         @click="handleItemClick(item)"
       >
-        <div class="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+        <div
+          class="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+        >
           <UDropdownMenu :items="dropdownMenu(item)">
             <UButton
               color="secondary"
@@ -516,14 +563,20 @@ onMounted(() => {
           </UDropdownMenu>
         </div>
 
-        <div class="w-full aspect-square flex items-center justify-center mb-3 relative overflow-hidden rounded">
+        <div
+          class="w-full aspect-square flex items-center justify-center mb-3 relative overflow-hidden rounded"
+        >
           <img
-            v-if="item.type === 'file' && isImage(item.key) && item.thumbnailUrl"
+            v-if="
+              item.type === 'file' && isImage(item.key) && item.thumbnailUrl
+            "
             :src="item.thumbnailUrl"
             :alt="getDisplayName(item.key)"
             class="max-w-full max-h-full object-contain transition-transform group-hover:scale-105"
             loading="lazy"
-            @error="(e) => ((e.target as HTMLImageElement).style.display = 'none')"
+            @error="
+              (e) => ((e.target as HTMLImageElement).style.display = 'none')
+            "
           />
           <UIcon
             v-else
@@ -542,11 +595,26 @@ onMounted(() => {
         >
           {{ getDisplayName(item.key) }}
         </span>
-        <span v-if="item.type === 'file'" class="text-[10px] text-gray-400 mt-1 font-mono">
+        <span
+          v-if="item.type === 'file'"
+          class="text-[10px] text-gray-400 mt-1 font-mono"
+        >
           {{ formatSize(item.size as bigint) }}
         </span>
       </div>
     </div>
+
+    <ConfirmButton
+      v-model:open="isDeleteModalOpen"
+      :subtitle="
+        itemToDelete
+          ? `删除文件 ${getDisplayName(itemToDelete.key, true, 32)}`
+          : '确认删除'
+      "
+      :description="'此操作将永久移除该文件，无法找回。确定要继续吗？'"
+      :loading="isDeleting"
+      @confirm="executeDelete"
+    />
   </UContainer>
 </template>
 

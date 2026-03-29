@@ -332,10 +332,8 @@ onMounted(() => {
             <ConfirmButton
               icon="i-lucide-trash"
               color="error"
-              title="确认删除吗？"
-              @confirm="
-                (confirmed) => confirmed && deleteShare(row.original.shortId)
-              "
+              subtitle="确认删除吗？"
+              @confirm="deleteShare(row.original.shortId)"
             />
           </div>
         </template>
