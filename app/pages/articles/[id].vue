@@ -80,8 +80,8 @@ const handleCommentCountChange = (count: number) => {
 
               <!-- 封面图片 -->
               <img
-                v-if="article.cover"
-                :src="article.cover"
+                v-if="getArticleCover(article)"
+                :src="getArticleCover(article)!"
                 :alt="article.title"
                 class="w-full h-64 md:h-80 object-cover rounded-xl mb-6"
               />

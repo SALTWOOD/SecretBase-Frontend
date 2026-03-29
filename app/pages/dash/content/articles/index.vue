@@ -53,8 +53,8 @@ onMounted(refresh);
       >
         <div class="shrink-0 w-24 h-24 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
           <img
-            v-if="article.coverUrl"
-            :src="article.cover!"
+            v-if="getArticleCover(article)"
+            :src="getArticleCover(article)!"
             :alt="article.title"
             class="w-full h-full object-cover"
           />
