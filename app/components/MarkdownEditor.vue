@@ -9,6 +9,7 @@ import {
 import "md-editor-v3/lib/style.css";
 import type { EditorPlugin } from "~/types/editor-plugins/base";
 import { StorageSelectPlugin } from "~/types/editor-plugins/storage-select";
+import { postAdminFileShares } from "~~/packages/api/src";
 
 const props = defineProps<{
   modelValue: string;
@@ -31,11 +32,28 @@ const plugins = ref<EditorPlugin[]>([
   }),
 ]);
 
-const handleFileSelected = (s3Url: string) => {
+const handleFileSelected = async (s3Url: string) => {
   if (!s3Url || !editorRef.value) return;
 
+  const url = new URL(s3Url);
+  const key = decodeURI(url.pathname).substring(1);
+  const bucket = url.hostname;
+  const fileName = key.split("/").filter(Boolean).pop() || "";
+
+  const response = await postAdminFileShares({
+    body: {
+      bucket,
+      key,
+      fileName,
+      remarks: `Auto-Uploaded by MarkdownEditor at ${new Date().toLocaleString()}`
+    }
+  });
+
+  if (response.error || !response.data) return;
+  const file = `/api/v1/shared/${response.data.shortId}`
+
   const isImage = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(s3Url);
-  const insertText = isImage ? `![image](${s3Url})` : `[文件](${s3Url})`;
+  const insertText = isImage ? `![image](${file})` : `[文件](${file})`;
 
   editorRef.value.insert(() => ({
     targetValue: insertText,
@@ -105,7 +123,7 @@ const toolbars = computed<ToolbarNames[]>(() => [
   </ClientOnly>
 
   <StorageFileSelect
-    v-model:open="fileSelectState"
+    v-model="fileSelectState"
     selectionMode="file"
     @select="handleFileSelected"
   />
