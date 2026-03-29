@@ -104,10 +104,10 @@ const getDisplayName = (key: string): string =>
 
 const fillFileField = (s3Url: string) => {
   const url = new URL(s3Url);
-  const path = decodeURI(url.pathname);
+  const key = decodeURI(url.pathname).substring(1);
   formState.value.bucket = url.hostname;
-  formState.value.key = path;
-  formState.value.fileName = getDisplayName(path);
+  formState.value.key = key;
+  formState.value.fileName = getDisplayName(key);
 }
 
 const openForm = (edit: boolean, row?: FileShareResponse) => {
