@@ -84,12 +84,6 @@ export const ArticleResponseSchema = {
                 'string'
             ]
         },
-        cover: {
-            type: [
-                'null',
-                'string'
-            ]
-        },
         commentCount: {
             pattern: '^-?(?:0|[1-9]\\d*)$',
             type: [
@@ -113,7 +107,6 @@ export const ArticleUpdateModelSchema = {
             type: 'string'
         },
         content: {
-            maxLength: 10000,
             type: 'string'
         },
         coverUrl: {

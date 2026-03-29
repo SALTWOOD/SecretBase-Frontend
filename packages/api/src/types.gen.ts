@@ -25,7 +25,6 @@ export type ArticleResponse = {
     updatedAt?: Date;
     isPublished?: boolean;
     coverUrl?: null | string;
-    cover?: null | string;
     commentCount?: number | string;
 };
 
