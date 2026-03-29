@@ -34,6 +34,21 @@
                   :placeholder="field.placeholder"
                   :disabled="field.disabled"
                 />
+
+                <UTooltip
+                  v-if="field.action"
+                  :text="field.action.tooltip"
+                >
+                  <UButton
+                    :icon="field.action.icon"
+                    variant="ghost"
+                    color="neutral"
+                    @click="
+                    field.action.onClick?.(formData[field.key][index], formData)
+                  "
+                  />
+                </UTooltip>
+
                 <UButton
                   v-if="formData[field.key].length > 1"
                   icon="i-lucide-minus"
@@ -42,41 +57,50 @@
                   @click="removeField(field.key, index as number)"
                 />
               </div>
-              <UButton
-                icon="i-lucide-plus"
-                variant="subtle"
-                size="xs"
-                @click="addField(field.key)"
-              >
-                添加项
-              </UButton>
             </template>
+
             <template v-else-if="field.type === 'select'">
-              <USelect
-                v-model="formData[field.key]"
-                :items="field.options || []"
-                :placeholder="field.placeholder"
-                class="w-full"
-              />
-            </template>
-            <template v-else>
-              <UInput
-                v-model="formData[field.key]"
-                class="w-full"
-                :icon="field.icon"
-                :placeholder="field.placeholder"
-                :disabled="field.disabled"
-              />
-              <div v-if="field.presets?.length" class="flex flex-wrap gap-1.5">
-                <UButton
-                  v-for="p in field.presets"
-                  :key="p.value"
-                  :label="p.label"
-                  size="xs"
-                  variant="subtle"
-                  color="primary"
-                  @click="formData[field.key] = p.value"
+              <div class="flex gap-2">
+                <USelect
+                  v-model="formData[field.key]"
+                  :items="field.options || []"
+                  :placeholder="field.placeholder"
+                  class="grow"
                 />
+                <UTooltip
+                  v-if="field.action"
+                  :text="field.action.tooltip"
+                >
+                  <UButton
+                    :icon="field.action.icon"
+                    variant="ghost"
+                    color="neutral"
+                    @click="field.action.onClick?.(formData[field.key], formData)"
+                  />
+                </UTooltip>
+              </div>
+            </template>
+
+            <template v-else>
+              <div class="flex gap-2">
+                <UInput
+                  v-model="formData[field.key]"
+                  class="grow"
+                  :icon="field.icon"
+                  :placeholder="field.placeholder"
+                  :disabled="field.disabled"
+                />
+                <UTooltip
+                  v-if="field.action"
+                  :text="field.action.tooltip"
+                >
+                  <UButton
+                    :icon="field.action.icon"
+                    variant="ghost"
+                    color="neutral"
+                    @click="field.action.onClick?.(formData[field.key], formData)"
+                  />
+                </UTooltip>
               </div>
             </template>
           </div>

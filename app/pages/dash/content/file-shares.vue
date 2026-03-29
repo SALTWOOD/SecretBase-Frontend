@@ -41,6 +41,14 @@ const formConfig: Ref<FieldConfig[]> = ref([
     description: "设置 Content-Disposition 中的文件名",
     type: "text",
     icon: "i-lucide-type",
+    action: {
+      icon: "i-lucide-file-plus-corner",
+      tooltip: "选择 S3 存储中的文件",
+      onClick: () => {
+
+      }
+    }
+
   },
   {
     key: "isPublic",

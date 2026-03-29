@@ -12,4 +12,9 @@ export interface FieldConfig {
   options?: { label: string; value: any }[];
   multiple?: boolean;
   disabled?: boolean;
+  action?: {
+    icon: string;
+    tooltip?: string;
+    onClick?: (value: any, formData: Record<string, any>) => void;
+  };
 }
