@@ -7,7 +7,7 @@ import {
   postAdminStorageBucketByBucketNamePresignUpload,
   type S3ObjectResponse,
 } from "~~/packages/api/src";
-import ConfirmButton from "~/components/ConfirmButton.vue";
+import ConfirmDialog from "~/components/ConfirmDialog.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -621,7 +621,7 @@ onMounted(() => {
       </div>
     </div>
 
-    <ConfirmButton
+    <ConfirmDialog
       v-model:open="isDeleteModalOpen"
       :subtitle="
         itemToDelete

@@ -7,8 +7,6 @@ import {
   postAdminFileShares,
 } from "~~/packages/api/src";
 import type { FieldConfig } from "~/types/field-config";
-import ConfirmButton from "~/components/ConfirmButton.vue";
-import { getDisplayValue } from "@nuxt/ui/utils";
 
 const columns = [
   { accessorKey: "short-id", header: "分享 ID" },
