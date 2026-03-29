@@ -84,6 +84,12 @@ export const ArticleResponseSchema = {
                 'string'
             ]
         },
+        cover: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
         commentCount: {
             pattern: '^-?(?:0|[1-9]\\d*)$',
             type: [

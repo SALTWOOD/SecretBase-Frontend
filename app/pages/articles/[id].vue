@@ -78,6 +78,14 @@ const handleCommentCountChange = (count: number) => {
                 class="mb-6"
               />
 
+              <!-- 封面图片 -->
+              <img
+                v-if="article.cover"
+                :src="article.cover"
+                :alt="article.title"
+                class="w-full h-64 md:h-80 object-cover rounded-xl mb-6"
+              />
+
               <h1
                 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-6 text-gray-900 dark:text-white"
               >
@@ -88,7 +96,7 @@ const handleCommentCountChange = (count: number) => {
                 class="flex items-center gap-6 text-sm text-gray-500 dark:text-gray-400"
               >
                 <div class="flex items-center gap-2">
-                  <UAvatar :alt="article.authorUsername" size="xs" />
+                  <UAvatar :alt="article.authorUsername || ''" size="xs" />
                   <span class="font-medium">{{ article.authorUsername }}</span>
                 </div>
                 <div class="flex items-center gap-1">

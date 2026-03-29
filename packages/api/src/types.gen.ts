@@ -25,6 +25,7 @@ export type ArticleResponse = {
     updatedAt?: Date;
     isPublished?: boolean;
     coverUrl?: null | string;
+    cover?: null | string;
     commentCount?: number | string;
 };
 
@@ -1050,6 +1051,22 @@ export type PutArticlesByIdResponses = {
 };
 
 export type PutArticlesByIdResponse = PutArticlesByIdResponses[keyof PutArticlesByIdResponses];
+
+export type GetArticlesByIdCoverData = {
+    body?: never;
+    path: {
+        id: number | string;
+    };
+    query?: never;
+    url: '/articles/{id}/cover';
+};
+
+export type GetArticlesByIdCoverResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
 
 export type PostAuthLoginData = {
     body: AuthLoginModel;
