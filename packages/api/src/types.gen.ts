@@ -347,15 +347,24 @@ export type FileShareUpdateRequest = {
     fileName?: null | string;
 };
 
-export type HomeBackgroundResponse = {
-    url?: string;
-    blur?: number | string;
-    opacity?: number | string;
+export type FooterBeianSettings = {
+    icp: string;
+    police: string;
 };
 
-export type HomeBannerResponse = {
-    content?: string;
-    displayMode?: string;
+export type FooterSettings = {
+    beian: null | FooterBeianSettings;
+};
+
+export type HomeBackgroundSettings = {
+    url: string;
+    blur: number | string;
+    opacity: number | string;
+};
+
+export type HomeBannerSettings = {
+    content: string;
+    displayMode: string;
 };
 
 export type HostString = {
@@ -694,15 +703,11 @@ export type SafeWaitHandle = {
     isClosed?: boolean;
 };
 
-export type SeoMetaResponse = {
-    title?: string;
-    description?: string;
-    keywords?: null | string;
-    ogTitle?: null | string;
-    ogDescription?: null | string;
-    ogImage?: null | string;
-    twitterCard?: string;
-    robots?: string;
+export type SeoGeneralSettings = {
+    title: string;
+    description: string;
+    keywords: string;
+    robots: string;
 };
 
 export type SettingListItem = {
@@ -777,16 +782,6 @@ export type ShortcodeUpdateModel = {
     isEnabled?: null | boolean;
 };
 
-export type SiteInitResponse = {
-    seo?: {
-        [key: string]: unknown;
-    };
-    home?: {
-        [key: string]: unknown;
-    };
-    registrationEnabled?: boolean;
-};
-
 export type StorageStatusResponse = {
     isConnected?: boolean;
     bucketCount?: number | string;
@@ -843,7 +838,7 @@ export type UpdateProfileModel = {
 };
 
 export type UpdateSettingBody = {
-    value?: unknown;
+    value?: JsonElement;
 };
 
 export type UpdateUserStatusBody = {
@@ -1341,21 +1336,21 @@ export type GetSharedByShortIdErrors = {
 
 export type GetSharedByShortIdError = GetSharedByShortIdErrors[keyof GetSharedByShortIdErrors];
 
-export type GetSettingsSeoData = {
+export type GetSettingsSeoGeneralData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/settings/seo';
+    url: '/settings/seo/general';
 };
 
-export type GetSettingsSeoResponses = {
+export type GetSettingsSeoGeneralResponses = {
     /**
      * OK
      */
-    200: SeoMetaResponse;
+    200: SeoGeneralSettings;
 };
 
-export type GetSettingsSeoResponse = GetSettingsSeoResponses[keyof GetSettingsSeoResponses];
+export type GetSettingsSeoGeneralResponse = GetSettingsSeoGeneralResponses[keyof GetSettingsSeoGeneralResponses];
 
 export type GetSettingsHomeBackgroundData = {
     body?: never;
@@ -1368,7 +1363,7 @@ export type GetSettingsHomeBackgroundResponses = {
     /**
      * OK
      */
-    200: HomeBackgroundResponse;
+    200: HomeBackgroundSettings;
 };
 
 export type GetSettingsHomeBackgroundResponse = GetSettingsHomeBackgroundResponses[keyof GetSettingsHomeBackgroundResponses];
@@ -1384,26 +1379,26 @@ export type GetSettingsHomeBannerResponses = {
     /**
      * OK
      */
-    200: HomeBannerResponse;
+    200: HomeBannerSettings;
 };
 
 export type GetSettingsHomeBannerResponse = GetSettingsHomeBannerResponses[keyof GetSettingsHomeBannerResponses];
 
-export type GetSettingsInitData = {
+export type GetSettingsFooterData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/settings/init';
+    url: '/settings/footer';
 };
 
-export type GetSettingsInitResponses = {
+export type GetSettingsFooterResponses = {
     /**
      * OK
      */
-    200: SiteInitResponse;
+    200: FooterSettings;
 };
 
-export type GetSettingsInitResponse = GetSettingsInitResponses[keyof GetSettingsInitResponses];
+export type GetSettingsFooterResponse = GetSettingsFooterResponses[keyof GetSettingsFooterResponses];
 
 export type GetShortcodesData = {
     body?: never;

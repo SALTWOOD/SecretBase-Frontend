@@ -1,39 +1,38 @@
 <script setup lang="ts">
-/**
- * @file Index page for Secret Base
- * @description List articles with a clean layout
- */
 import {
-  getArticles,
-  getSettingsHomeBackground,
-  getSettingsHomeBanner,
-  getSettingsSeo,
+  getArticles, getSettingsFooter,
+  getSettingsHomeBanner, getSettingsSeoGeneral,
 } from "@secret-base/api/src/sdk.gen";
 
 definePageMeta({
   layout: "background",
 });
 
-const { data: seoMeta, pending: seoPending } = await useAsyncData(
-  "site-seo",
-  async () => (await getSettingsSeo()).data,
-);
+const [
+  { data: seoGeneral, pending: seoPending },
+  { data: bannerSettings, pending: bannerPending },
+  { data: articles, pending: articlesPending },
+  { data: footer }
+] = await Promise.all([
+  useAsyncData("site-seo", async () => (await getSettingsSeoGeneral()).data),
+  useAsyncData("home-banner", async () => (await getSettingsHomeBanner()).data),
+  useAsyncData("articles-list", async () => (await getArticles()).data),
+  useAsyncData("footer", async () => (await getSettingsFooter()).data)
+]);
 
-const { data: bannerSettings, pending: bannerPending } = await useAsyncData(
-  "home-banner",
-  async () => (await getSettingsHomeBanner()).data,
-);
-
-const { data: articles, pending: articlesPending } = await useAsyncData(
-  "articles-list",
-  async () => (await getArticles()).data,
-);
+const policeLink = computed(() => {
+  const policeStr = footer.value?.beian?.police;
+  if (!policeStr) return 'https://beian.mps.gov.cn/';
+  const code = policeStr.match(/\d+/)?.[0];
+  return code
+    ? `https://beian.mps.gov.cn/#/query/webSearch?code=${code}`
+    : 'https://beian.mps.gov.cn/';
+});
 
 const isLoading = computed(
   () => seoPending.value || bannerPending.value || articlesPending.value,
 );
 
-// Banner display logic
 const bannerDisplayMode = computed(
   () => bannerSettings.value?.displayMode || "full",
 );
@@ -42,7 +41,6 @@ const showBanner = computed(() => bannerDisplayMode.value !== "hidden");
 const isFullScreenMode = computed(() => bannerDisplayMode.value === "screen");
 const isMiniMode = computed(() => bannerDisplayMode.value === "mini");
 
-// 瀑布流列数配置
 const masonryColumns = "columns-1 md:columns-2 lg:columns-3";
 
 const formatDate = (dateStr: string | Date) => {
@@ -63,9 +61,9 @@ const truncateContent = (content: string, length: number = 100) => {
 };
 
 useSeoMeta({
-  title: () => seoMeta.value?.title || "Secret Base",
+  title: () => seoGeneral.value?.title || "Secret Base",
   description: () =>
-    seoMeta.value?.description || "A mysterious space for tech.",
+    seoGeneral.value?.description || "A mysterious space for tech.",
 });
 </script>
 
@@ -75,12 +73,12 @@ useSeoMeta({
       <h1
         class="text-5xl md:text-7xl font-extrabold tracking-tight text-highlighted mb-6"
       >
-        {{ seoMeta?.title || "探索技术与创新" }}
+        {{ seoGeneral?.title || "探索技术与创新" }}
       </h1>
       <p class="text-muted max-w-2xl text-xl mb-8">
         {{
           bannerContent ||
-          seoMeta?.description ||
+          seoGeneral?.description ||
           "分享最新的技术见解、开发经验和创新思维"
         }}
       </p>
@@ -101,12 +99,12 @@ useSeoMeta({
               isMiniMode ? 'text-3xl' : 'text-4xl md:text-5xl',
             ]"
           >
-            {{ seoMeta?.title || "探索技术与创新" }}
+            {{ seoGeneral?.title || "探索技术与创新" }}
           </h1>
           <p class="text-muted max-w-2xl text-lg">
             {{
               bannerContent ||
-              seoMeta?.description ||
+              seoGeneral?.description ||
               "分享最新的技术见解、开发经验和创新思维"
             }}
           </p>
@@ -150,7 +148,7 @@ useSeoMeta({
                   {{ article.isPublished ? "已发布" : "草稿" }}
                 </UBadge>
                 <time v-if="article.createdAt" class="text-xs text-muted"
-                  >{{ formatDate(article.createdAt) }}
+                >{{ formatDate(article.createdAt) }}
                 </time>
               </div>
 
@@ -183,6 +181,38 @@ useSeoMeta({
       </UContainer>
     </div>
   </main>
+
+  <footer class="footer-card">
+    <UCard
+      class="w-full max-w-4xl shadow-xl shadow-gray-950/20"
+      :ui="{
+        root: 'bg-neutral-800/80 backdrop-blur-md border-0 rounded-2xl ring-1 ring-white/10',
+        body: 'flex flex-col items-center gap-3 p-8 text-center'
+      }"
+    >
+      <div v-if="footer?.beian" class="flex flex-col items-center gap-2">
+        <a
+          v-if="footer?.beian?.icp"
+          v-text="footer.beian.icp"
+          href="https://beian.miit.gov.cn/"
+          target="_blank"
+        />
+
+        <div v-if="footer?.beian?.police">
+          <a
+            v-text="footer.beian.police"
+            :href="policeLink"
+            target="_blank"
+          />
+        </div>
+      </div>
+
+      <a href="https://github.com/SALTWOOD/SecretBase-Frontend">
+        <UIcon name="i-simple-icons-github" />
+        SALTWOOD/SecretBase-Frontend
+      </a>
+    </UCard>
+  </footer>
 </template>
 
 <style scoped>
@@ -215,5 +245,18 @@ useSeoMeta({
 
 .dark .article-card:hover {
   @apply bg-neutral-900/60;
+}
+
+.footer-card {
+  @apply w-full flex justify-center py-10 px-4;
+
+  & a, & span {
+    @apply text-neutral-400 underline-offset-4 transition-all duration-300 ease-in-out;
+  }
+
+  & a:hover {
+    color: var(--ui-primary);
+    @apply underline;
+  }
 }
 </style>

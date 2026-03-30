@@ -1436,7 +1436,47 @@ export const FileShareUpdateRequestSchema = {
     }
 } as const;
 
-export const HomeBackgroundResponseSchema = {
+export const FooterBeianSettingsSchema = {
+    required: [
+        'icp',
+        'police'
+    ],
+    type: 'object',
+    properties: {
+        icp: {
+            type: 'string'
+        },
+        police: {
+            type: 'string'
+        }
+    }
+} as const;
+
+export const FooterSettingsSchema = {
+    required: [
+        'beian'
+    ],
+    type: 'object',
+    properties: {
+        beian: {
+            oneOf: [
+                {
+                    type: 'null'
+                },
+                {
+                    $ref: '#/components/schemas/FooterBeianSettings'
+                }
+            ]
+        }
+    }
+} as const;
+
+export const HomeBackgroundSettingsSchema = {
+    required: [
+        'url',
+        'blur',
+        'opacity'
+    ],
     type: 'object',
     properties: {
         url: {
@@ -1451,17 +1491,21 @@ export const HomeBackgroundResponseSchema = {
             format: 'int32'
         },
         opacity: {
-            pattern: '^-?(?:0|[1-9]\\d*)$',
+            pattern: '^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$',
             type: [
-                'integer',
+                'number',
                 'string'
             ],
-            format: 'int32'
+            format: 'double'
         }
     }
 } as const;
 
-export const HomeBannerResponseSchema = {
+export const HomeBannerSettingsSchema = {
+    required: [
+        'content',
+        'displayMode'
+    ],
     type: 'object',
     properties: {
         content: {
@@ -2669,7 +2713,13 @@ export const SafeWaitHandleSchema = {
     }
 } as const;
 
-export const SeoMetaResponseSchema = {
+export const SeoGeneralSettingsSchema = {
+    required: [
+        'title',
+        'description',
+        'keywords',
+        'robots'
+    ],
     type: 'object',
     properties: {
         title: {
@@ -2679,30 +2729,6 @@ export const SeoMetaResponseSchema = {
             type: 'string'
         },
         keywords: {
-            type: [
-                'null',
-                'string'
-            ]
-        },
-        ogTitle: {
-            type: [
-                'null',
-                'string'
-            ]
-        },
-        ogDescription: {
-            type: [
-                'null',
-                'string'
-            ]
-        },
-        ogImage: {
-            type: [
-                'null',
-                'string'
-            ]
-        },
-        twitterCard: {
             type: 'string'
         },
         robots: {
@@ -2975,21 +3001,6 @@ export const ShortcodeUpdateModelSchema = {
     }
 } as const;
 
-export const SiteInitResponseSchema = {
-    type: 'object',
-    properties: {
-        seo: {
-            type: 'object'
-        },
-        home: {
-            type: 'object'
-        },
-        registrationEnabled: {
-            type: 'boolean'
-        }
-    }
-} as const;
-
 export const StorageStatusResponseSchema = {
     type: 'object',
     properties: {
@@ -3189,7 +3200,9 @@ export const UpdateProfileModelSchema = {
 export const UpdateSettingBodySchema = {
     type: 'object',
     properties: {
-        value: {}
+        value: {
+            $ref: '#/components/schemas/JsonElement'
+        }
     }
 } as const;
 
