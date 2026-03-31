@@ -9,6 +9,8 @@ import {
   Database,
   File,
   Loader2,
+  ArrowLeft,
+  ArrowRight,
 } from "lucide-vue-next";
 import {
   getAdminStorageBuckets,
@@ -43,7 +45,11 @@ const isEditingPath = ref(false);
 const pathInputRef = ref<HTMLInputElement | null>(null);
 const pathInputValue = ref("");
 
-// 获取所有存储桶
+// 历史记录栈
+const backStack = ref<{ bucket: string; path: string }[]>([]);
+const forwardStack = ref<{ bucket: string; path: string }[]>([]);
+let isNavigatingHistory = false;
+
 const fetchBuckets = async () => {
   const response = await getAdminStorageBuckets();
   if (response.data) {
@@ -122,16 +128,58 @@ const formatSize = (bytes?: bigint) => {
   return `${value.toFixed(2)} ${sizes[i]}`;
 };
 
-const navigateToBreadcrumb = (index: number) => {
-  const parts = breadcrumbs.value.slice(0, index + 1);
-  currentPath.value = parts.join("/") + "/";
+const updateLocation = (bucket: string, path: string, skipHistory = false) => {
+  if (!skipHistory && (selectedBucket.value !== bucket || currentPath.value !== path)) {
+    backStack.value.push({ bucket: selectedBucket.value, path: currentPath.value });
+    forwardStack.value = [];
+  }
+  selectedBucket.value = bucket;
+  currentPath.value = path;
   selectedFileKey.value = "";
 };
 
-const navigateToBucket = (name: string) => {
-  selectedBucket.value = name;
-  currentPath.value = "";
+// 后退
+const goBack = () => {
+  if (backStack.value.length === 0) return;
+  isNavigatingHistory = true;
+  const target = backStack.value.pop()!;
+  forwardStack.value.push({ bucket: selectedBucket.value, path: currentPath.value });
+  selectedBucket.value = target.bucket;
+  currentPath.value = target.path;
   selectedFileKey.value = "";
+  nextTick(() => (isNavigatingHistory = false));
+};
+
+// 前进
+const goForward = () => {
+  if (forwardStack.value.length === 0) return;
+  isNavigatingHistory = true;
+  const target = forwardStack.value.pop()!;
+  backStack.value.push({ bucket: selectedBucket.value, path: currentPath.value });
+  selectedBucket.value = target.bucket;
+  currentPath.value = target.path;
+  selectedFileKey.value = "";
+  nextTick(() => (isNavigatingHistory = false));
+};
+
+const handleMouseButtons = (e: MouseEvent) => {
+  if (!isVisible.value) return;
+  if (e.button === 3) {
+    e.preventDefault();
+    goBack();
+  } else if (e.button === 4) {
+    e.preventDefault();
+    goForward();
+  }
+};
+
+const navigateToBreadcrumb = (index: number) => {
+  const parts = breadcrumbs.value.slice(0, index + 1);
+  updateLocation(selectedBucket.value, parts.join("/") + "/");
+};
+
+const navigateToBucket = (name: string) => {
+  updateLocation(name, "");
 };
 
 const togglePathEdit = () => {
@@ -152,8 +200,7 @@ const handleItemClick = (item: { key: string; type: string }) => {
 
 const handleItemDbClick = (item: { key: string; type: string }) => {
   if (item.type === "directory") {
-    currentPath.value = item.key;
-    selectedFileKey.value = "";
+    updateLocation(selectedBucket.value, item.key);
   } else {
     if (props.selectionMode === "file" || props.selectionMode === "both") {
       selectedFileKey.value = item.key;
@@ -166,8 +213,7 @@ const navigateBack = () => {
   if (!currentPath.value) return;
   const parts = currentPath.value.split("/").filter(Boolean);
   parts.pop();
-  currentPath.value = parts.length > 0 ? parts.join("/") + "/" : "";
-  selectedFileKey.value = "";
+  updateLocation(selectedBucket.value, parts.length > 0 ? parts.join("/") + "/" : "");
 };
 
 const handlePathBlur = () => {
@@ -178,9 +224,7 @@ const handlePathBlur = () => {
 
     const targetBucket = buckets.value.find((x) => x.name === bucketName);
     if (targetBucket) {
-      selectedBucket.value = targetBucket.name;
-      currentPath.value =
-        rawPath && !rawPath.endsWith("/") ? rawPath + "/" : rawPath;
+      updateLocation(targetBucket.name, rawPath && !rawPath.endsWith("/") ? rawPath + "/" : rawPath);
     }
   }
   isEditingPath.value = false;
@@ -205,24 +249,39 @@ onMounted(() => {
   fetchBuckets();
 });
 
+const addListeners = () => {
+  if (typeof window !== "undefined")
+    window.addEventListener("mouseup", handleMouseButtons);
+}
+
+const removeListeners = () => {
+  if (typeof window !== "undefined")
+    window.removeEventListener("mouseup", handleMouseButtons);
+};
+
 watch([selectedBucket, currentPath], () => {
   fetchFiles();
 });
 
+onUnmounted(removeListeners);
+
 watch(isVisible, (val) => {
   if (typeof window !== "undefined") {
-    document.body.style.overflow = val ? "hidden" : "";
+    if (val) {
+      removeListeners();
+      addListeners();
+    }
+    else removeListeners();
   }
-  if (val && buckets.value.length === 0) {
-    fetchBuckets();
-  }
+  if (val && buckets.value.length === 0) fetchBuckets();
 });
 </script>
 
 <template>
   <UModal
     v-model:open="isVisible"
-    class="sm:max-w-[max-content]"
+    class="sm:max-w-max"
+    :dismissible="false"
   >
     <template #content>
       <div
@@ -245,8 +304,25 @@ watch(isVisible, (val) => {
           </button>
         </header>
         <nav
-          class="flex h-12 items-center gap-3 border-b border-gray-100 px-3 dark:border-zinc-800"
+          class="flex h-12 items-center gap-2 border-b border-gray-100 px-3 dark:border-zinc-800"
         >
+          <div class="flex items-center gap-0.5 mr-1">
+            <button
+              class="rounded p-1.5 text-gray-500 hover:bg-gray-100 disabled:opacity-20 dark:hover:bg-zinc-800"
+              :disabled="backStack.length === 0"
+              @click="goBack"
+            >
+              <ArrowLeft :size="18" />
+            </button>
+            <button
+              class="rounded p-1.5 text-gray-500 hover:bg-gray-100 disabled:opacity-20 dark:hover:bg-zinc-800"
+              :disabled="forwardStack.length === 0"
+              @click="goForward"
+            >
+              <ArrowRight :size="18" />
+            </button>
+          </div>
+
           <button
             class="rounded p-1.5 text-gray-500 hover:bg-gray-100 disabled:opacity-30 dark:hover:bg-zinc-800"
             :disabled="!currentPath || isLoading"
@@ -265,10 +341,7 @@ watch(isVisible, (val) => {
               >
               <span
                 class="cursor-pointer text-xs font-semibold text-primary-600 hover:underline dark:text-primary-400"
-                @click="
-                   currentPath = '';
-                   selectedFileKey = '';
-                 "
+                @click="updateLocation(selectedBucket, '')"
               >
                 {{ selectedBucket || "选择存储桶" }}
               </span>
@@ -425,7 +498,7 @@ watch(isVisible, (val) => {
             <label class="flex items-center gap-2 mr-2 cursor-pointer select-none group">
               <UCheckbox v-model="isDirectLink" size="sm" />
               <span class="text-xs text-gray-500 group-hover:text-primary-500 transition-colors">
-                使用 HTTP 直连
+                使用 HTTP 直链
               </span>
             </label>
             <button
