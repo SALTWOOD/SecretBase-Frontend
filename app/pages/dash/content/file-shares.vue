@@ -124,10 +124,10 @@ const openRemarks = (remarks: string) => {
 const getDisplayName = (key: string): string =>
   key.split("/").filter(Boolean).pop() || "";
 
-const fillFileField = (s3Url: string) => {
-  const url = new URL(s3Url);
-  const key = decodeURI(url.pathname).substring(1);
-  formState.value.bucket = url.hostname;
+const fillFileField = (url: string) => {
+  const urlObject = new URL(url);
+  const key = decodeURI(urlObject.pathname).substring(1);
+  formState.value.bucket = urlObject.hostname;
   formState.value.key = key;
   formState.value.fileName = getDisplayName(key);
 }

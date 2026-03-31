@@ -13,8 +13,8 @@ const isEdit = computed(() => articleId !== "create");
 const toast = useToast();
 const isFileSelectVisible = ref(false);
 
-const fillCoverUrl = (s3Url: string) => {
-  formState.coverUrl = s3Url;
+const fillCoverUrl = (url: string) => {
+  formState.coverUrl = url;
 }
 
 const formState = reactive({

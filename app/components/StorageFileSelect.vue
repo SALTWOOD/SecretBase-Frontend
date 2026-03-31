@@ -14,7 +14,7 @@ import {
   getAdminStorageBuckets,
   getAdminStorageBucketByBucketNameFiles,
   type S3ObjectResponse,
-  type BucketResponse,
+  type BucketResponse, getStorageDirect,
 } from "~~/packages/api/src";
 
 interface Props {
@@ -26,7 +26,7 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const isVisible = defineModel<boolean>({ default: false });
-const emit = defineEmits<{ (e: "select", s3Url: string): void }>();
+const emit = defineEmits<{ (e: "select", url: string): void }>();
 
 const buckets = ref<BucketResponse[]>([]);
 const allFiles = ref<(S3ObjectResponse & { type: "directory" | "file" })[]>([]);
@@ -36,6 +36,7 @@ const searchQuery = ref("");
 const selectedBucket = ref("");
 const currentPath = ref("");
 const selectedFileKey = ref("");
+const isDirectLink = ref(false);
 
 // 地址栏逻辑
 const isEditingPath = ref(false);
@@ -185,9 +186,17 @@ const handlePathBlur = () => {
   isEditingPath.value = false;
 };
 
-const confirm = () => {
+const confirm = async () => {
   if (canConfirm.value) {
-    emit("select", `s3://${selectedBucket.value}/${selectedFileKey.value}`);
+    let url = `s3://${selectedBucket.value}/${selectedFileKey.value}`;
+    if (isDirectLink.value) {
+      const response = await getStorageDirect({
+        query: { s3Url: url }
+      });
+      if (response.error || !response.data || !response.data.url) return;
+      url = response.data.url;
+    }
+    emit("select", url);
     isVisible.value = false;
   }
 };
@@ -412,7 +421,13 @@ watch(isVisible, (val) => {
               class="h-8 flex-1 border border-gray-200 bg-white px-3 text-xs outline-none dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200"
             />
           </div>
-          <div class="ml-6 flex gap-2">
+          <div class="ml-6 flex items-center gap-2">
+            <label class="flex items-center gap-2 mr-2 cursor-pointer select-none group">
+              <UCheckbox v-model="isDirectLink" size="sm" />
+              <span class="text-xs text-gray-500 group-hover:text-primary-500 transition-colors">
+                使用 HTTP 直连
+              </span>
+            </label>
             <button
               class="h-9 rounded-md bg-primary-500 px-5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-primary-600 disabled:opacity-50"
               :disabled="!canConfirm"

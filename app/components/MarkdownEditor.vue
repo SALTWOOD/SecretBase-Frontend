@@ -32,12 +32,12 @@ const plugins = ref<EditorPlugin[]>([
   }),
 ]);
 
-const handleFileSelected = async (s3Url: string) => {
-  if (!s3Url || !editorRef.value) return;
+const handleFileSelected = async (url: string) => {
+  if (!url || !editorRef.value) return;
 
-  const url = new URL(s3Url);
-  const key = decodeURI(url.pathname).substring(1);
-  const bucket = url.hostname;
+  const urlObject = new URL(url);
+  const key = decodeURI(urlObject.pathname).substring(1);
+  const bucket = urlObject.hostname;
   const fileName = key.split("/").filter(Boolean).pop() || "";
 
   const response = await postAdminFileShares({
@@ -52,7 +52,7 @@ const handleFileSelected = async (s3Url: string) => {
   if (response.error || !response.data) return;
   const file = `/api/v1/shared/${response.data.shortId}`
 
-  const isImage = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(s3Url);
+  const isImage = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(urlObject);
   const insertText = isImage ? `![image](${file})` : `[文件](${file})`;
 
   editorRef.value.insert(() => ({

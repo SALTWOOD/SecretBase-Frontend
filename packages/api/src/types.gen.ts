@@ -1481,6 +1481,24 @@ export type PostShortcodesByNameHandlersByHandlerNameResponses = {
 
 export type PostShortcodesByNameHandlersByHandlerNameResponse = PostShortcodesByNameHandlersByHandlerNameResponses[keyof PostShortcodesByNameHandlersByHandlerNameResponses];
 
+export type GetStorageDirectData = {
+    body?: never;
+    path?: never;
+    query?: {
+        s3Url?: string;
+    };
+    url: '/storage/direct';
+};
+
+export type GetStorageDirectResponses = {
+    /**
+     * OK
+     */
+    200: UrlResponse;
+};
+
+export type GetStorageDirectResponse = GetStorageDirectResponses[keyof GetStorageDirectResponses];
+
 export type GetUserProfileData = {
     body?: never;
     path?: never;
