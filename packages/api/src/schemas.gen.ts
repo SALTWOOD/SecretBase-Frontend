@@ -987,38 +987,6 @@ export const CommentUpdateModelSchema = {
     }
 } as const;
 
-export const ConfirmStickerItemSchema = {
-    required: [
-        'key',
-        'name'
-    ],
-    type: 'object',
-    properties: {
-        key: {
-            type: 'string'
-        },
-        name: {
-            maxLength: 100,
-            type: 'string'
-        }
-    }
-} as const;
-
-export const ConfirmStickerUploadRequestSchema = {
-    required: [
-        'items'
-    ],
-    type: 'object',
-    properties: {
-        items: {
-            type: 'array',
-            items: {
-                $ref: '#/components/schemas/ConfirmStickerItem'
-            }
-        }
-    }
-} as const;
-
 export const ConnectionInfoSchema = {
     type: 'object',
     properties: {
@@ -2482,22 +2450,6 @@ export const PipeWriterSchema = {
     }
 } as const;
 
-export const PresignedStickerUrlSchema = {
-    type: 'object',
-    properties: {
-        key: {
-            type: 'string'
-        },
-        url: {
-            type: 'string'
-        },
-        expiresAt: {
-            type: 'string',
-            format: 'date-time'
-        }
-    }
-} as const;
-
 export const PresignedUrlResponseSchema = {
     required: [
         'url',
@@ -2514,21 +2466,6 @@ export const PresignedUrlResponseSchema = {
         expiresAt: {
             type: 'string',
             format: 'date-time'
-        }
-    }
-} as const;
-
-export const PresignStickerUploadRequestSchema = {
-    required: [
-        'items'
-    ],
-    type: 'object',
-    properties: {
-        items: {
-            type: 'array',
-            items: {
-                $ref: '#/components/schemas/StickerUploadItem'
-            }
         }
     }
 } as const;
@@ -3422,6 +3359,54 @@ export const UpdateUserStatusBodySchema = {
     properties: {
         isBanned: {
             type: 'boolean'
+        }
+    }
+} as const;
+
+export const UploadedStickerResponseSchema = {
+    required: [
+        'id',
+        'name',
+        'key',
+        'uploadUrl'
+    ],
+    type: 'object',
+    properties: {
+        id: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        name: {
+            type: 'string'
+        },
+        key: {
+            type: 'string'
+        },
+        uploadUrl: {
+            type: 'string'
+        },
+        expiresAt: {
+            type: 'string',
+            format: 'date-time'
+        }
+    }
+} as const;
+
+export const UploadStickersRequestSchema = {
+    required: [
+        'items'
+    ],
+    type: 'object',
+    properties: {
+        items: {
+            type: 'array',
+            items: {
+                $ref: '#/components/schemas/StickerUploadItem'
+            }
         }
     }
 } as const;

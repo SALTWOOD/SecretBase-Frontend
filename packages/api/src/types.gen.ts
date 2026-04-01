@@ -244,15 +244,6 @@ export type CommentUpdateModel = {
     content: string;
 };
 
-export type ConfirmStickerItem = {
-    key: string;
-    name: string;
-};
-
-export type ConfirmStickerUploadRequest = {
-    items: Array<ConfirmStickerItem>;
-};
-
 export type ConnectionInfo = {
     id?: string;
     remoteIpAddress?: null | IpAddress;
@@ -637,20 +628,10 @@ export type PipeWriter = {
     unflushedBytes?: bigint | string;
 };
 
-export type PresignedStickerUrl = {
-    key?: string;
-    url?: string;
-    expiresAt?: Date;
-};
-
 export type PresignedUrlResponse = {
     url: string;
     key: string;
     expiresAt?: Date;
-};
-
-export type PresignStickerUploadRequest = {
-    items: Array<StickerUploadItem>;
 };
 
 export type PresignUploadRequest = {
@@ -900,6 +881,18 @@ export type UpdateStickerSetRequest = {
 
 export type UpdateUserStatusBody = {
     isBanned?: boolean;
+};
+
+export type UploadedStickerResponse = {
+    id: number | string;
+    name: string;
+    key: string;
+    uploadUrl: string;
+    expiresAt?: Date;
+};
+
+export type UploadStickersRequest = {
+    items: Array<StickerUploadItem>;
 };
 
 export type UrlResponse = {
@@ -3119,39 +3112,8 @@ export type PutAdminStickerSetsByIdResponses = {
 
 export type PutAdminStickerSetsByIdResponse = PutAdminStickerSetsByIdResponses[keyof PutAdminStickerSetsByIdResponses];
 
-export type PostAdminStickerSetsByIdStickersPresignData = {
-    body: PresignStickerUploadRequest;
-    path: {
-        id: number;
-    };
-    query?: never;
-    url: '/admin/sticker-sets/{id}/stickers/presign';
-};
-
-export type PostAdminStickerSetsByIdStickersPresignErrors = {
-    /**
-     * Bad Request
-     */
-    400: MessageResponse;
-    /**
-     * Not Found
-     */
-    404: MessageResponse;
-};
-
-export type PostAdminStickerSetsByIdStickersPresignError = PostAdminStickerSetsByIdStickersPresignErrors[keyof PostAdminStickerSetsByIdStickersPresignErrors];
-
-export type PostAdminStickerSetsByIdStickersPresignResponses = {
-    /**
-     * OK
-     */
-    200: Array<PresignedStickerUrl>;
-};
-
-export type PostAdminStickerSetsByIdStickersPresignResponse = PostAdminStickerSetsByIdStickersPresignResponses[keyof PostAdminStickerSetsByIdStickersPresignResponses];
-
 export type PostAdminStickerSetsByIdStickersData = {
-    body: ConfirmStickerUploadRequest;
+    body: UploadStickersRequest;
     path: {
         id: number;
     };
@@ -3176,7 +3138,7 @@ export type PostAdminStickerSetsByIdStickersResponses = {
     /**
      * OK
      */
-    200: Array<StickerResponse>;
+    200: Array<UploadedStickerResponse>;
 };
 
 export type PostAdminStickerSetsByIdStickersResponse = PostAdminStickerSetsByIdStickersResponses[keyof PostAdminStickerSetsByIdStickersResponses];
