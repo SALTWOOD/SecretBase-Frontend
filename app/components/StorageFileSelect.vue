@@ -16,7 +16,8 @@ import {
   getAdminStorageBuckets,
   getAdminStorageBucketByBucketNameFiles,
   type S3ObjectResponse,
-  type BucketResponse, getStorageDirect,
+  type BucketResponse,
+  getStorageDirect,
 } from "~~/packages/api/src";
 
 interface Props {
@@ -129,8 +130,14 @@ const formatSize = (bytes?: bigint) => {
 };
 
 const updateLocation = (bucket: string, path: string, skipHistory = false) => {
-  if (!skipHistory && (selectedBucket.value !== bucket || currentPath.value !== path)) {
-    backStack.value.push({ bucket: selectedBucket.value, path: currentPath.value });
+  if (
+    !skipHistory &&
+    (selectedBucket.value !== bucket || currentPath.value !== path)
+  ) {
+    backStack.value.push({
+      bucket: selectedBucket.value,
+      path: currentPath.value,
+    });
     forwardStack.value = [];
   }
   selectedBucket.value = bucket;
@@ -143,7 +150,10 @@ const goBack = () => {
   if (backStack.value.length === 0) return;
   isNavigatingHistory = true;
   const target = backStack.value.pop()!;
-  forwardStack.value.push({ bucket: selectedBucket.value, path: currentPath.value });
+  forwardStack.value.push({
+    bucket: selectedBucket.value,
+    path: currentPath.value,
+  });
   selectedBucket.value = target.bucket;
   currentPath.value = target.path;
   selectedFileKey.value = "";
@@ -155,7 +165,10 @@ const goForward = () => {
   if (forwardStack.value.length === 0) return;
   isNavigatingHistory = true;
   const target = forwardStack.value.pop()!;
-  backStack.value.push({ bucket: selectedBucket.value, path: currentPath.value });
+  backStack.value.push({
+    bucket: selectedBucket.value,
+    path: currentPath.value,
+  });
   selectedBucket.value = target.bucket;
   currentPath.value = target.path;
   selectedFileKey.value = "";
@@ -213,7 +226,10 @@ const navigateBack = () => {
   if (!currentPath.value) return;
   const parts = currentPath.value.split("/").filter(Boolean);
   parts.pop();
-  updateLocation(selectedBucket.value, parts.length > 0 ? parts.join("/") + "/" : "");
+  updateLocation(
+    selectedBucket.value,
+    parts.length > 0 ? parts.join("/") + "/" : "",
+  );
 };
 
 const handlePathBlur = () => {
@@ -224,7 +240,10 @@ const handlePathBlur = () => {
 
     const targetBucket = buckets.value.find((x) => x.name === bucketName);
     if (targetBucket) {
-      updateLocation(targetBucket.name, rawPath && !rawPath.endsWith("/") ? rawPath + "/" : rawPath);
+      updateLocation(
+        targetBucket.name,
+        rawPath && !rawPath.endsWith("/") ? rawPath + "/" : rawPath,
+      );
     }
   }
   isEditingPath.value = false;
@@ -235,7 +254,7 @@ const confirm = async () => {
     let url = `s3://${selectedBucket.value}/${selectedFileKey.value}`;
     if (isDirectLink.value) {
       const response = await getStorageDirect({
-        query: { s3Url: url }
+        query: { s3Url: url },
       });
       if (response.error || !response.data || !response.data.url) return;
       url = response.data.url;
@@ -252,7 +271,7 @@ onMounted(() => {
 const addListeners = () => {
   if (typeof window !== "undefined")
     window.addEventListener("mouseup", handleMouseButtons);
-}
+};
 
 const removeListeners = () => {
   if (typeof window !== "undefined")
@@ -270,19 +289,14 @@ watch(isVisible, (val) => {
     if (val) {
       removeListeners();
       addListeners();
-    }
-    else removeListeners();
+    } else removeListeners();
   }
   if (val && buckets.value.length === 0) fetchBuckets();
 });
 </script>
 
 <template>
-  <UModal
-    v-model:open="isVisible"
-    class="sm:max-w-max"
-    :dismissible="false"
-  >
+  <UModal v-model:open="isVisible" class="sm:max-w-max" :dismissible="false">
     <template #content>
       <div
         class="flex h-150 w-240 flex-col border border-gray-200 bg-white shadow-2xl dark:border-zinc-800 dark:bg-zinc-950 overflow-hidden"
@@ -337,7 +351,7 @@ watch(isVisible, (val) => {
           >
             <template v-if="!isEditingPath">
               <span class="flex items-center gap-1 text-xs text-gray-400"
-              >s3://</span
+                >s3://</span
               >
               <span
                 class="cursor-pointer text-xs font-semibold text-primary-600 hover:underline dark:text-primary-400"
@@ -396,10 +410,10 @@ watch(isVisible, (val) => {
                 :key="b.name"
                 class="mb-1 flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors select-none"
                 :class="
-                   selectedBucket === b.name
-                     ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400'
-                     : 'text-gray-600 hover:bg-gray-100 dark:text-zinc-400 dark:hover:bg-zinc-800'
-                 "
+                  selectedBucket === b.name
+                    ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400'
+                    : 'text-gray-600 hover:bg-gray-100 dark:text-zinc-400 dark:hover:bg-zinc-800'
+                "
                 @click="navigateToBucket(b.name)"
               >
                 <Database :size="16" />
@@ -414,63 +428,58 @@ watch(isVisible, (val) => {
               <thead
                 class="sticky top-0 z-10 border-b border-gray-100 bg-white/80 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/80"
               >
-              <tr class="text-gray-400 uppercase tracking-tighter">
-                <th class="p-3 font-medium w-[50%]">名称</th>
-                <th class="p-3 font-medium">最后修改</th>
-                <th class="p-3 font-medium w-20">类型</th>
-                <th class="p-3 font-medium text-right w-24">大小</th>
-              </tr>
+                <tr class="text-gray-400 uppercase tracking-tighter">
+                  <th class="p-3 font-medium w-[50%]">名称</th>
+                  <th class="p-3 font-medium">最后修改</th>
+                  <th class="p-3 font-medium w-20">类型</th>
+                  <th class="p-3 font-medium text-right w-24">大小</th>
+                </tr>
               </thead>
               <tbody class="divide-y divide-gray-50 dark:divide-zinc-900">
-              <tr
-                v-for="item in displayedItems"
-                :key="item.key"
-                class="group cursor-pointer transition-colors select-none"
-                :class="
-                     selectedFileKey === item.key
-                       ? 'bg-primary-50/50 dark:bg-primary-900/10'
-                       : 'hover:bg-gray-50 dark:hover:bg-zinc-900/50'
-                   "
-                @click="handleItemClick(item)"
-                @dblclick="handleItemDbClick(item)"
-              >
-                <td
-                  class="flex items-center gap-3 p-3 font-medium text-gray-700 dark:text-zinc-200 overflow-hidden"
+                <tr
+                  v-for="item in displayedItems"
+                  :key="item.key"
+                  class="group cursor-pointer transition-colors select-none"
+                  :class="
+                    selectedFileKey === item.key
+                      ? 'bg-primary-50/50 dark:bg-primary-900/10'
+                      : 'hover:bg-gray-50 dark:hover:bg-zinc-900/50'
+                  "
+                  @click="handleItemClick(item)"
+                  @dblclick="handleItemDbClick(item)"
                 >
-                  <Folder
-                    v-if="item.type === 'directory'"
-                    :size="18"
-                    class="text-primary-500 fill-primary-500/20 shrink-0"
-                  />
-                  <File v-else :size="18" class="text-gray-400 shrink-0" />
-                  <span class="truncate">{{
-                      getDisplayName(item.key)
-                    }}</span>
-                </td>
-                <td class="p-3 text-gray-500 dark:text-zinc-500 truncate">
-                  {{
-                    item.type === "directory"
-                      ? "--"
-                      : (item.lastModified?.toLocaleString() ?? "--")
-                  }}
-                </td>
-                <td class="p-3 text-gray-500 dark:text-zinc-500 truncate">
-                  {{ item.type === "directory" ? "文件夹" : "文件" }}
-                </td>
-                <td
-                  class="p-3 text-right text-gray-500 dark:text-zinc-500 font-mono"
-                >
-                  {{ formatSize(item.size as bigint) }}
-                </td>
-              </tr>
-              <tr v-if="displayedItems.length === 0 && !isLoading">
-                <td
-                  colspan="4"
-                  class="p-10 text-center text-gray-400 italic"
-                >
-                  此目录下没有文件
-                </td>
-              </tr>
+                  <td
+                    class="flex items-center gap-3 p-3 font-medium text-gray-700 dark:text-zinc-200 overflow-hidden"
+                  >
+                    <Folder
+                      v-if="item.type === 'directory'"
+                      :size="18"
+                      class="text-primary-500 fill-primary-500/20 shrink-0"
+                    />
+                    <File v-else :size="18" class="text-gray-400 shrink-0" />
+                    <span class="truncate">{{ getDisplayName(item.key) }}</span>
+                  </td>
+                  <td class="p-3 text-gray-500 dark:text-zinc-500 truncate">
+                    {{
+                      item.type === "directory"
+                        ? "--"
+                        : (item.lastModified?.toLocaleString() ?? "--")
+                    }}
+                  </td>
+                  <td class="p-3 text-gray-500 dark:text-zinc-500 truncate">
+                    {{ item.type === "directory" ? "文件夹" : "文件" }}
+                  </td>
+                  <td
+                    class="p-3 text-right text-gray-500 dark:text-zinc-500 font-mono"
+                  >
+                    {{ formatSize(item.size as bigint) }}
+                  </td>
+                </tr>
+                <tr v-if="displayedItems.length === 0 && !isLoading">
+                  <td colspan="4" class="p-10 text-center text-gray-400 italic">
+                    此目录下没有文件
+                  </td>
+                </tr>
               </tbody>
             </table>
             <div
@@ -495,9 +504,13 @@ watch(isVisible, (val) => {
             />
           </div>
           <div class="ml-6 flex items-center gap-2">
-            <label class="flex items-center gap-2 mr-2 cursor-pointer select-none group">
+            <label
+              class="flex items-center gap-2 mr-2 cursor-pointer select-none group"
+            >
               <UCheckbox v-model="isDirectLink" size="sm" />
-              <span class="text-xs text-gray-500 group-hover:text-primary-500 transition-colors">
+              <span
+                class="text-xs text-gray-500 group-hover:text-primary-500 transition-colors"
+              >
                 使用 HTTP 直链
               </span>
             </label>

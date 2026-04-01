@@ -47,8 +47,8 @@ const formConfig: Ref<FieldConfig[]> = ref([
       tooltip: "选择 S3 存储中的文件",
       onClick: () => {
         isFileSelectVisible.value = true;
-      }
-    }
+      },
+    },
   },
   {
     key: "remarks",
@@ -96,11 +96,24 @@ const formState = ref({
 
 const dropdownMenu = (row: any) => [
   [
-    { label: '复制链接', icon: 'i-lucide-clipboard', onSelect: () => copyLink(row.original.shortId) },
-    { label: '编辑', icon: 'i-lucide-pencil', onSelect: () => openForm(true, row.original) },
+    {
+      label: "复制链接",
+      icon: "i-lucide-clipboard",
+      onSelect: () => copyLink(row.original.shortId),
+    },
+    {
+      label: "编辑",
+      icon: "i-lucide-pencil",
+      onSelect: () => openForm(true, row.original),
+    },
   ],
   [
-    { label: '删除', icon: 'i-lucide-trash', color: 'error', onSelect: () => deleteShare(row.original.shortId) },
+    {
+      label: "删除",
+      icon: "i-lucide-trash",
+      color: "error",
+      onSelect: () => deleteShare(row.original.shortId),
+    },
   ],
 ];
 
@@ -118,7 +131,7 @@ const toast = useToast();
 const remarksModal = ref<InstanceType<typeof TextDisplayModal>>();
 
 const openRemarks = (remarks: string) => {
-  remarksModal.value?.open(remarks)
+  remarksModal.value?.open(remarks);
 };
 
 const getDisplayName = (key: string): string =>
@@ -130,7 +143,7 @@ const fillFileField = (url: string) => {
   formState.value.bucket = urlObject.hostname;
   formState.value.key = key;
   formState.value.fileName = getDisplayName(key);
-}
+};
 
 const openForm = (edit: boolean, row?: FileShareResponse) => {
   isEditMode.value = edit;
@@ -371,10 +384,12 @@ onMounted(() => {
         </template>
 
         <template #actions-cell="{ row }">
-          <UDropdownMenu
-            :items="dropdownMenu(row)"
-          >
-            <UButton icon="i-lucide-more-horizontal" variant="ghost" color="neutral" />
+          <UDropdownMenu :items="dropdownMenu(row)">
+            <UButton
+              icon="i-lucide-more-horizontal"
+              variant="ghost"
+              color="neutral"
+            />
           </UDropdownMenu>
         </template>
       </UTable>
@@ -403,9 +418,6 @@ onMounted(() => {
       selectionMode="file"
       @select="fillFileField"
     />
-    <TextDisplayModal
-      title="查看备注"
-      ref="remarksModal"
-    />
+    <TextDisplayModal title="查看备注" ref="remarksModal" />
   </UContainer>
 </template>

@@ -21,12 +21,7 @@ const handleAction = (result: boolean) => {
 
 <template>
   <UPopover v-model:open="open">
-    <UButton
-      :icon="icon"
-      :label="label"
-      color="primary"
-      variant="ghost"
-    />
+    <UButton :icon="icon" :label="label" color="primary" variant="ghost" />
 
     <template #content>
       <div

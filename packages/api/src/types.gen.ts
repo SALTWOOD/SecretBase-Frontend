@@ -244,6 +244,15 @@ export type CommentUpdateModel = {
     content: string;
 };
 
+export type ConfirmStickerItem = {
+    key: string;
+    name: string;
+};
+
+export type ConfirmStickerUploadRequest = {
+    items: Array<ConfirmStickerItem>;
+};
+
 export type ConnectionInfo = {
     id?: string;
     remoteIpAddress?: null | IpAddress;
@@ -275,6 +284,10 @@ export type CreateAppResponse = {
 export type CreateInvitationRequest = {
     uses: number | string;
     hoursValid: number | string;
+};
+
+export type CreateStickerSetRequest = {
+    name: string;
 };
 
 export type CredentialCreateOptions = {
@@ -624,10 +637,20 @@ export type PipeWriter = {
     unflushedBytes?: bigint | string;
 };
 
+export type PresignedStickerUrl = {
+    key?: string;
+    url?: string;
+    expiresAt?: Date;
+};
+
 export type PresignedUrlResponse = {
     url: string;
     key: string;
     expiresAt?: Date;
+};
+
+export type PresignStickerUploadRequest = {
+    items: Array<StickerUploadItem>;
 };
 
 export type PresignUploadRequest = {
@@ -782,6 +805,36 @@ export type ShortcodeUpdateModel = {
     isEnabled?: null | boolean;
 };
 
+export type StickerImageUrlResponse = {
+    url?: string;
+};
+
+export type StickerResponse = {
+    id: number | string;
+    name: string;
+};
+
+export type StickerSetDetailResponse = {
+    id: number | string;
+    name: string;
+    stickers: Array<StickerResponse>;
+    createdAt?: Date;
+    updatedAt?: Date;
+};
+
+export type StickerSetResponse = {
+    id: number | string;
+    name: string;
+    stickerCount?: number | string;
+    createdAt?: Date;
+    updatedAt?: Date;
+};
+
+export type StickerUploadItem = {
+    name: string;
+    contentType?: null | string;
+};
+
 export type StorageStatusResponse = {
     isConnected?: boolean;
     bucketCount?: number | string;
@@ -839,6 +892,10 @@ export type UpdateProfileModel = {
 
 export type UpdateSettingBody = {
     value?: JsonElement;
+};
+
+export type UpdateStickerSetRequest = {
+    name?: null | string;
 };
 
 export type UpdateUserStatusBody = {
@@ -1480,6 +1537,79 @@ export type PostShortcodesByNameHandlersByHandlerNameResponses = {
 };
 
 export type PostShortcodesByNameHandlersByHandlerNameResponse = PostShortcodesByNameHandlersByHandlerNameResponses[keyof PostShortcodesByNameHandlersByHandlerNameResponses];
+
+export type GetStickerSetsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        page?: number | string;
+        pageSize?: number | string;
+    };
+    url: '/sticker-sets';
+};
+
+export type GetStickerSetsResponses = {
+    /**
+     * OK
+     */
+    200: Array<StickerSetResponse>;
+};
+
+export type GetStickerSetsResponse = GetStickerSetsResponses[keyof GetStickerSetsResponses];
+
+export type GetStickerSetsByIdData = {
+    body?: never;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/sticker-sets/{id}';
+};
+
+export type GetStickerSetsByIdErrors = {
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+};
+
+export type GetStickerSetsByIdError = GetStickerSetsByIdErrors[keyof GetStickerSetsByIdErrors];
+
+export type GetStickerSetsByIdResponses = {
+    /**
+     * OK
+     */
+    200: StickerSetDetailResponse;
+};
+
+export type GetStickerSetsByIdResponse = GetStickerSetsByIdResponses[keyof GetStickerSetsByIdResponses];
+
+export type GetStickerSetsStickersByStickerIdImageData = {
+    body?: never;
+    path: {
+        stickerId: number;
+    };
+    query?: never;
+    url: '/sticker-sets/stickers/{stickerId}/image';
+};
+
+export type GetStickerSetsStickersByStickerIdImageErrors = {
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+};
+
+export type GetStickerSetsStickersByStickerIdImageError = GetStickerSetsStickersByStickerIdImageErrors[keyof GetStickerSetsStickersByStickerIdImageErrors];
+
+export type GetStickerSetsStickersByStickerIdImageResponses = {
+    /**
+     * OK
+     */
+    200: StickerImageUrlResponse;
+};
+
+export type GetStickerSetsStickersByStickerIdImageResponse = GetStickerSetsStickersByStickerIdImageResponses[keyof GetStickerSetsStickersByStickerIdImageResponses];
 
 export type GetStorageDirectData = {
     body?: never;
@@ -2865,6 +2995,217 @@ export type PatchAdminShortcodesByIdStatusResponses = {
 };
 
 export type PatchAdminShortcodesByIdStatusResponse = PatchAdminShortcodesByIdStatusResponses[keyof PatchAdminShortcodesByIdStatusResponses];
+
+export type GetAdminStickerSetsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        page?: number | string;
+        pageSize?: number | string;
+    };
+    url: '/admin/sticker-sets';
+};
+
+export type GetAdminStickerSetsResponses = {
+    /**
+     * OK
+     */
+    200: Array<StickerSetResponse>;
+};
+
+export type GetAdminStickerSetsResponse = GetAdminStickerSetsResponses[keyof GetAdminStickerSetsResponses];
+
+export type PostAdminStickerSetsData = {
+    body: CreateStickerSetRequest;
+    path?: never;
+    query?: never;
+    url: '/admin/sticker-sets';
+};
+
+export type PostAdminStickerSetsErrors = {
+    /**
+     * Bad Request
+     */
+    400: MessageResponse;
+};
+
+export type PostAdminStickerSetsError = PostAdminStickerSetsErrors[keyof PostAdminStickerSetsErrors];
+
+export type PostAdminStickerSetsResponses = {
+    /**
+     * Created
+     */
+    201: StickerSetResponse;
+};
+
+export type PostAdminStickerSetsResponse = PostAdminStickerSetsResponses[keyof PostAdminStickerSetsResponses];
+
+export type DeleteAdminStickerSetsByIdData = {
+    body?: never;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/admin/sticker-sets/{id}';
+};
+
+export type DeleteAdminStickerSetsByIdErrors = {
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+};
+
+export type DeleteAdminStickerSetsByIdError = DeleteAdminStickerSetsByIdErrors[keyof DeleteAdminStickerSetsByIdErrors];
+
+export type DeleteAdminStickerSetsByIdResponses = {
+    /**
+     * No Content
+     */
+    204: unknown;
+};
+
+export type GetAdminStickerSetsByIdData = {
+    body?: never;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/admin/sticker-sets/{id}';
+};
+
+export type GetAdminStickerSetsByIdErrors = {
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+};
+
+export type GetAdminStickerSetsByIdError = GetAdminStickerSetsByIdErrors[keyof GetAdminStickerSetsByIdErrors];
+
+export type GetAdminStickerSetsByIdResponses = {
+    /**
+     * OK
+     */
+    200: StickerSetDetailResponse;
+};
+
+export type GetAdminStickerSetsByIdResponse = GetAdminStickerSetsByIdResponses[keyof GetAdminStickerSetsByIdResponses];
+
+export type PutAdminStickerSetsByIdData = {
+    body: UpdateStickerSetRequest;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/admin/sticker-sets/{id}';
+};
+
+export type PutAdminStickerSetsByIdErrors = {
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+};
+
+export type PutAdminStickerSetsByIdError = PutAdminStickerSetsByIdErrors[keyof PutAdminStickerSetsByIdErrors];
+
+export type PutAdminStickerSetsByIdResponses = {
+    /**
+     * OK
+     */
+    200: StickerSetResponse;
+};
+
+export type PutAdminStickerSetsByIdResponse = PutAdminStickerSetsByIdResponses[keyof PutAdminStickerSetsByIdResponses];
+
+export type PostAdminStickerSetsByIdStickersPresignData = {
+    body: PresignStickerUploadRequest;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/admin/sticker-sets/{id}/stickers/presign';
+};
+
+export type PostAdminStickerSetsByIdStickersPresignErrors = {
+    /**
+     * Bad Request
+     */
+    400: MessageResponse;
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+};
+
+export type PostAdminStickerSetsByIdStickersPresignError = PostAdminStickerSetsByIdStickersPresignErrors[keyof PostAdminStickerSetsByIdStickersPresignErrors];
+
+export type PostAdminStickerSetsByIdStickersPresignResponses = {
+    /**
+     * OK
+     */
+    200: Array<PresignedStickerUrl>;
+};
+
+export type PostAdminStickerSetsByIdStickersPresignResponse = PostAdminStickerSetsByIdStickersPresignResponses[keyof PostAdminStickerSetsByIdStickersPresignResponses];
+
+export type PostAdminStickerSetsByIdStickersData = {
+    body: ConfirmStickerUploadRequest;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/admin/sticker-sets/{id}/stickers';
+};
+
+export type PostAdminStickerSetsByIdStickersErrors = {
+    /**
+     * Bad Request
+     */
+    400: MessageResponse;
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+};
+
+export type PostAdminStickerSetsByIdStickersError = PostAdminStickerSetsByIdStickersErrors[keyof PostAdminStickerSetsByIdStickersErrors];
+
+export type PostAdminStickerSetsByIdStickersResponses = {
+    /**
+     * OK
+     */
+    200: Array<StickerResponse>;
+};
+
+export type PostAdminStickerSetsByIdStickersResponse = PostAdminStickerSetsByIdStickersResponses[keyof PostAdminStickerSetsByIdStickersResponses];
+
+export type DeleteAdminStickerSetsByIdStickersByStickerIdData = {
+    body?: never;
+    path: {
+        id: number;
+        stickerId: number;
+    };
+    query?: never;
+    url: '/admin/sticker-sets/{id}/stickers/{stickerId}';
+};
+
+export type DeleteAdminStickerSetsByIdStickersByStickerIdErrors = {
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+};
+
+export type DeleteAdminStickerSetsByIdStickersByStickerIdError = DeleteAdminStickerSetsByIdStickersByStickerIdErrors[keyof DeleteAdminStickerSetsByIdStickersByStickerIdErrors];
+
+export type DeleteAdminStickerSetsByIdStickersByStickerIdResponses = {
+    /**
+     * No Content
+     */
+    204: unknown;
+};
 
 export type DeleteAdminStorageBucketByBucketNameFilesData = {
     body: Array<string>;

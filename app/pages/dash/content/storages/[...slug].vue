@@ -445,9 +445,13 @@ onMounted(() => {
         </div>
 
         <div class="flex items-center gap-3">
-          <label class="flex items-center gap-2 mr-2 cursor-pointer select-none group">
+          <label
+            class="flex items-center gap-2 mr-2 cursor-pointer select-none group"
+          >
             <UCheckbox v-model="isRecursiveSearch" size="sm" />
-            <span class="text-xs text-gray-500 group-hover:text-primary-500 transition-colors">
+            <span
+              class="text-xs text-gray-500 group-hover:text-primary-500 transition-colors"
+            >
               包含子目录
             </span>
           </label>

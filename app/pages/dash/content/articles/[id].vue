@@ -15,7 +15,7 @@ const isFileSelectVisible = ref(false);
 
 const fillCoverUrl = (url: string) => {
   formState.coverUrl = url;
-}
+};
 
 const formState = reactive({
   title: "",
@@ -157,8 +157,5 @@ const handleSave = async () => {
     />
   </UContainer>
 
-  <StorageFileSelect
-    @select="fillCoverUrl"
-    v-model="isFileSelectVisible"
-  />
+  <StorageFileSelect @select="fillCoverUrl" v-model="isFileSelectVisible" />
 </template>

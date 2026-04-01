@@ -35,17 +35,17 @@
                   :disabled="field.disabled"
                 />
 
-                <UTooltip
-                  v-if="field.action"
-                  :text="field.action.tooltip"
-                >
+                <UTooltip v-if="field.action" :text="field.action.tooltip">
                   <UButton
                     :icon="field.action.icon"
                     variant="ghost"
                     color="neutral"
                     @click="
-                    field.action.onClick?.(formData[field.key][index], formData)
-                  "
+                      field.action.onClick?.(
+                        formData[field.key][index],
+                        formData,
+                      )
+                    "
                   />
                 </UTooltip>
 
@@ -67,15 +67,14 @@
                   :placeholder="field.placeholder"
                   class="grow"
                 />
-                <UTooltip
-                  v-if="field.action"
-                  :text="field.action.tooltip"
-                >
+                <UTooltip v-if="field.action" :text="field.action.tooltip">
                   <UButton
                     :icon="field.action.icon"
                     variant="ghost"
                     color="neutral"
-                    @click="field.action.onClick?.(formData[field.key], formData)"
+                    @click="
+                      field.action.onClick?.(formData[field.key], formData)
+                    "
                   />
                 </UTooltip>
               </div>
@@ -90,15 +89,14 @@
                   :placeholder="field.placeholder"
                   :disabled="field.disabled"
                 />
-                <UTooltip
-                  v-if="field.action"
-                  :text="field.action.tooltip"
-                >
+                <UTooltip v-if="field.action" :text="field.action.tooltip">
                   <UButton
                     :icon="field.action.icon"
                     variant="ghost"
                     color="neutral"
-                    @click="field.action.onClick?.(formData[field.key], formData)"
+                    @click="
+                      field.action.onClick?.(formData[field.key], formData)
+                    "
                   />
                 </UTooltip>
               </div>

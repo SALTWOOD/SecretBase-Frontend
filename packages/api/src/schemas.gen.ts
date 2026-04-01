@@ -987,6 +987,38 @@ export const CommentUpdateModelSchema = {
     }
 } as const;
 
+export const ConfirmStickerItemSchema = {
+    required: [
+        'key',
+        'name'
+    ],
+    type: 'object',
+    properties: {
+        key: {
+            type: 'string'
+        },
+        name: {
+            maxLength: 100,
+            type: 'string'
+        }
+    }
+} as const;
+
+export const ConfirmStickerUploadRequestSchema = {
+    required: [
+        'items'
+    ],
+    type: 'object',
+    properties: {
+        items: {
+            type: 'array',
+            items: {
+                $ref: '#/components/schemas/ConfirmStickerItem'
+            }
+        }
+    }
+} as const;
+
 export const ConnectionInfoSchema = {
     type: 'object',
     properties: {
@@ -1140,6 +1172,19 @@ export const CreateInvitationRequestSchema = {
                 'string'
             ],
             format: 'int32'
+        }
+    }
+} as const;
+
+export const CreateStickerSetRequestSchema = {
+    required: [
+        'name'
+    ],
+    type: 'object',
+    properties: {
+        name: {
+            maxLength: 100,
+            type: 'string'
         }
     }
 } as const;
@@ -2437,6 +2482,22 @@ export const PipeWriterSchema = {
     }
 } as const;
 
+export const PresignedStickerUrlSchema = {
+    type: 'object',
+    properties: {
+        key: {
+            type: 'string'
+        },
+        url: {
+            type: 'string'
+        },
+        expiresAt: {
+            type: 'string',
+            format: 'date-time'
+        }
+    }
+} as const;
+
 export const PresignedUrlResponseSchema = {
     required: [
         'url',
@@ -2453,6 +2514,21 @@ export const PresignedUrlResponseSchema = {
         expiresAt: {
             type: 'string',
             format: 'date-time'
+        }
+    }
+} as const;
+
+export const PresignStickerUploadRequestSchema = {
+    required: [
+        'items'
+    ],
+    type: 'object',
+    properties: {
+        items: {
+            type: 'array',
+            items: {
+                $ref: '#/components/schemas/StickerUploadItem'
+            }
         }
     }
 } as const;
@@ -3001,6 +3077,128 @@ export const ShortcodeUpdateModelSchema = {
     }
 } as const;
 
+export const StickerImageUrlResponseSchema = {
+    type: 'object',
+    properties: {
+        url: {
+            type: 'string'
+        }
+    }
+} as const;
+
+export const StickerResponseSchema = {
+    required: [
+        'id',
+        'name'
+    ],
+    type: 'object',
+    properties: {
+        id: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        name: {
+            type: 'string'
+        }
+    }
+} as const;
+
+export const StickerSetDetailResponseSchema = {
+    required: [
+        'id',
+        'name',
+        'stickers'
+    ],
+    type: 'object',
+    properties: {
+        id: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        name: {
+            type: 'string'
+        },
+        stickers: {
+            type: 'array',
+            items: {
+                $ref: '#/components/schemas/StickerResponse'
+            }
+        },
+        createdAt: {
+            type: 'string',
+            format: 'date-time'
+        },
+        updatedAt: {
+            type: 'string',
+            format: 'date-time'
+        }
+    }
+} as const;
+
+export const StickerSetResponseSchema = {
+    required: [
+        'id',
+        'name'
+    ],
+    type: 'object',
+    properties: {
+        id: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        name: {
+            type: 'string'
+        },
+        stickerCount: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        createdAt: {
+            type: 'string',
+            format: 'date-time'
+        },
+        updatedAt: {
+            type: 'string',
+            format: 'date-time'
+        }
+    }
+} as const;
+
+export const StickerUploadItemSchema = {
+    required: [
+        'name'
+    ],
+    type: 'object',
+    properties: {
+        name: {
+            maxLength: 100,
+            type: 'string'
+        },
+        contentType: {
+            type: [
+                'null',
+                'string'
+            ]
+        }
+    }
+} as const;
+
 export const StorageStatusResponseSchema = {
     type: 'object',
     properties: {
@@ -3202,6 +3400,19 @@ export const UpdateSettingBodySchema = {
     properties: {
         value: {
             $ref: '#/components/schemas/JsonElement'
+        }
+    }
+} as const;
+
+export const UpdateStickerSetRequestSchema = {
+    type: 'object',
+    properties: {
+        name: {
+            maxLength: 100,
+            type: [
+                'null',
+                'string'
+            ]
         }
     }
 } as const;

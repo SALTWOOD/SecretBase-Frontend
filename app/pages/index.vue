@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import {
-  getArticles, getSettingsFooter,
-  getSettingsHomeBanner, getSettingsSeoGeneral,
+  getArticles,
+  getSettingsFooter,
+  getSettingsHomeBanner,
+  getSettingsSeoGeneral,
 } from "@secret-base/api/src/sdk.gen";
 
 definePageMeta({
@@ -12,21 +14,21 @@ const [
   { data: seoGeneral, pending: seoPending },
   { data: bannerSettings, pending: bannerPending },
   { data: articles, pending: articlesPending },
-  { data: footer }
+  { data: footer },
 ] = await Promise.all([
   useAsyncData("site-seo", async () => (await getSettingsSeoGeneral()).data),
   useAsyncData("home-banner", async () => (await getSettingsHomeBanner()).data),
   useAsyncData("articles-list", async () => (await getArticles()).data),
-  useAsyncData("footer", async () => (await getSettingsFooter()).data)
+  useAsyncData("footer", async () => (await getSettingsFooter()).data),
 ]);
 
 const policeLink = computed(() => {
   const policeStr = footer.value?.beian?.police;
-  if (!policeStr) return 'https://beian.mps.gov.cn/';
+  if (!policeStr) return "https://beian.mps.gov.cn/";
   const code = policeStr.match(/\d+/)?.[0];
   return code
     ? `https://beian.mps.gov.cn/#/query/webSearch?code=${code}`
-    : 'https://beian.mps.gov.cn/';
+    : "https://beian.mps.gov.cn/";
 });
 
 const isLoading = computed(
@@ -114,7 +116,11 @@ useSeoMeta({
           v-if="isLoading"
           :class="[masonryColumns, 'gap-8 pb-20 space-y-8']"
         >
-          <USkeleton v-for="i in 6" :key="i" class="h-64 w-full rounded-2xl break-inside-avoid" />
+          <USkeleton
+            v-for="i in 6"
+            :key="i"
+            class="h-64 w-full rounded-2xl break-inside-avoid"
+          />
         </div>
 
         <template v-else>
@@ -148,7 +154,7 @@ useSeoMeta({
                   {{ article.isPublished ? "已发布" : "草稿" }}
                 </UBadge>
                 <time v-if="article.createdAt" class="text-xs text-muted"
-                >{{ formatDate(article.createdAt) }}
+                  >{{ formatDate(article.createdAt) }}
                 </time>
               </div>
 
@@ -187,7 +193,7 @@ useSeoMeta({
       class="w-full max-w-4xl shadow-xl shadow-gray-950/20"
       :ui="{
         root: 'bg-neutral-800/80 backdrop-blur-md border-0 rounded-2xl ring-1 ring-white/10',
-        body: 'flex flex-col items-center gap-3 p-8 text-center'
+        body: 'flex flex-col items-center gap-3 p-8 text-center',
       }"
     >
       <div v-if="footer?.beian" class="flex flex-col items-center gap-2">
@@ -199,11 +205,7 @@ useSeoMeta({
         />
 
         <div v-if="footer?.beian?.police">
-          <a
-            v-text="footer.beian.police"
-            :href="policeLink"
-            target="_blank"
-          />
+          <a v-text="footer.beian.police" :href="policeLink" target="_blank" />
         </div>
       </div>
 
@@ -250,7 +252,8 @@ useSeoMeta({
 .footer-card {
   @apply w-full flex justify-center py-10 px-4;
 
-  & a, & span {
+  & a,
+  & span {
     @apply text-neutral-400 underline-offset-4 transition-all duration-300 ease-in-out;
   }
 

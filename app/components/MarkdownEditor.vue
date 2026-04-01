@@ -4,7 +4,7 @@ import {
   NormalToolbar,
   type Themes,
   type ToolbarNames,
-  type ExposeParam
+  type ExposeParam,
 } from "md-editor-v3";
 import "md-editor-v3/lib/style.css";
 import type { EditorPlugin } from "~/types/editor-plugins/base";
@@ -45,12 +45,12 @@ const handleFileSelected = async (url: string) => {
       bucket,
       key,
       fileName,
-      remarks: `Auto-shared by MarkdownEditor at ${new Date().toLocaleString()}`
-    }
+      remarks: `Auto-shared by MarkdownEditor at ${new Date().toLocaleString()}`,
+    },
   });
 
   if (response.error || !response.data) return;
-  const file = `/api/v1/shared/${response.data.shortId}`
+  const file = `/api/v1/shared/${response.data.shortId}`;
 
   const isImage = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(urlObject);
   const insertText = isImage ? `![image](${file})` : `[文件](${file})`;
@@ -66,7 +66,7 @@ const handleFileSelected = async (url: string) => {
 };
 
 const theme = computed<Themes>(() =>
-  colorMode.value === "dark" ? "dark" : "light"
+  colorMode.value === "dark" ? "dark" : "light",
 );
 
 const content = computed({
@@ -75,14 +75,40 @@ const content = computed({
 });
 
 const toolbars = computed<ToolbarNames[]>(() => [
-  'bold', 'underline', 'italic', '-',
-  'title', 'strikeThrough', 'sub', 'sup', 'quote', 'unorderedList', 'orderedList', 'task', '-',
-  'codeRow', 'code', 'link', 'image', 'table', 'mermaid', 'katex', '-',
-  'revoke', 'next', 'save',
-  '-',
+  "bold",
+  "underline",
+  "italic",
+  "-",
+  "title",
+  "strikeThrough",
+  "sub",
+  "sup",
+  "quote",
+  "unorderedList",
+  "orderedList",
+  "task",
+  "-",
+  "codeRow",
+  "code",
+  "link",
+  "image",
+  "table",
+  "mermaid",
+  "katex",
+  "-",
+  "revoke",
+  "next",
+  "save",
+  "-",
   ...Array.from({ length: plugins.value.length }, (_, i) => i as ToolbarNames),
-  '=',
-  'pageFullscreen', 'fullscreen', 'preview', 'previewOnly', 'htmlPreview', 'catalog', 'github',
+  "=",
+  "pageFullscreen",
+  "fullscreen",
+  "preview",
+  "previewOnly",
+  "htmlPreview",
+  "catalog",
+  "github",
 ]);
 </script>
 

@@ -162,6 +162,11 @@ const allNavigationItems = computed<NavigationItem[]>(() => [
         icon: "i-lucide-upload",
         to: "/dash/content/file-shares",
       },
+      {
+        label: "贴纸管理",
+        icon: "i-lucide-smile-plus",
+        to: "/dash/content/stickers",
+      },
     ],
   },
   {
