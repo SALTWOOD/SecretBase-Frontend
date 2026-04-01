@@ -3341,6 +3341,65 @@ export const UpdateSettingBodySchema = {
     }
 } as const;
 
+export const UpdateStickerRequestSchema = {
+    type: 'object',
+    properties: {
+        name: {
+            maxLength: 100,
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        contentType: {
+            type: [
+                'null',
+                'string'
+            ]
+        }
+    }
+} as const;
+
+export const UpdateStickerResponseSchema = {
+    required: [
+        'id',
+        'name'
+    ],
+    type: 'object',
+    properties: {
+        id: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        name: {
+            type: 'string'
+        },
+        key: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        uploadUrl: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        expiresAt: {
+            type: [
+                'null',
+                'string'
+            ],
+            format: 'date-time'
+        }
+    }
+} as const;
+
 export const UpdateStickerSetRequestSchema = {
     type: 'object',
     properties: {

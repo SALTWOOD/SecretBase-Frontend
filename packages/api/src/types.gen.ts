@@ -875,6 +875,19 @@ export type UpdateSettingBody = {
     value?: JsonElement;
 };
 
+export type UpdateStickerRequest = {
+    name?: null | string;
+    contentType?: null | string;
+};
+
+export type UpdateStickerResponse = {
+    id: number | string;
+    name: string;
+    key?: null | string;
+    uploadUrl?: null | string;
+    expiresAt?: null | Date;
+};
+
 export type UpdateStickerSetRequest = {
     name?: null | string;
 };
@@ -3168,6 +3181,38 @@ export type DeleteAdminStickerSetsByIdStickersByStickerIdResponses = {
      */
     204: unknown;
 };
+
+export type PutAdminStickerSetsByIdStickersByStickerIdData = {
+    body: UpdateStickerRequest;
+    path: {
+        id: number;
+        stickerId: number;
+    };
+    query?: never;
+    url: '/admin/sticker-sets/{id}/stickers/{stickerId}';
+};
+
+export type PutAdminStickerSetsByIdStickersByStickerIdErrors = {
+    /**
+     * Bad Request
+     */
+    400: MessageResponse;
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+};
+
+export type PutAdminStickerSetsByIdStickersByStickerIdError = PutAdminStickerSetsByIdStickersByStickerIdErrors[keyof PutAdminStickerSetsByIdStickersByStickerIdErrors];
+
+export type PutAdminStickerSetsByIdStickersByStickerIdResponses = {
+    /**
+     * OK
+     */
+    200: UpdateStickerResponse;
+};
+
+export type PutAdminStickerSetsByIdStickersByStickerIdResponse = PutAdminStickerSetsByIdStickersByStickerIdResponses[keyof PutAdminStickerSetsByIdStickersByStickerIdResponses];
 
 export type DeleteAdminStorageBucketByBucketNameFilesData = {
     body: Array<string>;
