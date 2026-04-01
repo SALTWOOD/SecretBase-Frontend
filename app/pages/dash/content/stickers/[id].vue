@@ -513,6 +513,59 @@ onMounted(() => {
       @confirm="handleDeleteSticker"
     />
 
+    <!-- Edit Sticker Modal -->
+    <UModal v-model:open="isEditStickerModalOpen">
+      <template #content>
+        <div class="p-4 border-b border-default flex justify-between items-center">
+          <span class="font-bold text-foreground">编辑贴纸</span>
+          <UButton color="neutral" variant="ghost" icon="i-lucide-x" @click="isEditStickerModalOpen = false" />
+        </div>
+        <div class="p-4 space-y-4">
+          <div class="flex gap-4">
+            <div class="w-24 h-24 bg-elevated rounded-lg flex items-center justify-center shrink-0 overflow-hidden">
+              <img
+                v-if="editStickerPreview || stickerImageUrls[editStickerForm.id]"
+                :src="editStickerPreview || stickerImageUrls[editStickerForm.id]"
+                alt="预览"
+                class="w-full h-full object-contain"
+              />
+              <UIcon v-else name="i-lucide-image" class="text-3xl text-muted" />
+            </div>
+            <div class="flex-1 space-y-3">
+              <UFormField label="贴纸名称" required>
+                <UInput v-model="editStickerForm.name" placeholder="请输入贴纸名称" :maxlength="100" />
+              </UFormField>
+              <div class="flex items-center gap-2">
+                <UButton
+                  icon="i-lucide-upload"
+                  label="替换图片"
+                  variant="outline"
+                  size="sm"
+                  @click="editStickerFileInput?.click()"
+                />
+                <span v-if="editStickerFile" class="text-xs text-muted truncate">
+                  {{ editStickerFile.name }}
+                </span>
+                <input
+                  ref="editStickerFileInput"
+                  type="file"
+                  accept="image/*"
+                  class="hidden"
+                  @change="handleEditStickerFileSelect"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="p-4 border-t border-default flex justify-end gap-2">
+          <UButton color="neutral" variant="ghost" :disabled="isUpdatingSticker" @click="isEditStickerModalOpen = false">
+            取消
+          </UButton>
+          <UButton :loading="isUpdatingSticker" @click="handleEditSticker">保存</UButton>
+        </div>
+      </template>
+    </UModal>
+
     <!-- Upload Modal -->
     <UModal v-model:open="isUploadModalOpen">
       <template #content>
@@ -554,7 +607,7 @@ onMounted(() => {
               class="flex items-center gap-3 p-2 border border-default rounded-lg"
             >
               <div
-                class="w-10 h-10 bg-elevated rounded flex items-center justify-center shrink-0 overflow-hidden"
+                class="w-16 h-16 bg-elevated rounded flex items-center justify-center shrink-0 overflow-hidden"
               >
                 <img
                   :src="objectUrl(item.file)"
