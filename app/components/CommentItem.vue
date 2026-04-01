@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { CommentResponse } from "~~/packages/api/src/types.gen";
+import type { CommentResponse, UrlResponse } from "~~/packages/api/src/types.gen";
 import {
   deleteCommentsById,
-  getCommentsByIdReplies,
+  getCommentsByIdReplies, getStickerSetsStickersByStickerIdImage,
 } from "~~/packages/api/src/sdk.gen";
 
 const props = defineProps<{
@@ -23,6 +23,11 @@ const isDeleting = ref(false);
 const showReplies = ref(false);
 const replies = ref<CommentResponse[]>([]);
 const isLoadingReplies = ref(false);
+const regex = /^\[emoji:(\d+):(\d+)]$/;
+const sticker = ref<{
+  src: string;
+  name: string;
+} | null>(null);
 
 // 检查是否是当前用户的评论
 const isOwner = computed(() => {
@@ -130,6 +135,20 @@ const menuItems = computed(() => {
   });
   return [items];
 });
+
+onMounted(async () => {
+  const match = props.comment.content?.match(regex);
+  if (match) {
+    const response = await getStickerSetsStickersByStickerIdImage({
+      path: { stickerId: Number(match[2]) },
+    });
+    if (response.error || !response.data) return;
+    sticker.value = {
+      name: "test",
+      src: response.data.url!
+    };
+  }
+})
 </script>
 
 <template>
@@ -167,9 +186,12 @@ const menuItems = computed(() => {
 
         <div
           class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed mb-3"
+          v-if="!sticker"
         >
           {{ comment.content }}
         </div>
+
+        <img :src="sticker?.src" :alt="sticker?.name" v-else/>
 
         <div class="flex items-center gap-4">
           <UButton
