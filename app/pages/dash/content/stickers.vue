@@ -4,7 +4,7 @@ import {
   deleteAdminStickerSetsById, deleteAdminStickerSetsByIdStickersByStickerId,
   getStickerSets,
   getStickerSetsById, getStickerSetsStickersByStickerIdImage, postAdminStickerSets, postAdminStickerSetsByIdStickers,
-  postAdminStickerSetsByIdStickersPresign, putAdminStickerSetsById,
+  putAdminStickerSetsById,
   type StickerSetDetailResponse,
   type StickerSetResponse
 } from "~~/packages/api/src";
@@ -326,12 +326,12 @@ async function handleUpload() {
     toast.add({
       id: toastId,
       title: "正在准备上传",
-      description: "获取上传授权...",
+      description: "创建贴纸记录...",
       color: "info",
       duration: 0,
     });
 
-    const response = await postAdminStickerSetsByIdStickersPresign({
+    const response = await postAdminStickerSetsByIdStickers({
       path: { id: currentSet.value.id as number },
       body: {
         items: uploadFiles.value.map((f) => ({
@@ -341,43 +341,28 @@ async function handleUpload() {
       }
     });
     if (response.error || !response.data) throw new Error("Unable to upload");
-    const presignedUrls = response.data;
+    const uploadedStickers = response.data;
 
     toast.update(toastId, { title: "正在上传图片", color: "info" });
 
-    for (let i = 0; i < presignedUrls.length; i++) {
-      const presigned = presignedUrls[i]!;
+    for (let i = 0; i < uploadedStickers.length; i++) {
+      const sticker = uploadedStickers[i]!;
       const uploadFile = uploadFiles.value[i]!;
-      await uploadWithProgress(presigned.url!, uploadFile.file, (percent) => {
+      await uploadWithProgress(sticker.uploadUrl!, uploadFile.file, (percent) => {
         const overall = Math.round(
-          ((i + percent / 100) / presignedUrls.length) * 100,
+          ((i + percent / 100) / uploadedStickers.length) * 100,
         );
         uploadProgress.value = overall;
         toast.update(toastId, {
-          description: `已上传 ${i + 1}/${presignedUrls.length} (${percent}%)`,
+          description: `已上传 ${i + 1}/${uploadedStickers.length} (${percent}%)`,
         });
       });
     }
 
-    toast.update(toastId, {
-      title: "正在确认上传",
-      description: "验证并保存贴纸...",
-    });
-
-    await postAdminStickerSetsByIdStickers({
-      path: {id: currentSet.value.id as number},
-      body: {
-        items: presignedUrls.map((p, i) => ({
-          key: p.key!,
-          name: uploadFiles.value[i]?.name ?? `sticker-${i}`,
-        })),
-      }
-    });
-
     toast.remove(toastId);
     toast.add({
       title: "上传成功",
-      description: `已添加 ${presignedUrls.length} 个贴纸`,
+      description: `已添加 ${uploadedStickers.length} 个贴纸`,
       color: "success",
     });
 
