@@ -65,7 +65,7 @@ const handleCommentCountChange = (count: number) => {
     />
 
     <div v-else-if="article" class="flex flex-col gap-8">
-      <UCard class="article-card">
+      <UCard class="article-card overflow-visible!">
         <article class="grid grid-cols-1 lg:grid-cols-[1fr_260px] gap-12">
           <div class="min-w-0">
             <header class="mb-10">
@@ -120,7 +120,7 @@ const handleCommentCountChange = (count: number) => {
 
           <aside class="hidden lg:block">
             <div
-              class="sticky top-24 pl-8 border-l border-gray-100 dark:border-gray-800"
+              class="sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto pl-8 border-l border-gray-100 dark:border-gray-800"
             >
               <div
                 class="flex items-center gap-2 mb-4 text-gray-900 dark:text-white"
