@@ -6,6 +6,23 @@ export type ClientOptions = {
 
 export type AddressFamily = number;
 
+export type AdminCommentResponse = {
+    id?: number | string;
+    content?: string;
+    articleId?: number | string;
+    authorId?: null | number | string;
+    authorUsername?: null | string;
+    parentCommentId?: null | number | string;
+    createdAt?: Date;
+    updatedAt?: Date;
+    isDeleted?: boolean;
+    reviewStatus?: ReviewStatus;
+    guestNickname?: null | string;
+    guestEmail?: null | string;
+    guestWebsite?: null | string;
+    ipAddress?: null | string;
+};
+
 export type Algorithm = number;
 
 export type ArticleCreateModel = {
@@ -225,19 +242,25 @@ export type ClaimsPrincipal = {
 export type CommentCreateModel = {
     content: string;
     parentCommentId?: null | number | string;
+    guestNickname?: null | string;
+    guestEmail?: null | string;
+    guestWebsite?: null | string;
+    captchaToken?: null | string;
 };
 
 export type CommentResponse = {
     id?: number | string;
     content?: string;
     articleId?: number | string;
-    authorId?: number | string;
+    authorId?: null | number | string;
     authorUsername?: null | string;
     parentCommentId?: null | number | string;
     createdAt?: Date;
     updatedAt?: Date;
     isDeleted?: boolean;
     replyCount?: number | string;
+    guestNickname?: null | string;
+    guestWebsite?: null | string;
 };
 
 export type CommentUpdateModel = {
@@ -682,6 +705,8 @@ export type QueryString = {
 export type ReadOnlyMemoryOfbyte = string;
 
 export type ResidentKeyRequirement = unknown;
+
+export type ReviewStatus = number;
 
 export type S3ObjectMetadataResponse = {
     key: string;
@@ -1254,27 +1279,26 @@ export type GetCommentsArticleByArticleIdResponses = {
 
 export type GetCommentsArticleByArticleIdResponse = GetCommentsArticleByArticleIdResponses[keyof GetCommentsArticleByArticleIdResponses];
 
-export type GetCommentsByIdRepliesData = {
+export type GetCommentsByCommentIdRepliesData = {
     body?: never;
     path: {
-        id: string;
+        commentId: number | string;
     };
     query?: {
-        commentId?: number | string;
         page?: number | string;
         pageSize?: number | string;
     };
-    url: '/comments/{id}/replies';
+    url: '/comments/{commentId}/replies';
 };
 
-export type GetCommentsByIdRepliesResponses = {
+export type GetCommentsByCommentIdRepliesResponses = {
     /**
      * OK
      */
     200: Array<CommentResponse>;
 };
 
-export type GetCommentsByIdRepliesResponse = GetCommentsByIdRepliesResponses[keyof GetCommentsByIdRepliesResponses];
+export type GetCommentsByCommentIdRepliesResponse = GetCommentsByCommentIdRepliesResponses[keyof GetCommentsByCommentIdRepliesResponses];
 
 export type PostCommentsData = {
     body: CommentCreateModel;
@@ -2422,6 +2446,99 @@ export type PostAuthTwoFactorPolicyDisableResponses = {
 };
 
 export type PostAuthTwoFactorPolicyDisableResponse = PostAuthTwoFactorPolicyDisableResponses[keyof PostAuthTwoFactorPolicyDisableResponses];
+
+export type GetAdminCommentsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        page?: number | string;
+        pageSize?: number | string;
+        status?: ReviewStatus;
+    };
+    url: '/admin/comments';
+};
+
+export type GetAdminCommentsResponses = {
+    /**
+     * OK
+     */
+    200: Array<AdminCommentResponse>;
+};
+
+export type GetAdminCommentsResponse = GetAdminCommentsResponses[keyof GetAdminCommentsResponses];
+
+export type GetAdminCommentsPendingData = {
+    body?: never;
+    path?: never;
+    query?: {
+        page?: number | string;
+        pageSize?: number | string;
+    };
+    url: '/admin/comments/pending';
+};
+
+export type GetAdminCommentsPendingResponses = {
+    /**
+     * OK
+     */
+    200: Array<AdminCommentResponse>;
+};
+
+export type GetAdminCommentsPendingResponse = GetAdminCommentsPendingResponses[keyof GetAdminCommentsPendingResponses];
+
+export type PutAdminCommentsByIdApproveData = {
+    body?: never;
+    path: {
+        id: number | string;
+    };
+    query?: never;
+    url: '/admin/comments/{id}/approve';
+};
+
+export type PutAdminCommentsByIdApproveErrors = {
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+};
+
+export type PutAdminCommentsByIdApproveError = PutAdminCommentsByIdApproveErrors[keyof PutAdminCommentsByIdApproveErrors];
+
+export type PutAdminCommentsByIdApproveResponses = {
+    /**
+     * OK
+     */
+    200: MessageResponse;
+};
+
+export type PutAdminCommentsByIdApproveResponse = PutAdminCommentsByIdApproveResponses[keyof PutAdminCommentsByIdApproveResponses];
+
+export type PutAdminCommentsByIdRejectData = {
+    body?: never;
+    path: {
+        id: number | string;
+    };
+    query?: never;
+    url: '/admin/comments/{id}/reject';
+};
+
+export type PutAdminCommentsByIdRejectErrors = {
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+};
+
+export type PutAdminCommentsByIdRejectError = PutAdminCommentsByIdRejectErrors[keyof PutAdminCommentsByIdRejectErrors];
+
+export type PutAdminCommentsByIdRejectResponses = {
+    /**
+     * OK
+     */
+    200: MessageResponse;
+};
+
+export type PutAdminCommentsByIdRejectResponse = PutAdminCommentsByIdRejectResponses[keyof PutAdminCommentsByIdRejectResponses];
 
 export type GetAdminFileSharesData = {
     body?: never;

@@ -4,6 +4,93 @@ export const AddressFamilySchema = {
     type: 'integer'
 } as const;
 
+export const AdminCommentResponseSchema = {
+    type: 'object',
+    properties: {
+        id: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        content: {
+            type: 'string'
+        },
+        articleId: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        authorId: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'null',
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        authorUsername: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        parentCommentId: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'null',
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        createdAt: {
+            type: 'string',
+            format: 'date-time'
+        },
+        updatedAt: {
+            type: 'string',
+            format: 'date-time'
+        },
+        isDeleted: {
+            type: 'boolean'
+        },
+        reviewStatus: {
+            $ref: '#/components/schemas/ReviewStatus'
+        },
+        guestNickname: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        guestEmail: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        guestWebsite: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        ipAddress: {
+            type: [
+                'null',
+                'string'
+            ]
+        }
+    }
+} as const;
+
 export const AlgorithmSchema = {
     type: 'integer'
 } as const;
@@ -903,6 +990,32 @@ export const CommentCreateModelSchema = {
                 'string'
             ],
             format: 'int32'
+        },
+        guestNickname: {
+            maxLength: 50,
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        guestEmail: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        guestWebsite: {
+            type: [
+                'null',
+                'string'
+            ],
+            format: 'uri'
+        },
+        captchaToken: {
+            type: [
+                'null',
+                'string'
+            ]
         }
     }
 } as const;
@@ -932,6 +1045,7 @@ export const CommentResponseSchema = {
         authorId: {
             pattern: '^-?(?:0|[1-9]\\d*)$',
             type: [
+                'null',
                 'integer',
                 'string'
             ],
@@ -970,6 +1084,18 @@ export const CommentResponseSchema = {
                 'string'
             ],
             format: 'int32'
+        },
+        guestNickname: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        guestWebsite: {
+            type: [
+                'null',
+                'string'
+            ]
         }
     }
 } as const;
@@ -2635,6 +2761,10 @@ export const ReadOnlyMemoryOfbyteSchema = {
 } as const;
 
 export const ResidentKeyRequirementSchema = {} as const;
+
+export const ReviewStatusSchema = {
+    type: 'integer'
+} as const;
 
 export const S3ObjectMetadataResponseSchema = {
     required: [

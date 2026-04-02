@@ -210,6 +210,11 @@ const allNavigationItems = computed<NavigationItem[]>(() => [
         to: "/dash/admin/shortcode",
         exact: false,
       },
+      {
+        label: "评论管理",
+        icon: "i-lucide-message-square-text",
+        to: "/dash/admin/comments",
+      },
     ],
   },
   {

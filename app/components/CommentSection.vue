@@ -4,6 +4,7 @@ import {
   getCommentsArticleByArticleId,
   postComments,
 } from "~~/packages/api/src/sdk.gen";
+import "@cap.js/widget";
 
 const props = defineProps<{
   articleId: string | number;
@@ -23,11 +24,39 @@ const newComment = ref("");
 const replyTo = ref<CommentResponse | null>(null);
 const replyContent = ref("");
 
-// 构建评论树结构
-const commentTree = computed(() => {
-  const rootComments = comments.value.filter((c) => !c.parentCommentId);
-  return rootComments;
+const guestNickname = ref("");
+const guestEmail = ref("");
+const guestWebsite = ref("");
+const capToken = ref("");
+const capApi = "/api/cap/";
+
+const isGuest = computed(() => !userStore.isLoggedIn);
+
+const canSubmitComment = computed(() => {
+  if (!newComment.value.trim()) return false;
+  if (isGuest.value && !guestNickname.value.trim()) return false;
+  if (isGuest.value && !capToken.value) return false;
+  return true;
 });
+
+const canSubmitReply = computed(() => {
+  if (!replyContent.value.trim()) return false;
+  if (isGuest.value && !guestNickname.value.trim()) return false;
+  if (isGuest.value && !capToken.value) return false;
+  return true;
+});
+
+const commentTree = computed(() => {
+  return comments.value.filter((c) => !c.parentCommentId);
+});
+
+const handleCapSolve = (e: CustomEvent) => {
+  capToken.value = e.detail.token;
+};
+
+const handleCapReset = () => {
+  capToken.value = "";
+};
 
 const loadComments = async () => {
   isLoading.value = true;
@@ -46,98 +75,67 @@ const loadComments = async () => {
   }
 };
 
-const handleSubmit = async () => {
-  if (!newComment.value.trim()) return;
-  if (!userStore.isLoggedIn) {
-    toast.add({
-      title: "请先登录",
-      description: "登录后才能发表评论",
-      color: "warning",
-    });
+const buildBody = (content: string, parentCommentId: number | string | null = null) => {
+  const body: Record<string, unknown> = {
+    content,
+    parentCommentId,
+  };
+  if (isGuest.value) {
+    body.guestNickname = guestNickname.value.trim() || undefined;
+    body.guestEmail = guestEmail.value.trim() || undefined;
+    body.guestWebsite = guestWebsite.value.trim() || undefined;
+    body.captchaToken = capToken.value;
+  }
+  return body;
+};
+
+const afterSubmit = (success: boolean, action: string) => {
+  if (!success) {
+    toast.add({ title: `${action}失败`, color: "error" });
     return;
   }
+  if (isGuest.value) {
+    toast.add({ title: `${action}已提交，等待管理员审核`, color: "success" });
+  } else {
+    toast.add({ title: `${action}已发布`, color: "success" });
+    loadComments();
+  }
+};
 
+const handleSubmit = async () => {
+  if (!canSubmitComment.value) return;
   isSubmitting.value = true;
   try {
     const response = await postComments({
-      body: {
-        content: newComment.value,
-        parentCommentId: null,
-      },
-      query: {
-        articleId: String(props.articleId),
-      },
+      body: buildBody(newComment.value) as any,
+      query: { articleId: String(props.articleId) },
     });
-
-    if (!response.error && response.data) {
-      toast.add({
-        title: "评论已发布",
-        color: "success",
-      });
-      newComment.value = "";
-      await loadComments();
-    } else {
-      toast.add({
-        title: "发布失败",
-        color: "error",
-      });
-    }
+    afterSubmit(!response.error && !!response.data, "评论");
+    if (!response.error) newComment.value = "";
   } catch (error) {
     console.error("Failed to submit comment:", error);
-    toast.add({
-      title: "发布失败",
-      color: "error",
-    });
+    toast.add({ title: "发布失败", color: "error" });
   } finally {
     isSubmitting.value = false;
   }
 };
 
 const handleReply = async () => {
-  if (!replyContent.value.trim()) return;
-  if (!userStore.isLoggedIn) {
-    toast.add({
-      title: "请先登录",
-      description: "登录后才能回复评论",
-      color: "warning",
-    });
-    return;
-  }
-
-  if (!replyTo.value) return;
-
+  if (!canSubmitReply.value || !replyTo.value) return;
   isSubmitting.value = true;
   try {
     const response = await postComments({
-      body: {
-        content: replyContent.value,
-        parentCommentId: replyTo.value.id!,
-      },
-      query: {
-        articleId: String(props.articleId),
-      },
+      body: buildBody(replyContent.value, replyTo.value.id!) as any,
+      query: { articleId: String(props.articleId) },
     });
-
-    if (!response.error && response.data) {
-      toast.add({
-        title: "回复已发布",
-        color: "success",
-      });
+    afterSubmit(!response.error && !!response.data, "回复");
+    if (!response.error) {
       replyContent.value = "";
       replyTo.value = null;
-      await loadComments();
-    } else {
-      toast.add({
-        title: "回复失败",
-        color: "error",
-      });
     }
   } catch (error) {
     console.error("Failed to submit reply:", error);
-    toast.add({
-      title: "回复失败",
-      color: "error",
-    });
+    toast.add({ title: "回复失败", color: "error" });
   } finally {
     isSubmitting.value = false;
   }
@@ -172,8 +170,8 @@ onMounted(loadComments);
         </span>
       </h2>
 
-      <!-- 新评论表单 -->
-      <div v-if="userStore.isLoggedIn" class="mb-6">
+      <!-- 已登录用户表单 -->
+      <div v-if="!isGuest" class="mb-6">
         <UTextarea
           v-model="newComment"
           placeholder="写下你的评论..."
@@ -191,12 +189,53 @@ onMounted(loadComments);
         </div>
       </div>
 
-      <div
-        v-else
-        class="mb-6 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg text-center"
-      >
-        <p class="text-gray-600 dark:text-gray-400 mb-3">登录后参与讨论</p>
-        <UButton to="/auth/login" variant="ghost"> 前往登录 </UButton>
+      <!-- 游客表单 -->
+      <div v-else class="mb-6 space-y-3">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <UInput
+            v-model="guestNickname"
+            placeholder="昵称 *"
+            icon="i-lucide-user"
+          />
+          <UInput
+            v-model="guestEmail"
+            placeholder="邮箱（可选）"
+            icon="i-lucide-mail"
+            type="email"
+          />
+          <UInput
+            v-model="guestWebsite"
+            placeholder="网站（可选）"
+            icon="i-lucide-globe"
+            type="url"
+          />
+        </div>
+        <UTextarea
+          v-model="newComment"
+          placeholder="写下你的评论..."
+          :rows="5"
+        />
+        <client-only>
+          <div class="cap-wrapper w-full overflow-hidden rounded-lg border border-default bg-muted/20">
+            <cap-widget
+              :data-cap-api-endpoint="capApi"
+              @solve="handleCapSolve"
+              @reset="handleCapReset"
+            />
+          </div>
+        </client-only>
+        <div class="flex items-center justify-between">
+          <UButton to="/auth/login" variant="ghost" size="sm">
+            登录后评论
+          </UButton>
+          <UButton
+            :loading="isSubmitting"
+            :disabled="!canSubmitComment"
+            @click="handleSubmit"
+          >
+            发表评论
+          </UButton>
+        </div>
       </div>
 
       <!-- 回复表单 -->
@@ -206,10 +245,8 @@ onMounted(loadComments);
       >
         <div class="flex items-center justify-between mb-3">
           <div>
-            <span
-              class="text-sm font-medium text-primary-600 dark:text-primary-400"
-            >
-              回复 @{{ replyTo.authorUsername || "匿名用户" }}
+            <span class="text-sm font-medium text-primary-600 dark:text-primary-400">
+              回复 @{{ replyTo.authorUsername || replyTo.guestNickname || "匿名用户" }}
             </span>
             <p class="text-xs text-gray-500 mt-1 line-clamp-1">
               {{ replyTo.content }}
@@ -219,16 +256,38 @@ onMounted(loadComments);
             取消
           </UButton>
         </div>
+
+        <div v-if="isGuest" class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
+          <UInput
+            v-model="guestNickname"
+            placeholder="昵称 *"
+            icon="i-lucide-user"
+          />
+          <UInput
+            v-model="guestEmail"
+            placeholder="邮箱（可选）"
+            icon="i-lucide-mail"
+            type="email"
+          />
+          <UInput
+            v-model="guestWebsite"
+            placeholder="网站（可选）"
+            icon="i-lucide-globe"
+            type="url"
+          />
+        </div>
+
         <UTextarea
           v-model="replyContent"
           placeholder="写下你的回复..."
           :rows="3"
           class="mb-3"
         />
+
         <div class="flex justify-end">
           <UButton
             :loading="isSubmitting"
-            :disabled="!replyContent.trim()"
+            :disabled="!canSubmitReply"
             @click="handleReply"
           >
             发表回复
@@ -279,5 +338,9 @@ onMounted(loadComments);
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.cap-wrapper {
+  --cap-widget-width: 100%;
 }
 </style>

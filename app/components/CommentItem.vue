@@ -2,7 +2,7 @@
 import type { CommentResponse, UrlResponse } from "~~/packages/api/src/types.gen";
 import {
   deleteCommentsById,
-  getCommentsByIdReplies, getStickerSetsStickersByStickerIdImage,
+  getCommentsByCommentIdReplies, getStickerSetsStickersByStickerIdImage,
 } from "~~/packages/api/src/sdk.gen";
 
 const props = defineProps<{
@@ -29,7 +29,11 @@ const sticker = ref<{
   name: string;
 } | null>(null);
 
-// 检查是否是当前用户的评论
+const displayName = computed(() => {
+  if (props.comment.authorId) return props.comment.authorUsername || "用户"
+  return props.comment.guestNickname || "匿名用户"
+})
+
 const isOwner = computed(() => {
   if (!userStore.user || !props.comment.authorId) return false;
   return String(userStore.user.id) === String(props.comment.authorId);
@@ -103,8 +107,8 @@ const loadReplies = async () => {
   isLoadingReplies.value = true;
   showReplies.value = true;
   try {
-    const response = await getCommentsByIdReplies({
-      path: { id: String(props.comment.id!) },
+    const response = await getCommentsByCommentIdReplies({
+      path: { commentId: String(props.comment.id!) },
     });
     if (!response.error && response.data) {
       replies.value = response.data;
@@ -154,19 +158,25 @@ onMounted(async () => {
 <template>
   <div class="comment-item">
     <div class="flex gap-4 py-4 group">
-      <UAvatar
-        :src="undefined"
-        :alt="comment.authorUsername ?? undefined"
-        size="md"
-        class="flex-shrink-0"
-      />
+        <UAvatar
+          :src="undefined"
+          :alt="displayName"
+          size="md"
+          class="flex-shrink-0"
+        />
 
       <div class="flex-1 min-w-0">
         <div class="flex items-center justify-between mb-1">
           <div class="flex items-center gap-2">
             <span class="font-medium text-sm text-gray-900 dark:text-white">
-              {{ comment.authorUsername || "匿名用户" }}
+              {{ displayName }}
             </span>
+            <UBadge
+              v-if="!comment.authorId"
+              variant="subtle"
+              color="neutral"
+              size="sm"
+            >游客</UBadge>
             <span class="text-xs text-gray-500 dark:text-gray-400">
               {{ timeAgo(comment.createdAt) }}
             </span>
