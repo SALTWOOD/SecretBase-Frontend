@@ -10,6 +10,10 @@ definePageMeta({
   layout: "background",
 });
 
+// 模拟分页状态
+const page = ref(1);
+const pageSize = 10;
+
 const [
   { data: seoGeneral, pending: seoPending },
   { data: bannerSettings, pending: bannerPending },
@@ -43,7 +47,8 @@ const showBanner = computed(() => bannerDisplayMode.value !== "hidden");
 const isFullScreenMode = computed(() => bannerDisplayMode.value === "screen");
 const isMiniMode = computed(() => bannerDisplayMode.value === "mini");
 
-const masonryColumns = "columns-1 md:columns-2 lg:columns-3";
+// 瀑布流列数优化
+const masonryColumns = "columns-1 lg:columns-2";
 
 const formatDate = (dateStr: string | Date) => {
   const date = typeof dateStr === "string" ? new Date(dateStr) : dateStr;
@@ -72,118 +77,162 @@ useSeoMeta({
 <template>
   <main class="min-h-screen">
     <div v-if="showBanner && isFullScreenMode" class="banner-full">
-      <h1
-        class="text-5xl md:text-7xl font-extrabold tracking-tight text-highlighted mb-6"
-      >
+      <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight text-highlighted mb-6">
         {{ seoGeneral?.title || "探索技术与创新" }}
       </h1>
       <p class="text-muted max-w-2xl text-xl mb-8">
-        {{
-          bannerContent ||
-          seoGeneral?.description ||
-          "分享最新的技术见解、开发经验和创新思维"
-        }}
+        {{ bannerContent || seoGeneral?.description || "分享最新的技术见解、开发经验和创新思维" }}
       </p>
-      <UButton to="#articles" size="xl" icon="i-lucide-chevron-down">
+      <UButton to="#content-root" size="xl" icon="i-lucide-chevron-down" variant="soft" class="rounded-full">
         浏览文章
       </UButton>
     </div>
 
-    <div :class="['py-12 md:py-20', isFullScreenMode ? '' : 'pt-12']">
-      <UContainer :id="isFullScreenMode ? 'articles' : undefined">
-        <header
-          v-if="showBanner && !isFullScreenMode"
-          :class="['mb-12', isMiniMode ? 'text-center' : 'text-left']"
-        >
-          <h1
-            :class="[
-              'font-extrabold text-highlighted mb-4',
-              isMiniMode ? 'text-3xl' : 'text-4xl md:text-5xl',
-            ]"
-          >
-            {{ seoGeneral?.title || "探索技术与创新" }}
-          </h1>
-          <p class="text-muted max-w-2xl text-lg">
-            {{
-              bannerContent ||
-              seoGeneral?.description ||
-              "分享最新的技术见解、开发经验和创新思维"
-            }}
-          </p>
-        </header>
+    <div id="content-root" :class="['py-12', isFullScreenMode ? '' : 'pt-12']">
+      <UContainer>
+        <div class="grid grid-cols-12 gap-8">
 
-        <div
-          v-if="isLoading"
-          :class="[masonryColumns, 'gap-8 pb-20 space-y-8']"
-        >
-          <USkeleton
-            v-for="i in 6"
-            :key="i"
-            class="h-64 w-full rounded-2xl break-inside-avoid"
-          />
-        </div>
-
-        <template v-else>
-          <div
-            v-if="articles?.length"
-            :class="[masonryColumns, 'gap-8 pb-20 space-y-8']"
-          >
-            <article
-              v-for="article in articles"
-              :key="article.id"
-              class="article-card break-inside-avoid"
-            >
-              <NuxtLink
-                v-if="getArticleCover(article)"
-                :to="`/articles/${article.id}`"
-                class="block mb-4 -mx-6 -mt-6 overflow-hidden rounded-t-2xl"
-              >
-                <img
-                  :src="getArticleCover(article)!"
-                  :alt="article.title"
-                  class="w-full h-48 object-cover transition-transform duration-300 hover:scale-105"
+          <aside class="hidden xl:col-span-2 xl:block space-y-6">
+            <UCard class="sticky top-24 side-card">
+              <div class="flex flex-col items-center text-center">
+                <UAvatar
+                  src="https://github.com/SALTWOOD.png"
+                  alt="Avatar"
+                  size="xl"
+                  class="mb-4 ring-2 ring-primary"
                 />
-              </NuxtLink>
+                <h3 class="font-bold text-lg text-highlighted">{{ seoGeneral?.title }}</h3>
+                <p class="text-xs text-muted mt-1 italic">Maintainer of SecretBase</p>
+                <div class="flex gap-4 mt-6">
+                  <UButton icon="i-simple-icons-github" color="neutral" variant="ghost" to="https://github.com/SALTWOOD" />
+                  <UButton icon="i-lucide-rss" color="neutral" variant="ghost" />
+                </div>
+              </div>
+            </UCard>
+          </aside>
 
-              <div class="flex items-center gap-2 mb-4">
-                <UBadge
-                  :color="article.isPublished ? 'primary' : 'neutral'"
-                  variant="subtle"
-                  size="sm"
+          <div class="col-span-12 xl:col-span-7 space-y-8">
+            <header
+              v-if="showBanner && !isFullScreenMode"
+              :class="['mb-12', isMiniMode ? 'text-center' : 'text-left']"
+            >
+              <h1 :class="['font-extrabold text-highlighted mb-4', isMiniMode ? 'text-3xl' : 'text-4xl md:text-5xl']">
+                {{ seoGeneral?.title || "探索技术与创新" }}
+              </h1>
+              <p class="text-muted max-w-2xl text-lg">
+                {{ bannerContent || seoGeneral?.description }}
+              </p>
+            </header>
+
+            <div v-if="isLoading" :class="[masonryColumns, 'gap-6 space-y-6']">
+              <USkeleton v-for="i in 4" :key="i" class="h-80 w-full rounded-2xl" />
+            </div>
+
+            <template v-else>
+              <div v-if="articles?.length" :class="[masonryColumns, 'gap-6 space-y-6']">
+                <article
+                  v-for="article in articles"
+                  :key="article.id"
+                  class="article-card-v2 break-inside-avoid group"
                 >
-                  {{ article.isPublished ? "已发布" : "草稿" }}
-                </UBadge>
-                <time v-if="article.createdAt" class="text-xs text-muted"
-                  >{{ formatDate(article.createdAt) }}
-                </time>
+                  <NuxtLink
+                    v-if="getArticleCover(article)"
+                    :to="`/articles/${article.id}`"
+                    class="block overflow-hidden rounded-t-xl bg-neutral-800"
+                  >
+                    <img
+                      v-if="getArticleCover(article)"
+                      :src="getArticleCover(article)!"
+                      :alt="article.title"
+                      class="w-full h-44 object-cover transition-transform duration-500 group-hover:scale-110 opacity-90 group-hover:opacity-100"
+                    />
+                    <div v-else class="w-full h-44 flex items-center justify-center bg-primary/5 text-primary/20">
+                      <UIcon name="i-lucide-image" size="32" />
+                    </div>
+                  </NuxtLink>
+
+                  <div class="p-6">
+                    <div class="flex items-center justify-between mb-3">
+                      <UBadge :color="article.isPublished ? 'primary' : 'neutral'" variant="subtle" size="sm">
+                        {{ article.isPublished ? "Published" : "Draft" }}
+                      </UBadge>
+                      <time class="text-[10px] uppercase tracking-wider text-muted font-mono">
+                        {{ formatDate(article.createdAt) }}
+                      </time>
+                    </div>
+                    <h2 class="text-lg font-bold text-highlighted mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                      <NuxtLink :to="`/articles/${article.id}`">{{ article.title }}</NuxtLink>
+                    </h2>
+                    <p class="text-sm text-muted line-clamp-2 mb-4 leading-relaxed">
+                      {{ truncateContent(article.content || "") }}
+                    </p>
+                    <div class="flex items-center justify-end">
+                      <UButton
+                        icon="i-lucide-arrow-right"
+                        variant="ghost"
+                        color="neutral"
+                        size="xs"
+                        :to="`/articles/${article.id}`"
+                      >阅读全文</UButton>
+                    </div>
+                  </div>
+                </article>
               </div>
 
-              <h2
-                class="text-xl font-bold text-highlighted mb-3 group-hover:text-primary transition-colors"
-              >
-                <NuxtLink :to="`/articles/${article.id}`">
-                  {{ article.title }}
-                  <span class="absolute inset-0" />
-                </NuxtLink>
-              </h2>
+              <div v-if="articles?.length" class="flex justify-center mt-12">
+                <UPagination
+                  v-model="page"
+                  :total="articles.length"
+                  :page-count="pageSize"
+                  show-first
+                  show-last
+                  :ui="{ rounded: 'rounded-full' }"
+                />
+              </div>
 
-              <p class="text-sm text-muted line-clamp-3 mb-6 grow">
-                {{ truncateContent(article.content || "") }}
-              </p>
-            </article>
+              <div v-else class="flex flex-col items-center justify-center py-24 text-center">
+                <UIcon name="i-lucide-ghost" class="size-16 text-muted mb-4 opacity-20" />
+                <p class="text-muted text-lg font-medium">这里的代码库空空如也喵...</p>
+              </div>
+            </template>
           </div>
 
-          <div
-            v-else
-            class="flex flex-col items-center justify-center py-24 text-center"
-          >
-            <UIcon
-              name="i-lucide-ghost"
-              class="size-16 text-muted mb-4 opacity-20"
-            />
-            <p class="text-muted text-lg">这里的代码库空空如也喵...</p>
-          </div>
-        </template>
+          <aside class="hidden lg:col-span-3 lg:block">
+            <div class="sticky top-24 space-y-6">
+              <UCard class="side-card">
+                <template #header>
+                  <div class="flex items-center gap-2 font-bold text-highlighted">
+                    <UIcon name="i-lucide-megaphone" class="text-primary" />
+                    公告板
+                  </div>
+                </template>
+                <p class="text-sm text-muted leading-relaxed">
+                  欢迎来到 Secret Base！这里正在进行 Nuxt UI v4 的深度重构，更多功能敬请期待。
+                </p>
+              </UCard>
+
+              <UCard class="side-card">
+                <template #header>
+                  <div class="flex items-center gap-2 font-bold text-highlighted">
+                    <UIcon name="i-lucide-chart-bar" class="text-primary" />
+                    运行统计
+                  </div>
+                </template>
+                <div class="space-y-3">
+                  <div class="flex justify-between text-sm">
+                    <span class="text-muted">文章总数</span>
+                    <span class="font-mono">{{ articles?.length || 0 }}</span>
+                  </div>
+                  <div class="flex justify-between text-sm">
+                    <span class="text-muted">运行天数</span>
+                    <span class="font-mono">128 Days</span>
+                  </div>
+                </div>
+              </UCard>
+            </div>
+          </aside>
+
+        </div>
       </UContainer>
     </div>
   </main>
@@ -197,19 +246,12 @@ useSeoMeta({
       }"
     >
       <div v-if="footer?.beian" class="flex flex-col items-center gap-2">
-        <a
-          v-if="footer?.beian?.icp"
-          v-text="footer.beian.icp"
-          href="https://beian.miit.gov.cn/"
-          target="_blank"
-        />
-
+        <a v-if="footer?.beian?.icp" v-text="footer.beian.icp" href="https://beian.miit.gov.cn/" target="_blank" />
         <div v-if="footer?.beian?.police">
           <a v-text="footer.beian.police" :href="policeLink" target="_blank" />
         </div>
       </div>
-
-      <a href="https://github.com/SALTWOOD/SecretBase-Frontend">
+      <a href="https://github.com/SALTWOOD/SecretBase-Frontend" class="flex items-center gap-2">
         <UIcon name="i-simple-icons-github" />
         SALTWOOD/SecretBase-Frontend
       </a>
@@ -223,30 +265,21 @@ useSeoMeta({
 .banner-full {
   @apply h-[100vh] flex flex-col items-center justify-center text-center px-4;
   @apply border-b dark:border-white/5;
+  background: radial-gradient(circle at center, rgba(var(--ui-primary), 0.05) 0%, transparent 70%);
 }
 
-.dark .banner-full {
-  background: linear-gradient(
-    to bottom,
-    transparent,
-    rgba(0, 0, 0, 0.1) 50%,
-    rgba(0, 0, 0, 0.3)
-  );
+.side-card {
+  @apply border-0 ring-1 ring-white/5 bg-white/40 dark:bg-neutral-900/40 backdrop-blur-md shadow-sm;
 }
 
-.article-card {
-  @apply relative flex flex-col p-6 rounded-2xl transition-all duration-300;
-  @apply bg-white/40 dark:bg-neutral-900/40 backdrop-blur-sm;
-  @apply border border-white/50 dark:border-white/10;
+.article-card-v2 {
+  @apply relative flex flex-col overflow-hidden rounded-xl transition-all duration-300;
+  @apply bg-white/50 dark:bg-neutral-900/50 backdrop-blur-sm;
+  @apply border border-white/50 dark:border-white/10 shadow-sm;
 }
 
-.article-card:hover {
-  @apply bg-white/60;
-  @apply -translate-y-1.5 shadow-2xl;
-}
-
-.dark .article-card:hover {
-  @apply bg-neutral-900/60;
+.article-card-v2:hover {
+  @apply -translate-y-1 shadow-xl ring-1 bg-white/80 dark:bg-neutral-900/80;
 }
 
 .footer-card {
