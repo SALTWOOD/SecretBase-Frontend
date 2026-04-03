@@ -1,26 +1,58 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
+import CustomForm from "~/components/CustomForm.vue";
+import ConfirmButton from "~/components/ConfirmButton.vue";
+import type { FieldConfig } from "~/types/field-config";
 import {
   getAdminShortcodes,
-  deleteAdminShortcodesById,
-  patchAdminShortcodesById,
-  type ShortcodeDetail,
   postAdminShortcodes,
+  patchAdminShortcodesByIdStatus,
+  deleteAdminShortcodesById,
+  type ShortcodeDetail,
 } from "~~/packages/api/src";
 
-// --- 状态管理 ---
+const toast = useToast();
+
 const shortcodes = ref<ShortcodeDetail[]>([]);
 const isLoading = ref(true);
 const searchQuery = ref("");
 const isDeleting = ref<string | number | null>(null);
 
-// --- 数据获取 ---
+const isModalOpen = ref(false);
+const isSubmitting = ref(false);
+
+const formConfig = ref<FieldConfig[]>([
+  {
+    key: "name",
+    label: "标识符",
+    description: "简码的唯一内部标识符",
+    type: "text",
+    icon: "i-lucide-code",
+    placeholder: "my-shortcode",
+  },
+  {
+    key: "displayName",
+    label: "显示名称",
+    type: "text",
+    icon: "i-lucide-tag",
+    placeholder: "请输入显示名称",
+  },
+  {
+    key: "description",
+    label: "描述",
+    type: "text",
+    icon: "i-lucide-align-left",
+    placeholder: "请输入描述（可选）",
+  },
+]);
+
+const formState = ref<Record<string, any>>({});
+
 const fetchList = async () => {
   isLoading.value = true;
   try {
     const { data } = await getAdminShortcodes();
     shortcodes.value = data || [];
-    console.log("[Log] Shortcodes fetched successfully.");
   } catch (error) {
     console.error("[Error] Failed to fetch shortcodes:", error);
   } finally {
@@ -28,7 +60,6 @@ const fetchList = async () => {
   }
 };
 
-// --- 搜索过滤 ---
 const filteredShortcodes = computed(() => {
   if (!searchQuery.value) return shortcodes.value;
   const q = searchQuery.value.toLowerCase();
@@ -39,20 +70,78 @@ const filteredShortcodes = computed(() => {
   );
 });
 
-// --- 动作逻辑 (待实现) ---
 const handleToggleStatus = async (item: ShortcodeDetail) => {
-  // TODO: 调用 patchAdminShortcodesById 修改 isEnabled
-  console.log("[Log] Toggle status for:", item.id);
+  try {
+    const { data } = await patchAdminShortcodesByIdStatus({
+      path: { id: item.id as number },
+      body: { isEnabled: !item.isEnabled },
+    });
+    if (data) {
+      const target = shortcodes.value.find((s) => s.id === item.id);
+      if (target) target.isEnabled = data.isEnabled;
+      toast.add({
+        title: data.isEnabled ? "已启用" : "已禁用",
+        color: "success",
+        icon: "i-lucide-circle-check",
+      });
+    }
+  } catch (error) {
+    toast.add({ title: "操作失败", color: "error" });
+  }
 };
 
 const handleDelete = async (id: string | number) => {
-  // TODO: 调用 deleteAdminShortcodesById
   isDeleting.value = id;
-  console.log("[Log] Deleting shortcode:", id);
+  try {
+    await deleteAdminShortcodesById({ path: { id: id as number } });
+    shortcodes.value = shortcodes.value.filter((s) => s.id !== id);
+    toast.add({
+      title: "已删除",
+      color: "success",
+      icon: "i-lucide-circle-check",
+    });
+  } catch (error) {
+    toast.add({ title: "删除失败", color: "error" });
+  } finally {
+    isDeleting.value = null;
+  }
 };
 
 const handleEdit = (id: string | number) => {
   navigateTo(`shortcode/editor?id=${id}`);
+};
+
+const openCreateModal = () => {
+  formState.value = {};
+  isModalOpen.value = true;
+};
+
+const handleFormSubmit = async (data: Record<string, any>) => {
+  isSubmitting.value = true;
+  try {
+    const { error } = await postAdminShortcodes({
+      body: {
+        name: data.name,
+        displayName: data.displayName,
+        description: data.description || null,
+        backendCode: "",
+        frontendCode: "",
+      },
+    });
+    if (!error) {
+      toast.add({
+        title: "创建成功",
+        color: "success",
+        icon: "i-lucide-circle-check",
+      });
+      isModalOpen.value = false;
+      await fetchList();
+    }
+  } catch (error) {
+    toast.add({ title: "创建失败", color: "error" });
+  } finally {
+    isSubmitting.value = false;
+  }
 };
 
 onMounted(() => {
@@ -86,7 +175,7 @@ onMounted(() => {
         <UButton
           icon="i-heroicons-plus"
           label="创建简码"
-          to="/admin/shortcodes/new"
+          @click="openCreateModal"
         />
       </div>
     </div>
@@ -139,39 +228,21 @@ onMounted(() => {
             <div class="flex gap-2">
               <UButton
                 variant="ghost"
-                color="gray"
+                color="secondary"
                 icon="i-lucide-pencil"
-                size="sm"
                 @click="handleEdit(item.id!)"
               />
               <UButton
                 variant="ghost"
                 color="primary"
                 icon="i-lucide-power"
-                size="sm"
                 @click="handleToggleStatus(item)"
               />
-              <UPopover>
-                <UButton
-                  variant="ghost"
-                  color="error"
-                  icon="i-lucide-trash"
-                  size="sm"
-                />
-                <template #panel>
-                  <div class="p-4 w-48 text-center">
-                    <p class="text-xs mb-3 text-gray-200">Are you sure?</p>
-                    <UButton
-                      label="Confirm Delete"
-                      color="error"
-                      size="xs"
-                      block
-                      :loading="isDeleting === item.id"
-                      @click="handleDelete(item.id!)"
-                    />
-                  </div>
-                </template>
-              </UPopover>
+              <ConfirmButton
+                icon="i-lucide-trash"
+                title="确认删除此简码？"
+                @confirm="(confirmed: boolean) => confirmed && handleDelete(item.id!)"
+              />
             </div>
           </div>
         </template>
@@ -186,6 +257,14 @@ onMounted(() => {
       <p class="text-gray-400">没有任何简码</p>
       <UButton variant="link" label="Clear search" @click="searchQuery = ''" />
     </div>
+    <CustomForm
+      v-model:open="isModalOpen"
+      v-model:form-data="formState"
+      v-model:loading="isSubmitting"
+      :config="formConfig"
+      title="创建简码"
+      @success="handleFormSubmit"
+    />
   </UContainer>
 </template>
 
