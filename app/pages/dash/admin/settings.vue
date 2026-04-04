@@ -5,6 +5,11 @@ import {
   putAdminSettingsByKey,
   type SettingListItem,
 } from "~~/packages/api/src";
+import {
+  parseDate,
+  parseDateTime,
+  parseTime,
+} from "@internationalized/date";
 
 const i18nMap: Record<
   string,
@@ -15,6 +20,7 @@ const i18nMap: Record<
   "site.user": { label: "用户管理", icon: "i-lucide-users" },
   "site.home": { label: "首页定制", icon: "i-lucide-layout-template" },
   "site.footer": { label: "页脚配置", icon: "i-lucide-panel-bottom" },
+  "site.general": { label: "站点信息", icon: "i-lucide-globe" },
   "site.seo.general": { label: "常规 SEO" },
   "site.seo.general.title": {
     label: "站点标题",
@@ -99,11 +105,99 @@ const i18nMap: Record<
     label: "公安备案号",
     description: "网站底部的公安联网备案信息",
   },
+  "site.general.info": { label: "基本信息" },
+  "site.general.info.site_created_at": {
+    label: "建站时间",
+    description: "站点创建的日期时间，用于展示运行时长",
+  },
+};
+
+const isListType = (type: string) => type.startsWith("list[");
+const isDictType = (type: string) => type.startsWith("dict[");
+
+const getListInnerType = (type: string): string | null => {
+  const match = type.match(/^list\[(.+)\]$/);
+  return match ? match[1].trim() : null;
+};
+
+const getDictValueType = (type: string): string | null => {
+  const match = type.match(/^dict\[.+,\s*(.+)\]$/);
+  return match ? match[1].trim() : null;
+};
+
+const isNumericType = (t: string | null | undefined) =>
+  t === "int" || t === "double";
+
+const getDefaultValueForType = (t: string | null) => {
+  if (t === "int" || t === "double") return 0;
+  if (t === "bool") return false;
+  return "";
+};
+
+const toEditableValue = (value: any, type: string) => {
+  if (value == null) return null;
+  if (type === "datetime") {
+    const str = typeof value === "string" ? value : new Date(value).toISOString();
+    return parseDateTime(str.length > 19 ? str.slice(0, 19) : str);
+  }
+  if (type === "date") {
+    const str = typeof value === "string" ? value : new Date(value).toISOString().slice(0, 10);
+    return parseDate(str);
+  }
+  if (type === "time") {
+    return parseTime(typeof value === "string" ? value : String(value));
+  }
+  return value;
+};
+
+const toApiValue = (value: any, type: string) => {
+  if (value == null) return null;
+  if (type === "datetime" || type === "date" || type === "time") {
+    return value.toString();
+  }
+  if (isListType(type)) {
+    const inner = getListInnerType(type);
+    const arr = value as any[];
+    if (inner === "int")
+      return arr.map((v: any) => {
+        const n = parseInt(String(v), 10);
+        return isNaN(n) ? 0 : n;
+      });
+    if (inner === "double")
+      return arr.map((v: any) => {
+        const n = parseFloat(String(v));
+        return isNaN(n) ? 0 : n;
+      });
+    return value;
+  }
+  if (isDictType(type)) {
+    const vt = getDictValueType(type);
+    if (vt === "int" || vt === "double") {
+      const result: Record<string, any> = {};
+      const coerce =
+        vt === "int"
+          ? (v: any) => {
+              const n = parseInt(String(v), 10);
+              return isNaN(n) ? 0 : n;
+            }
+          : (v: any) => {
+              const n = parseFloat(String(v));
+              return isNaN(n) ? 0 : n;
+            };
+      for (const [k, v] of Object.entries(value as Record<string, any>)) {
+        result[k] = coerce(v);
+      }
+      return result;
+    }
+    return value;
+  }
+  return value;
 };
 
 const rawSettings = ref<SettingListItem[]>([]);
 const loading = ref(false);
 const editableSettings = ref<Record<string, any>>({});
+const newDictKey = ref("");
 
 const fetchData = async () => {
   loading.value = true;
@@ -113,7 +207,20 @@ const fetchData = async () => {
       throw new Error("Unable to fetch site settings.");
     rawSettings.value = response.data;
     response.data.forEach((item) => {
-      editableSettings.value[item.key] = item.currentValue;
+      if (isListType(item.type)) {
+        editableSettings.value[item.key] = Array.isArray(item.currentValue)
+          ? [...item.currentValue]
+          : [];
+      } else if (isDictType(item.type)) {
+        editableSettings.value[item.key] = item.currentValue
+          ? { ...(item.currentValue as Record<string, any>) }
+          : {};
+      } else {
+        editableSettings.value[item.key] = toEditableValue(
+          item.currentValue,
+          item.type,
+        );
+      }
     });
   } catch (error) {
     console.error("[Settings]: Failed to fetch settings", error);
@@ -156,11 +263,26 @@ const getCardLabel = (tabKey: string, cardKey: string) => {
   return i18nMap[fullCardKey]?.label || cardKey.toUpperCase();
 };
 
-const isModified = (item: SettingListItem) =>
-  editableSettings.value[item.key] !== item.currentValue;
+const isModified = (item: SettingListItem) => {
+  const current = editableSettings.value[item.key];
+  const original = item.currentValue;
+  if (typeof current === "object" && current !== null) {
+    return JSON.stringify(current) !== JSON.stringify(original);
+  }
+  return current !== original;
+};
 
 const handleReset = async (item: SettingListItem) => {
-  editableSettings.value[item.key] = item.defaultValue;
+  const dv = item.defaultValue;
+  if (isListType(item.type)) {
+    editableSettings.value[item.key] = Array.isArray(dv) ? [...dv] : [];
+  } else if (isDictType(item.type)) {
+    editableSettings.value[item.key] = dv
+      ? { ...(dv as Record<string, any>) }
+      : {};
+  } else {
+    editableSettings.value[item.key] = toEditableValue(dv, item.type);
+  }
   await deleteAdminSettingsByKey({
     path: { key: item.key! },
   });
@@ -168,7 +290,7 @@ const handleReset = async (item: SettingListItem) => {
 };
 
 const handleSave = async (item: SettingListItem) => {
-  const newValue = editableSettings.value[item.key];
+  const newValue = toApiValue(editableSettings.value[item.key], item.type);
   try {
     await putAdminSettingsByKey({
       path: { key: item.key! },
@@ -176,11 +298,22 @@ const handleSave = async (item: SettingListItem) => {
         value: newValue,
       },
     });
-    item.currentValue = newValue;
+    item.currentValue = JSON.parse(
+      JSON.stringify(editableSettings.value[item.key]),
+    );
     console.log(`[Settings]: ${item.key} updated.`);
   } catch (error) {
     console.error(`[Settings]: Save failed.`, error);
   }
+};
+
+const addDictEntry = (item: SettingListItem) => {
+  if (!newDictKey.value.trim()) return;
+  const dict = editableSettings.value[item.key] as Record<string, any>;
+  dict[newDictKey.value.trim()] = getDefaultValueForType(
+    getDictValueType(item.type),
+  );
+  newDictKey.value = "";
 };
 
 onMounted(() => fetchData());
@@ -255,6 +388,199 @@ onMounted(() => fetchData());
                       class="w-32"
                       align="right"
                     />
+                  </template>
+
+                  <template v-else-if="setting.type === 'datetime'">
+                    <UInputDate
+                      v-model="editableSettings[setting.key]"
+                      granularity="second"
+                      class="w-72"
+                    />
+                  </template>
+
+                  <template v-else-if="setting.type === 'date'">
+                    <UInputDate
+                      v-model="editableSettings[setting.key]"
+                      class="w-48"
+                    />
+                  </template>
+
+                  <template v-else-if="setting.type === 'time'">
+                    <UInputTime
+                      v-model="editableSettings[setting.key]"
+                      granularity="second"
+                      class="w-48"
+                    />
+                  </template>
+
+                  <template v-else-if="isListType(setting.type)">
+                    <div class="flex flex-col gap-2">
+                      <div
+                        v-for="(_, index) in (
+                          editableSettings[setting.key] as any[]
+                        )"
+                        :key="index"
+                        class="flex gap-2"
+                      >
+                        <UInput
+                          v-if="isNumericType(getListInnerType(setting.type))"
+                          v-model.number="
+                            (editableSettings[setting.key] as any[])[index]
+                          "
+                          type="number"
+                          :step="
+                            getListInnerType(setting.type) === 'double'
+                              ? '0.1'
+                              : '1'
+                          "
+                          class="grow"
+                          align="right"
+                        />
+                        <UInput
+                          v-else
+                          v-model="
+                            (editableSettings[setting.key] as any[])[index]
+                          "
+                          class="grow"
+                        />
+                        <UButton
+                          v-if="
+                            (editableSettings[setting.key] as any[]).length > 0
+                          "
+                          icon="i-lucide-minus"
+                          color="error"
+                          variant="ghost"
+                          size="xs"
+                          @click="
+                            (editableSettings[setting.key] as any[]).splice(
+                              index,
+                              1,
+                            )
+                          "
+                        />
+                      </div>
+                      <UButton
+                        icon="i-lucide-plus"
+                        size="xs"
+                        variant="ghost"
+                        @click="
+                          (editableSettings[setting.key] as any[]).push(
+                            getDefaultValueForType(
+                              getListInnerType(setting.type),
+                            ),
+                          )
+                        "
+                      >
+                        新增
+                      </UButton>
+                    </div>
+                  </template>
+
+                  <template v-else-if="isDictType(setting.type)">
+                    <div class="flex flex-col gap-2">
+                      <div
+                        v-for="(_, dKey) in (
+                          editableSettings[setting.key] as Record&lt;string, any&gt;
+                        )"
+                        :key="dKey"
+                        class="flex gap-2"
+                      >
+                        <UInput
+                          :model-value="dKey"
+                          class="w-32"
+                          @update:model-value="
+                            (newKey: string) => {
+                              const dict = editableSettings[setting.key] as Record<
+                                string,
+                                any
+                              >;
+                              const oldKey = dKey as string;
+                              if (newKey === oldKey) return;
+                              const entries = Object.entries(dict);
+                              const idx = entries.findIndex(
+                                ([k]) => k === oldKey,
+                              );
+                              const updated: Record<string, any> = {};
+                              for (let i = 0; i < entries.length; i++) {
+                                if (i === idx) updated[newKey] = entries[i][1];
+                                else updated[entries[i][0]] = entries[i][1];
+                              }
+                              editableSettings[setting.key] = updated;
+                            }
+                          "
+                        />
+                        <UInput
+                          v-if="isNumericType(getDictValueType(setting.type))"
+                          :model-value.number="
+                            (editableSettings[setting.key] as Record<
+                              string,
+                              any
+                            >)[dKey]
+                          "
+                          type="number"
+                          :step="
+                            getDictValueType(setting.type) === 'double'
+                              ? '0.1'
+                              : '1'
+                          "
+                          class="grow"
+                          align="right"
+                          @update:model-value="
+                            (v: any) => {
+                              (editableSettings[setting.key] as Record<
+                                string,
+                                any
+                              >)[dKey] = v;
+                            }
+                          "
+                        />
+                        <UInput
+                          v-else
+                          :model-value="
+                            (editableSettings[setting.key] as Record<
+                              string,
+                              any
+                            >)[dKey]
+                          "
+                          class="grow"
+                          @update:model-value="
+                            (v: any) => {
+                              (editableSettings[setting.key] as Record<
+                                string,
+                                any
+                              >)[dKey] = v;
+                            }
+                          "
+                        />
+                        <UButton
+                          icon="i-lucide-minus"
+                          color="error"
+                          variant="ghost"
+                          size="xs"
+                          @click="
+                            delete (editableSettings[setting.key] as Record<
+                              string,
+                              any
+                            >)[dKey]
+                          "
+                        />
+                      </div>
+                      <div class="flex gap-2">
+                        <UInput
+                          v-model="newDictKey"
+                          class="w-32"
+                          placeholder="新键名"
+                        />
+                        <UButton
+                          icon="i-lucide-plus"
+                          size="xs"
+                          variant="ghost"
+                          @click="addDictEntry(setting)"
+                        >
+                          新增
+                        </UButton>
+                      </div>
+                    </div>
                   </template>
 
                   <template v-else>
