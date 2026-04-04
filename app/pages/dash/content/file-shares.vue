@@ -126,7 +126,7 @@ const currentEditId = ref<string | null>(null);
 const fileShares: Ref<FileShareResponse[]> = ref([]);
 const totalCount = ref(0);
 const page = ref(1);
-const pageSize = ref(20);
+const pageSize = 10;
 const toast = useToast();
 const remarksModal = ref<InstanceType<typeof TextDisplayModal>>();
 
@@ -232,7 +232,7 @@ const fetchData = async () => {
   const response = await getAdminFileShares({
     query: {
       page: page.value,
-      pageSize: pageSize.value,
+      pageSize: pageSize,
     },
   });
 
