@@ -175,7 +175,7 @@ const refresh = async () => {
   const response = await getAdminInvitations({
     query: {
       page: page.value,
-      size: pageSize.value,
+      size: pageSize,
     },
   });
   if (!response.error && response.data) {
@@ -218,7 +218,7 @@ const handleCountClick = async (invite: Invite) => {
       path: { id: invite.id as number },
       query: {
         page: page.value,
-        size: pageSize.value,
+        size: pageSize,
       },
     });
     if (!response.error && response.data) {
@@ -238,11 +238,11 @@ const handleFormSubmit = async (data: Record<string, any>) => {
   try {
     const apiCall =
       isEditMode.value && currentEditId.value
-        ? putAdminInvitationsById({
-            path: { id: currentEditId.value },
-            body: data as UpdateInviteFormData,
-          })
-        : postAdminInvitations({ body: data as CreateInviteFormData });
+        ? await putAdminInvitationsById({
+          path: {id: currentEditId.value},
+          body: data as UpdateInviteFormData,
+        })
+        : await postAdminInvitations({body: data as CreateInviteFormData});
 
     const response = await apiCall;
 
@@ -253,7 +253,7 @@ const handleFormSubmit = async (data: Record<string, any>) => {
         icon: "i-lucide-circle-check",
       });
       isModalOpen.value = false;
-      refresh();
+      await refresh();
     }
   } catch (err) {
     toast.add({

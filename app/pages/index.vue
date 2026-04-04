@@ -2,6 +2,7 @@
 import {
   getArticles,
   getSettingsFooter,
+  getSettingsGeneralInfo,
   getSettingsHomeBanner,
   getSettingsSeoGeneral,
 } from "@secret-base/api/src/sdk.gen";
@@ -69,6 +70,37 @@ const isFullScreenMode = computed(() => bannerDisplayMode.value === "screen");
 const isMiniMode = computed(() => bannerDisplayMode.value === "mini");
 
 const masonryColumns = "columns-1 lg:columns-2";
+
+const uptimeDisplay = ref("0天0时0分0秒");
+
+const computeUptime = (createdAt: Date) => {
+  console.log(typeof createdAt)
+  const diff = Date.now() - createdAt.getTime();
+  if (diff < 0) return "0天0时0分0秒";
+  const totalSeconds = Math.floor(diff / 1000);
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  return `${days}天${hours}时${minutes}分${seconds}秒`;
+};
+
+let uptimeTimer: ReturnType<typeof setInterval> | null = null;
+
+onMounted(async () => {
+  const response = await getSettingsGeneralInfo();
+  if (response.error || !response.data) return;
+  const creation = new Date(response.data.siteCreatedAt);
+  console.log(creation);
+  uptimeDisplay.value = computeUptime(creation);
+  uptimeTimer = setInterval(() => {
+    if (creation) uptimeDisplay.value = computeUptime(creation);
+  }, 1000);
+});
+
+onUnmounted(() => {
+  if (uptimeTimer) clearInterval(uptimeTimer);
+});
 
 const formatDate = (dateStr: string | Date) => {
   const date = typeof dateStr === "string" ? new Date(dateStr) : dateStr;
@@ -239,8 +271,8 @@ useSeoMeta({
                     <span class="font-mono">{{ totalCount }}</span>
                   </div>
                   <div class="flex justify-between text-sm">
-                    <span class="text-muted">运行天数</span>
-                    <span class="font-mono">128 Days</span>
+                    <span class="text-muted">运行时间</span>
+                    <span class="font-mono">{{ uptimeDisplay }}</span>
                   </div>
                 </div>
               </UCard>

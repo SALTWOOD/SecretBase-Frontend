@@ -1610,6 +1610,19 @@ export const FooterSettingsSchema = {
     }
 } as const;
 
+export const GeneralInfoSettingsSchema = {
+    required: [
+        'siteCreatedAt'
+    ],
+    type: 'object',
+    properties: {
+        siteCreatedAt: {
+            type: 'string',
+            format: 'date-time'
+        }
+    }
+} as const;
+
 export const HomeBackgroundSettingsSchema = {
     required: [
         'url',

@@ -383,6 +383,10 @@ export type FooterSettings = {
     beian: null | FooterBeianSettings;
 };
 
+export type GeneralInfoSettings = {
+    siteCreatedAt: Date;
+};
+
 export type HomeBackgroundSettings = {
     url: string;
     blur: number | string;
@@ -1485,6 +1489,22 @@ export type GetSettingsFooterResponses = {
 };
 
 export type GetSettingsFooterResponse = GetSettingsFooterResponses[keyof GetSettingsFooterResponses];
+
+export type GetSettingsGeneralInfoData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/settings/general/info';
+};
+
+export type GetSettingsGeneralInfoResponses = {
+    /**
+     * OK
+     */
+    200: GeneralInfoSettings;
+};
+
+export type GetSettingsGeneralInfoResponse = GetSettingsGeneralInfoResponses[keyof GetSettingsGeneralInfoResponses];
 
 export type GetShortcodesData = {
     body?: never;

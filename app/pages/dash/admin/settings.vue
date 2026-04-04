@@ -151,7 +151,7 @@ const getDefaultValueForType = (t: string | null) => {
 const toEditableValue = (value: any, type: string) => {
   if (value == null) return null;
   if (type === "datetime") {
-    const str = typeof value === "string" ? value : new Date(value).toISOString();
+    const str = typeof value === "string" ? value : new Date(value);
     return parseDateTime(str.length > 19 ? str.slice(0, 19) : str);
   }
   if (type === "date") {
