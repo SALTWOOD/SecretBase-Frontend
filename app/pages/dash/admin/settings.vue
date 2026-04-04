@@ -110,6 +110,20 @@ const i18nMap: Record<
     label: "建站时间",
     description: "站点创建的日期时间，用于展示运行时长",
   },
+  "site.comment": { label: "评论设置" },
+  "site.comment.guest": { label: "访客" },
+  "site.comment.guest.enabled": {
+    label: "允许访客评论",
+    description: "允许访客提交评论",
+  },
+  "site.comment.guest.require_approval": {
+    label: "访客评论需要审核",
+    description: "控制访客发送的评论是否需要经过审核。如设置为是，则访客的评论需要被审核才会展出；如设置为否，则访客发送的评论会立刻可见"
+  },
+  "site.comment.guest.allow_reply": {
+    label: "允许访客回复",
+    description: "允许访客回复其他人的评论"
+  }
 };
 
 const isListType = (type: string) => type.startsWith("list[");
