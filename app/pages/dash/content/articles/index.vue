@@ -3,10 +3,19 @@ import { deleteArticlesById, getArticles } from "~~/packages/api/src/sdk.gen";
 import type { ArticleResponse } from "~~/packages/api/src/types.gen";
 
 const articles: Ref<ArticleResponse[]> = ref([]);
+const page = ref(1);
+const pageSize = 5; // 卡片太高了只能缩小分页大小
+const totalCount = ref(0);
+
 const refresh = async () => {
-  const response = await getArticles();
+  const response = await getArticles({
+    query: { page: page.value, pageSize },
+  });
   if (!response.error && response.data) {
     articles.value = response.data;
+    totalCount.value = Number(
+      response.response.headers.get("x-total-count") ?? 0,
+    );
   }
 };
 
@@ -15,11 +24,16 @@ const deleteArticle = async (id: string | number) => {
     await deleteArticlesById({
       path: { id },
     });
-    refresh();
+    await refresh();
+    if (articles.value.length === 0 && page.value > 1) {
+      page.value--;
+    }
   } catch (err) {
     console.error("Failed to delete article:", err);
   }
 };
+
+watch(page, refresh);
 
 const formatDate = (dateStr: string | Date) => {
   const date = typeof dateStr === "string" ? new Date(dateStr) : dateStr;
@@ -150,6 +164,14 @@ onMounted(refresh);
         color="primary"
         >发布第一篇文章</UButton
       >
+    </div>
+
+    <div v-if="totalCount > 0" class="flex justify-center mt-6">
+      <UPagination
+        v-model:page="page"
+        :total="totalCount"
+        :items-per-page="pageSize"
+      />
     </div>
   </UContainer>
 </template>
