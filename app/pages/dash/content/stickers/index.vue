@@ -17,7 +17,7 @@ const isSubmitting = ref(false);
 const stickerSets: Ref<StickerSetResponse[]> = ref([]);
 const totalCount = ref(0);
 const page = ref(1);
-const pageSize = ref(20);
+const pageSize = 10;
 
 const isCreateModalOpen = ref(false);
 const isEditModalOpen = ref(false);

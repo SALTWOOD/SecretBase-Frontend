@@ -96,9 +96,9 @@
     />
 
     <InformationForm
-      :loading="invitationUsers.loading"
-      v-model:open="invitationUsers.open"
-      :users="invitationUsers.users"
+      :loading="isLoading"
+      v-model:open="isInformationFormOpen"
+      :users="users"
     />
   </div>
 </template>
@@ -123,20 +123,12 @@ const inviteCodes = ref<Invite[]>([]);
 const isModalOpen = ref(false);
 const isEditMode = ref(false);
 const isSubmitting = ref(false);
+const isLoading = ref(true);
+const isInformationFormOpen = ref(false);
 const currentEditId = ref<number | null>(null);
-const invitationUsers = ref({
-  users: [] as User[],
-  loading: true,
-  open: false,
-  page: {
-    page: 1,
-    size: 20,
-    total: 0,
-  },
-});
-
+const users: Ref<User[]> = ref([]);
 const page = ref(1);
-const pageSize = ref(20);
+const pageSize = 10;
 const totalCount = ref(0);
 
 const form: Ref<FieldConfig[]> = ref([
@@ -219,25 +211,25 @@ const openForm = (editMode: boolean, row?: any) => {
 
 const handleCountClick = async (invite: Invite) => {
   console.log(invite);
-  invitationUsers.value.loading = true;
-  invitationUsers.value.open = true;
+  isLoading.value = true;
+  isInformationFormOpen.value = true;
   try {
     const response = await getAdminInvitationsByIdUsers({
       path: { id: invite.id as number },
       query: {
-        page: invitationUsers.value.page.page,
-        size: invitationUsers.value.page.size,
+        page: page.value,
+        size: pageSize.value,
       },
     });
     if (!response.error && response.data) {
-      invitationUsers.value.page.total = parseInt(
+      totalCount.value = parseInt(
         response.response.headers.get("x-total-count") || "0",
         10,
       );
-      invitationUsers.value.users = response.data;
+      users.value = response.data;
     }
   } finally {
-    invitationUsers.value.loading = false;
+    isLoading.value = false;
   }
 };
 
@@ -321,7 +313,7 @@ const getActionItems = (row: any) => [
   },
 ];
 
-watch(() => page, refresh);
+watch(page, refresh);
 onMounted(refresh);
 </script>
 

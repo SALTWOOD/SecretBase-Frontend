@@ -122,12 +122,9 @@ const search = ref("");
 const selectedStatus = ref(UserStatusFilter.All);
 const selectedRole = ref(UserRoleFilter.All);
 const users = ref<User[]>([]);
-
-const page = ref({
-  page: 1,
-  size: 20,
-  total: 0,
-});
+const page = ref(1);
+const pageSize = 10;
+const totalCount = ref(0);
 
 const columns = [
   { accessorKey: "username", header: "用户信息" },
@@ -140,7 +137,7 @@ const resetFilters = () => {
   search.value = "";
   selectedStatus.value = UserStatusFilter.All;
   selectedRole.value = UserRoleFilter.All;
-  page.value.page = 1;
+  page.value = 1;
 };
 
 const filteredUsers = computed(() => {
@@ -159,9 +156,9 @@ const filteredUsers = computed(() => {
 
     // Permission (Role)
     const roleMap: Record<string, number[]> = {
-      管理: [2, 3],
-      用户: [1],
-      访客: [0],
+      "管理": [2, 3],
+      "用户": [1],
+      "访客": [0],
     };
     const matchesRole =
       selectedRole.value === "全部等级" ||
@@ -216,13 +213,13 @@ const refresh = async () => {
   try {
     const response = await getAdminUsers({
       query: {
-        page: page.value.page,
-        size: page.value.size,
+        page: page.value,
+        size: pageSize,
       },
     });
     if (!response.error) {
       users.value = response.data as User[];
-      page.value.total = parseInt(
+      totalCount.value = parseInt(
         response.response.headers.get("x-total-count") || "0",
         10,
       );
@@ -234,10 +231,7 @@ const refresh = async () => {
   }
 };
 
-watch(
-  () => page.value.page,
-  () => refresh(),
-);
+watch(page, refresh);
 onMounted(refresh);
 </script>
 
