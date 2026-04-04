@@ -1013,7 +1013,6 @@ export type GetArticlesData = {
     query?: {
         page?: number | string;
         pageSize?: number | string;
-        published?: boolean;
     };
     url: '/articles';
 };

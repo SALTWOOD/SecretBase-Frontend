@@ -10,21 +10,44 @@ definePageMeta({
   layout: "background",
 });
 
-// 模拟分页状态
-const page = ref(1);
+const route = useRoute();
+const router = useRouter();
+
+const page = computed({
+  get: () => Number(route.query.page) || 1,
+  set: (val) => router.push({ query: { ...route.query, page: val } })
+});
 const pageSize = 10;
 
+// Fetch all initial data via Promise.all for SSR optimization
 const [
   { data: seoGeneral, pending: seoPending },
   { data: bannerSettings, pending: bannerPending },
-  { data: articles, pending: articlesPending },
+  { data: articleResult, pending: articlesPending },
   { data: footer },
 ] = await Promise.all([
   useAsyncData("site-seo", async () => (await getSettingsSeoGeneral()).data),
   useAsyncData("home-banner", async () => (await getSettingsHomeBanner()).data),
-  useAsyncData("articles-list", async () => (await getArticles()).data),
+  useAsyncData("articles-list", async () => {
+    const headers = useRequestHeaders(['cookie']) as Record<string, string>;
+    const res = await getArticles({
+      query: { page: page.value, pageSize },
+      headers
+    });
+    const total = Number(res.response.headers.get("x-total-count") ?? 0);
+    return {
+      items: res.data || [],
+      total
+    };
+  }, {
+    watch: [page]
+  }),
   useAsyncData("footer", async () => (await getSettingsFooter()).data),
 ]);
+
+// Computed shorthands
+const articles = computed(() => articleResult.value?.items || []);
+const totalCount = computed(() => articleResult.value?.total || 0);
 
 const policeLink = computed(() => {
   const policeStr = footer.value?.beian?.police;
@@ -39,15 +62,12 @@ const isLoading = computed(
   () => seoPending.value || bannerPending.value || articlesPending.value,
 );
 
-const bannerDisplayMode = computed(
-  () => bannerSettings.value?.displayMode || "full",
-);
+const bannerDisplayMode = computed(() => bannerSettings.value?.displayMode || "full");
 const bannerContent = computed(() => bannerSettings.value?.content || "");
 const showBanner = computed(() => bannerDisplayMode.value !== "hidden");
 const isFullScreenMode = computed(() => bannerDisplayMode.value === "screen");
 const isMiniMode = computed(() => bannerDisplayMode.value === "mini");
 
-// 瀑布流列数优化
 const masonryColumns = "columns-1 lg:columns-2";
 
 const formatDate = (dateStr: string | Date) => {
@@ -62,15 +82,13 @@ const formatDate = (dateStr: string | Date) => {
 const truncateContent = (content: string, length: number = 100) => {
   if (!content) return "";
   const cleanText = content.replace(/[#*`\->]/g, "");
-  return cleanText.length > length
-    ? cleanText.slice(0, length) + "..."
-    : cleanText;
+  return cleanText.length > length ? cleanText.slice(0, length) + "..." : cleanText;
 };
 
+// SEO Metadata
 useSeoMeta({
   title: () => seoGeneral.value?.title || "Secret Base",
-  description: () =>
-    seoGeneral.value?.description || "A mysterious space for tech.",
+  description: () => seoGeneral.value?.description || "A mysterious space for tech.",
 });
 </script>
 
@@ -89,10 +107,9 @@ useSeoMeta({
     </div>
 
     <div id="content-root" :class="['py-12', isFullScreenMode ? '' : 'pt-12']">
-      <UContainer>
-        <div class="grid grid-cols-12 gap-8">
-
-          <aside class="hidden xl:col-span-2 xl:block space-y-6">
+      <UContainer class="max-w-[75vw]">
+        <div class="grid grid-cols-16 gap-8">
+          <aside class="hidden xl:col-span-3 xl:block space-y-6">
             <UCard class="sticky top-24 side-card">
               <div class="flex flex-col items-center text-center">
                 <UAvatar
@@ -111,7 +128,7 @@ useSeoMeta({
             </UCard>
           </aside>
 
-          <div class="col-span-12 xl:col-span-7 space-y-8">
+          <div class="col-span-12 xl:col-span-10 space-y-8">
             <header
               v-if="showBanner && !isFullScreenMode"
               :class="['mb-12', isMiniMode ? 'text-center' : 'text-left']"
@@ -129,7 +146,7 @@ useSeoMeta({
             </div>
 
             <template v-else>
-              <div v-if="articles?.length" :class="[masonryColumns, 'gap-6 space-y-6']">
+              <div v-if="articles.length" :class="[masonryColumns, 'gap-6 space-y-6']">
                 <article
                   v-for="article in articles"
                   :key="article.id"
@@ -144,11 +161,10 @@ useSeoMeta({
                       v-if="getArticleCover(article)"
                       :src="getArticleCover(article)!"
                       :alt="article.title"
+                      loading="lazy"
+                      decoding="async"
                       class="w-full h-44 object-cover transition-transform duration-500 group-hover:scale-110 opacity-90 group-hover:opacity-100"
                     />
-                    <div v-else class="w-full h-44 flex items-center justify-center bg-primary/5 text-primary/20">
-                      <UIcon name="i-lucide-image" size="32" />
-                    </div>
                   </NuxtLink>
 
                   <div class="p-6">
@@ -179,14 +195,13 @@ useSeoMeta({
                 </article>
               </div>
 
-              <div v-if="articles?.length" class="flex justify-center mt-12">
+              <div v-if="articles.length" class="flex justify-center mt-12">
                 <UPagination
-                  v-model="page"
-                  :total="articles.length"
-                  :page-count="pageSize"
+                  v-model:page="page"
+                  :total="totalCount"
+                  :items-per-page="pageSize"
                   show-first
                   show-last
-                  :ui="{ rounded: 'rounded-full' }"
                 />
               </div>
 
@@ -221,7 +236,7 @@ useSeoMeta({
                 <div class="space-y-3">
                   <div class="flex justify-between text-sm">
                     <span class="text-muted">文章总数</span>
-                    <span class="font-mono">{{ articles?.length || 0 }}</span>
+                    <span class="font-mono">{{ totalCount }}</span>
                   </div>
                   <div class="flex justify-between text-sm">
                     <span class="text-muted">运行天数</span>
@@ -231,7 +246,6 @@ useSeoMeta({
               </UCard>
             </div>
           </aside>
-
         </div>
       </UContainer>
     </div>
