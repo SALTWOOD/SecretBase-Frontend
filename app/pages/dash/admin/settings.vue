@@ -10,6 +10,9 @@ import {
   parseDateTime,
   parseTime,
 } from "@internationalized/date";
+import { Codemirror } from "vue-codemirror";
+import { javascript } from "@codemirror/lang-javascript";
+import { oneDark } from "@codemirror/theme-one-dark";
 
 const i18nMap: Record<
   string,
@@ -96,6 +99,15 @@ const i18nMap: Record<
     label: "显示模式",
     description: "控制横幅的视觉覆盖范围 (full/screen)",
   },
+  "site.home.sidebar": { label: "侧边栏" },
+  "site.home.sidebar.left": {
+    label: "左侧边栏组件",
+    description: "JSON 数组，定义左侧栏的 Widget 列表",
+  },
+  "site.home.sidebar.right": {
+    label: "右侧边栏组件",
+    description: "JSON 数组，定义右侧栏的 Widget 列表",
+  },
   "site.footer.beian": { label: "备案与合规" },
   "site.footer.beian.icp": {
     label: "ICP 备案号",
@@ -128,6 +140,7 @@ const i18nMap: Record<
 
 const isListType = (type: string) => type.startsWith("list[");
 const isDictType = (type: string) => type.startsWith("dict[");
+const isJsonType = (type: string) => type === "json";
 
 const getListInnerType = (type: string): string | null => {
   const match = type.match(/^list\[(.+)\]$/);
@@ -150,12 +163,16 @@ const getDefaultValueForType = (t: string | null) => {
 
 const toEditableValue = (value: any, type: string) => {
   if (value == null) return null;
+  if (type === "json") {
+    return typeof value === "string" ? value : JSON.stringify(value, null, 2);
+  }
   if (type === "datetime") {
-    const str = typeof value === "string" ? value : new Date(value);
-    return parseDateTime(str.length > 19 ? str.slice(0, 19) : str);
+    const str = typeof value === "string" ? value : new Date(value as string | number | Date).toISOString();
+    const sliced = str.length > 19 ? str.slice(0, 19) : str;
+    return parseDateTime(sliced);
   }
   if (type === "date") {
-    const str = typeof value === "string" ? value : new Date(value).toISOString().slice(0, 10);
+    const str = typeof value === "string" ? value : new Date(value as string | number | Date).toISOString().slice(0, 10);
     return parseDate(str);
   }
   if (type === "time") {
@@ -166,6 +183,12 @@ const toEditableValue = (value: any, type: string) => {
 
 const toApiValue = (value: any, type: string) => {
   if (value == null) return null;
+  if (type === "json") {
+    if (typeof value === "string") {
+      try { return JSON.parse(value); } catch { return value; }
+    }
+    return value;
+  }
   if (type === "datetime" || type === "date" || type === "time") {
     return value.toString();
   }
@@ -208,10 +231,34 @@ const toApiValue = (value: any, type: string) => {
   return value;
 };
 
-const rawSettings = ref<SettingListItem[]>([]);
+type SettingItem = SettingListItem & { key: string; type: string };
+
+const rawSettings = ref<SettingItem[]>([]);
 const loading = ref(false);
 const editableSettings = ref<Record<string, any>>({});
 const newDictKey = ref("");
+
+const jsonEditorOpen = ref(false);
+const jsonEditorKey = ref("");
+const jsonEditorCode = ref("");
+const codeMirrorExtensions = [javascript(), oneDark];
+
+const openJsonEditor = (key: string) => {
+  jsonEditorKey.value = key;
+  const val = editableSettings.value[key];
+  jsonEditorCode.value = typeof val === "string" ? val : JSON.stringify(val, null, 2);
+  jsonEditorOpen.value = true;
+};
+
+const saveJsonEditor = () => {
+  try {
+    const parsed = JSON.parse(jsonEditorCode.value);
+    editableSettings.value[jsonEditorKey.value] = JSON.stringify(parsed, null, 2);
+    jsonEditorOpen.value = false;
+  } catch {
+    // invalid JSON, keep editor open
+  }
+};
 
 const fetchData = async () => {
   loading.value = true;
@@ -219,8 +266,10 @@ const fetchData = async () => {
     const response = await getAdminSettings();
     if (response.error || !response.data)
       throw new Error("Unable to fetch site settings.");
-    rawSettings.value = response.data;
-    response.data.forEach((item) => {
+    rawSettings.value = (response.data as SettingItem[]).filter(
+      (item): item is SettingItem => !!item.key && !!item.type,
+    );
+    rawSettings.value.forEach((item) => {
       if (isListType(item.type)) {
         editableSettings.value[item.key] = Array.isArray(item.currentValue)
           ? [...item.currentValue]
@@ -277,7 +326,7 @@ const getCardLabel = (tabKey: string, cardKey: string) => {
   return i18nMap[fullCardKey]?.label || cardKey.toUpperCase();
 };
 
-const isModified = (item: SettingListItem) => {
+const isModified = (item: SettingItem) => {
   const current = editableSettings.value[item.key];
   const original = item.currentValue;
   if (typeof current === "object" && current !== null) {
@@ -286,7 +335,7 @@ const isModified = (item: SettingListItem) => {
   return current !== original;
 };
 
-const handleReset = async (item: SettingListItem) => {
+const handleReset = async (item: SettingItem) => {
   const dv = item.defaultValue;
   if (isListType(item.type)) {
     editableSettings.value[item.key] = Array.isArray(dv) ? [...dv] : [];
@@ -298,16 +347,16 @@ const handleReset = async (item: SettingListItem) => {
     editableSettings.value[item.key] = toEditableValue(dv, item.type);
   }
   await deleteAdminSettingsByKey({
-    path: { key: item.key! },
+    path: { key: item.key },
   });
   item.currentValue = item.defaultValue;
 };
 
-const handleSave = async (item: SettingListItem) => {
+const handleSave = async (item: SettingItem) => {
   const newValue = toApiValue(editableSettings.value[item.key], item.type);
   try {
     await putAdminSettingsByKey({
-      path: { key: item.key! },
+      path: { key: item.key },
       body: {
         value: newValue,
       },
@@ -321,7 +370,7 @@ const handleSave = async (item: SettingListItem) => {
   }
 };
 
-const addDictEntry = (item: SettingListItem) => {
+const addDictEntry = (item: SettingItem) => {
   if (!newDictKey.value.trim()) return;
   const dict = editableSettings.value[item.key] as Record<string, any>;
   dict[newDictKey.value.trim()] = getDefaultValueForType(
@@ -597,6 +646,17 @@ onMounted(() => fetchData());
                     </div>
                   </template>
 
+                  <template v-else-if="isJsonType(setting.type)">
+                    <UButton
+                      icon="i-lucide-code"
+                      variant="outline"
+                      size="sm"
+                      @click="openJsonEditor(setting.key)"
+                    >
+                      编辑 JSON
+                    </UButton>
+                  </template>
+
                   <template v-else>
                     <UInput
                       v-model="editableSettings[setting.key]"
@@ -634,4 +694,36 @@ onMounted(() => fetchData());
       </template>
     </UTabs>
   </UContainer>
+
+  <UModal v-model:open="jsonEditorOpen" :ui="{ width: '80vw' }">
+    <template #content>
+      <UCard :ui="{ body: 'p-0 overflow-hidden' }">
+        <template #header>
+          <div class="flex items-center justify-between">
+            <h3 class="font-semibold text-sm">编辑 JSON — {{ jsonEditorKey }}</h3>
+            <UButton icon="i-lucide-x" variant="ghost" size="sm" @click="jsonEditorOpen = false" />
+          </div>
+        </template>
+        <div class="h-[60vh]">
+          <ClientOnly>
+            <Codemirror
+              v-model="jsonEditorCode"
+              placeholder="// JSON content here..."
+              :style="{ height: '100%', fontSize: '13px' }"
+              :autofocus="true"
+              :indent-with-tab="true"
+              :tab-size="2"
+              :extensions="codeMirrorExtensions"
+            />
+          </ClientOnly>
+        </div>
+        <template #footer>
+          <div class="flex justify-end gap-2">
+            <UButton variant="ghost" @click="jsonEditorOpen = false">取消</UButton>
+            <UButton color="primary" @click="saveJsonEditor">保存</UButton>
+          </div>
+        </template>
+      </UCard>
+    </template>
+  </UModal>
 </template>

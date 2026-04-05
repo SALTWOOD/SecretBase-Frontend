@@ -1474,6 +1474,34 @@ export type GetSettingsHomeBannerResponses = {
 
 export type GetSettingsHomeBannerResponse = GetSettingsHomeBannerResponses[keyof GetSettingsHomeBannerResponses];
 
+export type GetSettingsHomeSidebarLeftData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/settings/home/sidebar/left';
+};
+
+export type GetSettingsHomeSidebarLeftResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type GetSettingsHomeSidebarRightData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/settings/home/sidebar/right';
+};
+
+export type GetSettingsHomeSidebarRightResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
 export type GetSettingsFooterData = {
     body?: never;
     path?: never;

@@ -4,8 +4,11 @@ import {
   getSettingsFooter,
   getSettingsGeneralInfo,
   getSettingsHomeBanner,
+  getSettingsHomeSidebarLeft,
+  getSettingsHomeSidebarRight,
   getSettingsSeoGeneral,
 } from "@secret-base/api/src/sdk.gen";
+import type { SidebarWidget, SidebarLinksWidget, SidebarHtmlWidget } from "~/types/sidebar";
 
 definePageMeta({
   layout: "background",
@@ -45,6 +48,9 @@ const [
   }),
   useAsyncData("footer", async () => (await getSettingsFooter()).data),
 ]);
+
+const leftSidebarWidgets = ref<SidebarWidget[] | null>(null);
+const rightSidebarWidgets = ref<SidebarWidget[] | null>(null);
 
 // Computed shorthands
 const articles = computed(() => articleResult.value?.items || []);
@@ -88,14 +94,23 @@ const computeUptime = (createdAt: Date) => {
 let uptimeTimer: ReturnType<typeof setInterval> | null = null;
 
 onMounted(async () => {
-  const response = await getSettingsGeneralInfo();
-  if (response.error || !response.data) return;
-  const creation = new Date(response.data.siteCreatedAt);
-  console.log(creation);
-  uptimeDisplay.value = computeUptime(creation);
-  uptimeTimer = setInterval(() => {
-    if (creation) uptimeDisplay.value = computeUptime(creation);
-  }, 1000);
+  const [generalRes, leftRes, rightRes] = await Promise.all([
+    getSettingsGeneralInfo(),
+    getSettingsHomeSidebarLeft(),
+    getSettingsHomeSidebarRight(),
+  ]);
+
+  if (!generalRes.error && generalRes.data) {
+    const creation = new Date(generalRes.data.siteCreatedAt);
+    console.log(creation);
+    uptimeDisplay.value = computeUptime(creation);
+    uptimeTimer = setInterval(() => {
+      if (creation) uptimeDisplay.value = computeUptime(creation);
+    }, 1000);
+  }
+
+  leftSidebarWidgets.value = leftRes.data as SidebarWidget[] | null;
+  rightSidebarWidgets.value = rightRes.data as SidebarWidget[] | null;
 });
 
 onUnmounted(() => {
@@ -142,22 +157,14 @@ useSeoMeta({
       <UContainer class="max-w-[75vw]">
         <div class="grid grid-cols-16 gap-8">
           <aside class="hidden xl:col-span-3 xl:block space-y-6">
-            <UCard class="sticky top-24 side-card">
-              <div class="flex flex-col items-center text-center">
-                <UAvatar
-                  src="https://github.com/SALTWOOD.png"
-                  alt="Avatar"
-                  size="xl"
-                  class="mb-4 ring-2 ring-primary"
-                />
-                <h3 class="font-bold text-lg text-highlighted">{{ seoGeneral?.title }}</h3>
-                <p class="text-xs text-muted mt-1 italic">Maintainer of SecretBase</p>
-                <div class="flex gap-4 mt-6">
-                  <UButton icon="i-simple-icons-github" color="neutral" variant="ghost" to="https://github.com/SALTWOOD" />
-                  <UButton icon="i-lucide-rss" color="neutral" variant="ghost" />
-                </div>
-              </div>
-            </UCard>
+            <SidebarProfileCard
+              :site-title="seoGeneral?.title"
+              avatar-url="https://github.com/SALTWOOD.png"
+            />
+            <template v-for="widget in leftSidebarWidgets" :key="widget.id">
+              <SidebarLinksCard v-if="widget.type === 'links'" :widget="widget as SidebarLinksWidget" />
+              <SidebarHtmlCard v-else-if="widget.type === 'html'" :widget="widget as SidebarHtmlWidget" />
+            </template>
           </aside>
 
           <div class="col-span-12 xl:col-span-10 space-y-8">
@@ -249,18 +256,6 @@ useSeoMeta({
               <UCard class="side-card">
                 <template #header>
                   <div class="flex items-center gap-2 font-bold text-highlighted">
-                    <UIcon name="i-lucide-megaphone" class="text-primary" />
-                    公告板
-                  </div>
-                </template>
-                <p class="text-sm text-muted leading-relaxed">
-                  欢迎来到 Secret Base！这里正在进行 Nuxt UI v4 的深度重构，更多功能敬请期待。
-                </p>
-              </UCard>
-
-              <UCard class="side-card">
-                <template #header>
-                  <div class="flex items-center gap-2 font-bold text-highlighted">
                     <UIcon name="i-lucide-chart-bar" class="text-primary" />
                     运行统计
                   </div>
@@ -276,6 +271,10 @@ useSeoMeta({
                   </div>
                 </div>
               </UCard>
+
+              <template v-for="widget in rightSidebarWidgets" :key="widget.id">
+                <SidebarHtmlCard v-if="widget.type === 'html'" :widget="widget as SidebarHtmlWidget" />
+              </template>
             </div>
           </aside>
         </div>
