@@ -404,6 +404,16 @@ export type HomeBannerSettings = {
     displayMode: string;
 };
 
+export type HomeHeaderSettings = {
+    icon: string;
+    iconType: string;
+    title: string;
+    links: JsonElement;
+    showColorMode: boolean;
+    showGithub: boolean;
+    githubUrl: string;
+};
+
 export type HostString = {
     value?: null | string;
     hasValue?: boolean;
@@ -1726,8 +1736,10 @@ export type GetSettingsHomeHeaderResponses = {
     /**
      * OK
      */
-    200: unknown;
+    200: HomeHeaderSettings;
 };
+
+export type GetSettingsHomeHeaderResponse = GetSettingsHomeHeaderResponses[keyof GetSettingsHomeHeaderResponses];
 
 export type GetSettingsFooterData = {
     body?: never;

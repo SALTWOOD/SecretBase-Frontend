@@ -1696,6 +1696,42 @@ export const HomeBannerSettingsSchema = {
     }
 } as const;
 
+export const HomeHeaderSettingsSchema = {
+    required: [
+        'icon',
+        'iconType',
+        'title',
+        'links',
+        'showColorMode',
+        'showGithub',
+        'githubUrl'
+    ],
+    type: 'object',
+    properties: {
+        icon: {
+            type: 'string'
+        },
+        iconType: {
+            type: 'string'
+        },
+        title: {
+            type: 'string'
+        },
+        links: {
+            $ref: '#/components/schemas/JsonElement'
+        },
+        showColorMode: {
+            type: 'boolean'
+        },
+        showGithub: {
+            type: 'boolean'
+        },
+        githubUrl: {
+            type: 'string'
+        }
+    }
+} as const;
+
 export const HostStringSchema = {
     type: 'object',
     properties: {
