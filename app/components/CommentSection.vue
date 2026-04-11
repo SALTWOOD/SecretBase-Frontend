@@ -29,20 +29,21 @@ const guestEmail = ref("");
 const guestWebsite = ref("");
 const capToken = ref("");
 const capApi = "/api/cap/";
+const capKey = ref(0);
 
 const isGuest = computed(() => !userStore.isLoggedIn);
 
 const canSubmitComment = computed(() => {
   if (!newComment.value.trim()) return false;
   if (isGuest.value && !guestNickname.value.trim()) return false;
-  if (isGuest.value && !capToken.value) return false;
+  if (!capToken.value) return false;
   return true;
 });
 
 const canSubmitReply = computed(() => {
   if (!replyContent.value.trim()) return false;
   if (isGuest.value && !guestNickname.value.trim()) return false;
-  if (isGuest.value && !capToken.value) return false;
+  if (!capToken.value) return false;
   return true;
 });
 
@@ -84,8 +85,8 @@ const buildBody = (content: string, parentCommentId: number | string | null = nu
     body.guestNickname = guestNickname.value.trim() || undefined;
     body.guestEmail = guestEmail.value.trim() || undefined;
     body.guestWebsite = guestWebsite.value.trim() || undefined;
-    body.captchaToken = capToken.value;
   }
+  body.captchaToken = capToken.value;
   return body;
 };
 
@@ -111,7 +112,11 @@ const handleSubmit = async () => {
       query: { articleId: String(props.articleId) },
     });
     afterSubmit(!response.error && !!response.data, "评论");
-    if (!response.error) newComment.value = "";
+    if (!response.error) {
+      newComment.value = "";
+      capKey.value++;
+      capToken.value = "";
+    }
   } catch (error) {
     console.error("Failed to submit comment:", error);
     toast.add({ title: "发布失败", color: "error" });
@@ -132,6 +137,8 @@ const handleReply = async () => {
     if (!response.error) {
       replyContent.value = "";
       replyTo.value = null;
+      capKey.value++;
+      capToken.value = "";
     }
   } catch (error) {
     console.error("Failed to submit reply:", error);
@@ -171,17 +178,26 @@ onMounted(loadComments);
       </h2>
 
       <!-- 已登录用户表单 -->
-      <div v-if="!isGuest" class="mb-6">
+      <div v-if="!isGuest" class="mb-6 space-y-3">
         <UTextarea
           v-model="newComment"
           placeholder="写下你的评论..."
           :rows="5"
-          class="mb-3"
         />
+        <client-only>
+          <div class="cap-wrapper w-full overflow-hidden rounded-lg border border-default bg-muted/20">
+            <cap-widget
+              :key="capKey"
+              :data-cap-api-endpoint="capApi"
+              @solve="handleCapSolve"
+              @reset="handleCapReset"
+            />
+          </div>
+        </client-only>
         <div class="flex justify-end">
           <UButton
             :loading="isSubmitting"
-            :disabled="!newComment.trim()"
+            :disabled="!canSubmitComment"
             @click="handleSubmit"
           >
             发表评论
@@ -218,6 +234,7 @@ onMounted(loadComments);
         <client-only>
           <div class="cap-wrapper w-full overflow-hidden rounded-lg border border-default bg-muted/20">
             <cap-widget
+              :key="capKey"
               :data-cap-api-endpoint="capApi"
               @solve="handleCapSolve"
               @reset="handleCapReset"

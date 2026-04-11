@@ -95,6 +95,7 @@ import { isValidRedirectUrl } from "~/utils/url-validator";
 const form = reactive({ email: "", password: "" });
 const loading = ref(false);
 const capToken = ref("");
+const capKey = ref(0);
 const api = "/api/cap/";
 const toast = useToast();
 const userStore = useUserStore();
