@@ -600,7 +600,7 @@ onMounted(() => {
             </span>
           </div>
 
-          <div v-if="uploadFiles.length > 0" class="space-y-3">
+          <div v-if="uploadFiles.length > 0" class="space-y-3 max-h-[50vh] overflow-y-auto">
             <div
               v-for="(item, index) in uploadFiles"
               :key="index"
