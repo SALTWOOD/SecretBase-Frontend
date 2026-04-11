@@ -11,7 +11,7 @@
           </div>
         </div>
 
-        <UDashboardSearchButton :collapsed="collapsed" />
+        <UDashboardSearchButton :collapsed="collapsed"/>
 
         <UNavigationMenu
           :collapsed="collapsed"
@@ -56,21 +56,21 @@
       <template #header>
         <UDashboardNavbar>
           <template #left>
-            <UDashboardSidebarCollapse />
-            <UBreadcrumb :items="breadcrumbItems" class="ml-2" />
+            <UDashboardSidebarCollapse/>
+            <UBreadcrumb :items="breadcrumbItems" class="ml-2"/>
           </template>
 
           <template #right>
-            <UColorModeButton />
-            <UButton icon="i-lucide-bell" variant="ghost" color="neutral" />
-            <UButton icon="i-lucide-search" variant="ghost" color="neutral" />
+            <UColorModeButton/>
+            <UButton icon="i-lucide-bell" variant="ghost" color="neutral"/>
+            <UButton icon="i-lucide-search" variant="ghost" color="neutral"/>
           </template>
         </UDashboardNavbar>
       </template>
 
       <template #body>
         <div class="max-w-7xl mx-auto w-full">
-          <NuxtPage />
+          <NuxtPage/>
         </div>
       </template>
     </UDashboardPanel>
@@ -142,16 +142,11 @@ const allNavigationItems = computed<NavigationItem[]>(() => [
         icon: "i-lucide-files",
         to: "/dash/content/articles",
       },
-      // {
-      //   label: "草稿箱",
-      //   icon: "i-lucide-file-clock",
-      //   to: "/dash/content/articles/drafts",
-      // },
-      // {
-      //   label: "分类目录",
-      //   icon: "i-lucide-layers",
-      //   to: "/dash/content/articles/categories",
-      // },
+      {
+        label: "页面",
+        icon: "i-lucide-file",
+        to: "/dash/content/pages",
+      },
       {
         label: "存储",
         icon: "i-lucide-layers",
@@ -247,8 +242,8 @@ const breadcrumbItems = computed(() => {
 
   const current = flatItems.find((i) => i.to === route.path);
   return [
-    { label: "控制台", to: "/dash" },
-    ...(current ? [{ label: current.label }] : []),
+    {label: "控制台", to: "/dash"},
+    ...(current ? [{label: current.label}] : []),
   ];
 });
 
@@ -268,10 +263,10 @@ const userMenu = [
       onSelect: async () => {
         await postAuthLogout();
         userStore.reset();
-        toast.add({ title: "已退出登录", color: "success" });
+        toast.add({title: "已退出登录", color: "success"});
         navigateTo({
           path: "/auth/login",
-          query: { redirect: route.fullPath },
+          query: {redirect: route.fullPath},
         });
       },
     },

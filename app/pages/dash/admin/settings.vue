@@ -108,6 +108,35 @@ const i18nMap: Record<
     label: "右侧边栏组件",
     description: "JSON 数组，定义右侧栏的 Widget 列表",
   },
+  "site.home.header": { label: "顶栏配置", icon: "i-lucide-panel-top" },
+  "site.home.header.icon": {
+    label: "Logo 图标",
+    description: "图标名称或图片 URL",
+  },
+  "site.home.header.icon_type": {
+    label: "Logo 类型",
+    description: "icon 表示使用图标名，image 表示使用图片 URL",
+  },
+  "site.home.header.title": {
+    label: "站点名称",
+    description: "顶栏左侧显示的站点标题",
+  },
+  "site.home.header.links": {
+    label: "导航链接",
+    description: 'JSON 数组，格式：[{"name":"链接名","url":"https://...","icon":"i-lucide-xxx"}]',
+  },
+  "site.home.header.show_color_mode": {
+    label: "显示颜色切换",
+    description: "是否在顶栏显示深色/浅色模式切换按钮",
+  },
+  "site.home.header.show_github": {
+    label: "显示 GitHub 链接",
+    description: "是否在顶栏显示 GitHub 图标链接",
+  },
+  "site.home.header.github_url": {
+    label: "GitHub URL",
+    description: "GitHub 图标链接指向的地址",
+  },
   "site.footer.beian": { label: "备案与合规" },
   "site.footer.beian.icp": {
     label: "ICP 备案号",

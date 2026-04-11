@@ -30,6 +30,7 @@ export type ArticleCreateModel = {
     content: string;
     coverUrl?: null | string;
     isPublished?: boolean;
+    slug?: null | string;
 };
 
 export type ArticleResponse = {
@@ -43,13 +44,18 @@ export type ArticleResponse = {
     isPublished?: boolean;
     coverUrl?: null | string;
     commentCount?: number | string;
+    type?: ArticleType;
+    slug?: null | string;
 };
+
+export type ArticleType = number;
 
 export type ArticleUpdateModel = {
     title: string;
     content: string;
     coverUrl?: null | string;
     isPublished?: boolean;
+    slug?: null | string;
 };
 
 export type AsnEncodedData = {
@@ -636,6 +642,22 @@ export type Oid = {
     friendlyName?: null | string;
 };
 
+export type PageCreateModel = {
+    title: string;
+    content: string;
+    coverUrl?: null | string;
+    isPublished?: boolean;
+    slug: string;
+};
+
+export type PageUpdateModel = {
+    title: string;
+    content: string;
+    coverUrl?: null | string;
+    isPublished?: boolean;
+    slug?: null | string;
+};
+
 export type PatchAppRequest = {
     displayName?: null | string;
     redirectUris?: null | Array<string>;
@@ -1055,6 +1077,33 @@ export type PostArticlesResponses = {
 
 export type PostArticlesResponse = PostArticlesResponses[keyof PostArticlesResponses];
 
+export type GetArticlesSlugBySlugData = {
+    body?: never;
+    path: {
+        slug: string;
+    };
+    query?: never;
+    url: '/articles/slug/{slug}';
+};
+
+export type GetArticlesSlugBySlugErrors = {
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+};
+
+export type GetArticlesSlugBySlugError = GetArticlesSlugBySlugErrors[keyof GetArticlesSlugBySlugErrors];
+
+export type GetArticlesSlugBySlugResponses = {
+    /**
+     * OK
+     */
+    200: ArticleResponse;
+};
+
+export type GetArticlesSlugBySlugResponse = GetArticlesSlugBySlugResponses[keyof GetArticlesSlugBySlugResponses];
+
 export type DeleteArticlesByIdData = {
     body?: never;
     path: {
@@ -1426,6 +1475,170 @@ export type GetSharedByShortIdErrors = {
 
 export type GetSharedByShortIdError = GetSharedByShortIdErrors[keyof GetSharedByShortIdErrors];
 
+export type GetPagesData = {
+    body?: never;
+    path?: never;
+    query?: {
+        page?: number | string;
+        pageSize?: number | string;
+    };
+    url: '/pages';
+};
+
+export type GetPagesResponses = {
+    /**
+     * OK
+     */
+    200: Array<ArticleResponse>;
+};
+
+export type GetPagesResponse = GetPagesResponses[keyof GetPagesResponses];
+
+export type PostPagesData = {
+    body: PageCreateModel;
+    path?: never;
+    query?: never;
+    url: '/pages';
+};
+
+export type PostPagesErrors = {
+    /**
+     * Bad Request
+     */
+    400: MessageResponse;
+};
+
+export type PostPagesError = PostPagesErrors[keyof PostPagesErrors];
+
+export type PostPagesResponses = {
+    /**
+     * Created
+     */
+    201: ArticleResponse;
+};
+
+export type PostPagesResponse = PostPagesResponses[keyof PostPagesResponses];
+
+export type GetPagesSlugBySlugData = {
+    body?: never;
+    path: {
+        slug: string;
+    };
+    query?: never;
+    url: '/pages/slug/{slug}';
+};
+
+export type GetPagesSlugBySlugErrors = {
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+};
+
+export type GetPagesSlugBySlugError = GetPagesSlugBySlugErrors[keyof GetPagesSlugBySlugErrors];
+
+export type GetPagesSlugBySlugResponses = {
+    /**
+     * OK
+     */
+    200: ArticleResponse;
+};
+
+export type GetPagesSlugBySlugResponse = GetPagesSlugBySlugResponses[keyof GetPagesSlugBySlugResponses];
+
+export type DeletePagesByIdData = {
+    body?: never;
+    path: {
+        id: number | string;
+    };
+    query?: never;
+    url: '/pages/{id}';
+};
+
+export type DeletePagesByIdErrors = {
+    /**
+     * Forbidden
+     */
+    403: MessageResponse;
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+};
+
+export type DeletePagesByIdError = DeletePagesByIdErrors[keyof DeletePagesByIdErrors];
+
+export type DeletePagesByIdResponses = {
+    /**
+     * OK
+     */
+    200: MessageResponse;
+};
+
+export type DeletePagesByIdResponse = DeletePagesByIdResponses[keyof DeletePagesByIdResponses];
+
+export type GetPagesByIdData = {
+    body?: never;
+    path: {
+        id: number | string;
+    };
+    query?: never;
+    url: '/pages/{id}';
+};
+
+export type GetPagesByIdErrors = {
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+};
+
+export type GetPagesByIdError = GetPagesByIdErrors[keyof GetPagesByIdErrors];
+
+export type GetPagesByIdResponses = {
+    /**
+     * OK
+     */
+    200: ArticleResponse;
+};
+
+export type GetPagesByIdResponse = GetPagesByIdResponses[keyof GetPagesByIdResponses];
+
+export type PutPagesByIdData = {
+    body: PageUpdateModel;
+    path: {
+        id: number | string;
+    };
+    query?: never;
+    url: '/pages/{id}';
+};
+
+export type PutPagesByIdErrors = {
+    /**
+     * Bad Request
+     */
+    400: MessageResponse;
+    /**
+     * Forbidden
+     */
+    403: MessageResponse;
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+};
+
+export type PutPagesByIdError = PutPagesByIdErrors[keyof PutPagesByIdErrors];
+
+export type PutPagesByIdResponses = {
+    /**
+     * OK
+     */
+    200: ArticleResponse;
+};
+
+export type PutPagesByIdResponse = PutPagesByIdResponses[keyof PutPagesByIdResponses];
+
 export type GetSettingsSeoGeneralData = {
     body?: never;
     path?: never;
@@ -1496,6 +1709,20 @@ export type GetSettingsHomeSidebarRightData = {
 };
 
 export type GetSettingsHomeSidebarRightResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type GetSettingsHomeHeaderData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/settings/home/header';
+};
+
+export type GetSettingsHomeHeaderResponses = {
     /**
      * OK
      */

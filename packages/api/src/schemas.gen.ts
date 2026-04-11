@@ -119,6 +119,13 @@ export const ArticleCreateModelSchema = {
         },
         isPublished: {
             type: 'boolean'
+        },
+        slug: {
+            maxLength: 200,
+            type: [
+                'null',
+                'string'
+            ]
         }
     }
 } as const;
@@ -178,8 +185,21 @@ export const ArticleResponseSchema = {
                 'string'
             ],
             format: 'int32'
+        },
+        type: {
+            $ref: '#/components/schemas/ArticleType'
+        },
+        slug: {
+            type: [
+                'null',
+                'string'
+            ]
         }
     }
+} as const;
+
+export const ArticleTypeSchema = {
+    type: 'integer'
 } as const;
 
 export const ArticleUpdateModelSchema = {
@@ -205,6 +225,13 @@ export const ArticleUpdateModelSchema = {
         },
         isPublished: {
             type: 'boolean'
+        },
+        slug: {
+            maxLength: 200,
+            type: [
+                'null',
+                'string'
+            ]
         }
     }
 } as const;
@@ -2508,6 +2535,72 @@ export const OidSchema = {
             ]
         },
         friendlyName: {
+            type: [
+                'null',
+                'string'
+            ]
+        }
+    }
+} as const;
+
+export const PageCreateModelSchema = {
+    required: [
+        'title',
+        'content',
+        'slug'
+    ],
+    type: 'object',
+    properties: {
+        title: {
+            maxLength: 200,
+            type: 'string'
+        },
+        content: {
+            type: 'string'
+        },
+        coverUrl: {
+            maxLength: 500,
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        isPublished: {
+            type: 'boolean'
+        },
+        slug: {
+            maxLength: 200,
+            type: 'string'
+        }
+    }
+} as const;
+
+export const PageUpdateModelSchema = {
+    required: [
+        'title',
+        'content'
+    ],
+    type: 'object',
+    properties: {
+        title: {
+            maxLength: 200,
+            type: 'string'
+        },
+        content: {
+            type: 'string'
+        },
+        coverUrl: {
+            maxLength: 500,
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        isPublished: {
+            type: 'boolean'
+        },
+        slug: {
+            maxLength: 200,
             type: [
                 'null',
                 'string'
