@@ -2,7 +2,7 @@
 import ConfirmDialog from "~/components/ConfirmDialog.vue";
 import {
   deleteAdminStickerSetsById, deleteAdminStickerSetsByIdStickersByStickerId,
-  getStickerSetsById, getStickerSetsStickersByStickerIdImage, postAdminStickerSetsByIdStickers,
+  getStickerSetsById, getStickerSetsByIdImages, getStickerSetsStickersByStickerIdImage, postAdminStickerSetsByIdStickers,
   putAdminStickerSetsById, putAdminStickerSetsByIdStickersByStickerId,
   type StickerSetDetailResponse
 } from "~~/packages/api/src";
@@ -68,18 +68,11 @@ async function fetchDetail() {
 
 async function loadStickerImages() {
   if (!currentSet.value) return;
-  const promises = currentSet.value.stickers.map(async (sticker) => {
-    try {
-      const response = await getStickerSetsStickersByStickerIdImage({
-        path: { stickerId: sticker.id as number }
-      });
-      if (response.error || !response.data) throw new Error("Unable to fetch StickerSets");
-      stickerImageUrls.value[sticker.id as number] = response.data.url!;
-    } catch {
-      stickerImageUrls.value[sticker.id as number] = "";
-    }
+  const response = await getStickerSetsByIdImages({
+    path: { id: stickerSetId }
   });
-  await Promise.all(promises);
+  if (response.error || !response.data) return;
+  stickerImageUrls.value = response.data.map(i => i.url!);
 }
 
 function goBack() {

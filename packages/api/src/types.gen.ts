@@ -1888,6 +1888,33 @@ export type GetStickerSetsByIdResponses = {
 
 export type GetStickerSetsByIdResponse = GetStickerSetsByIdResponses[keyof GetStickerSetsByIdResponses];
 
+export type GetStickerSetsByIdImagesData = {
+    body?: never;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/sticker-sets/{id}/images';
+};
+
+export type GetStickerSetsByIdImagesErrors = {
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+};
+
+export type GetStickerSetsByIdImagesError = GetStickerSetsByIdImagesErrors[keyof GetStickerSetsByIdImagesErrors];
+
+export type GetStickerSetsByIdImagesResponses = {
+    /**
+     * OK
+     */
+    200: Array<StickerImageUrlResponse>;
+};
+
+export type GetStickerSetsByIdImagesResponse = GetStickerSetsByIdImagesResponses[keyof GetStickerSetsByIdImagesResponses];
+
 export type GetStickerSetsStickersByStickerIdImageData = {
     body?: never;
     path: {
