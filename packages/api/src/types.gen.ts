@@ -847,16 +847,12 @@ export type ShortcodeUpdateModel = {
     isEnabled?: null | boolean;
 };
 
-export type StickerImageUrlResponse = {
-    url?: string;
-};
-
 export type StickerResponse = {
-    id: number | string;
-    name: string;
+    id?: number | string;
+    name?: string;
 };
 
-export type StickerSetDetailResponse = {
+export type StickerSetInfoResponse = {
     id: number | string;
     name: string;
     stickers: Array<StickerResponse>;
@@ -875,6 +871,12 @@ export type StickerSetResponse = {
 export type StickerUploadItem = {
     name: string;
     contentType?: null | string;
+};
+
+export type StickerUrlResponse = {
+    id?: number | string;
+    name?: string;
+    url?: string;
 };
 
 export type StorageStatusResponse = {
@@ -1895,37 +1897,40 @@ export type GetStickerSetsByIdResponses = {
     /**
      * OK
      */
-    200: StickerSetDetailResponse;
+    200: StickerSetInfoResponse;
 };
 
 export type GetStickerSetsByIdResponse = GetStickerSetsByIdResponses[keyof GetStickerSetsByIdResponses];
 
-export type GetStickerSetsByIdImagesData = {
+export type GetStickerSetsByIdDetailsData = {
     body?: never;
     path: {
         id: number;
     };
-    query?: never;
-    url: '/sticker-sets/{id}/images';
+    query?: {
+        page?: number | string;
+        pageSize?: number | string;
+    };
+    url: '/sticker-sets/{id}/details';
 };
 
-export type GetStickerSetsByIdImagesErrors = {
+export type GetStickerSetsByIdDetailsErrors = {
     /**
      * Not Found
      */
     404: MessageResponse;
 };
 
-export type GetStickerSetsByIdImagesError = GetStickerSetsByIdImagesErrors[keyof GetStickerSetsByIdImagesErrors];
+export type GetStickerSetsByIdDetailsError = GetStickerSetsByIdDetailsErrors[keyof GetStickerSetsByIdDetailsErrors];
 
-export type GetStickerSetsByIdImagesResponses = {
+export type GetStickerSetsByIdDetailsResponses = {
     /**
      * OK
      */
-    200: Array<StickerImageUrlResponse>;
+    200: Array<StickerUrlResponse>;
 };
 
-export type GetStickerSetsByIdImagesResponse = GetStickerSetsByIdImagesResponses[keyof GetStickerSetsByIdImagesResponses];
+export type GetStickerSetsByIdDetailsResponse = GetStickerSetsByIdDetailsResponses[keyof GetStickerSetsByIdDetailsResponses];
 
 export type GetStickerSetsStickersByStickerIdImageData = {
     body?: never;
@@ -1949,7 +1954,7 @@ export type GetStickerSetsStickersByStickerIdImageResponses = {
     /**
      * OK
      */
-    200: StickerImageUrlResponse;
+    200: StickerUrlResponse;
 };
 
 export type GetStickerSetsStickersByStickerIdImageResponse = GetStickerSetsStickersByStickerIdImageResponses[keyof GetStickerSetsStickersByStickerIdImageResponses];
@@ -3523,7 +3528,7 @@ export type GetAdminStickerSetsByIdResponses = {
     /**
      * OK
      */
-    200: StickerSetDetailResponse;
+    200: StickerSetInfoResponse;
 };
 
 export type GetAdminStickerSetsByIdResponse = GetAdminStickerSetsByIdResponses[keyof GetAdminStickerSetsByIdResponses];

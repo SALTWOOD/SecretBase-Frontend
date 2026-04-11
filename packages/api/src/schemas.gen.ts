@@ -3286,20 +3286,7 @@ export const ShortcodeUpdateModelSchema = {
     }
 } as const;
 
-export const StickerImageUrlResponseSchema = {
-    type: 'object',
-    properties: {
-        url: {
-            type: 'string'
-        }
-    }
-} as const;
-
 export const StickerResponseSchema = {
-    required: [
-        'id',
-        'name'
-    ],
     type: 'object',
     properties: {
         id: {
@@ -3316,7 +3303,7 @@ export const StickerResponseSchema = {
     }
 } as const;
 
-export const StickerSetDetailResponseSchema = {
+export const StickerSetInfoResponseSchema = {
     required: [
         'id',
         'name',
@@ -3404,6 +3391,26 @@ export const StickerUploadItemSchema = {
                 'null',
                 'string'
             ]
+        }
+    }
+} as const;
+
+export const StickerUrlResponseSchema = {
+    type: 'object',
+    properties: {
+        id: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        name: {
+            type: 'string'
+        },
+        url: {
+            type: 'string'
         }
     }
 } as const;

@@ -1,10 +1,16 @@
 <script setup lang="ts">
 import ConfirmDialog from "~/components/ConfirmDialog.vue";
 import {
-  deleteAdminStickerSetsById, deleteAdminStickerSetsByIdStickersByStickerId,
-  getStickerSetsById, getStickerSetsByIdImages, getStickerSetsStickersByStickerIdImage, postAdminStickerSetsByIdStickers,
-  putAdminStickerSetsById, putAdminStickerSetsByIdStickersByStickerId,
-  type StickerSetDetailResponse
+  deleteAdminStickerSetsById,
+  deleteAdminStickerSetsByIdStickersByStickerId,
+  getStickerSetsById,
+  getStickerSetsByIdDetails,
+  getStickerSetsStickersByStickerIdImage,
+  postAdminStickerSetsByIdStickers,
+  putAdminStickerSetsById,
+  putAdminStickerSetsByIdStickersByStickerId,
+  type StickerSetInfoResponse,
+  type StickerUrlResponse,
 } from "~~/packages/api/src";
 
 const route = useRoute();
@@ -21,7 +27,7 @@ const isLoading = ref(false);
 const isSubmitting = ref(false);
 const isDeleting = ref(false);
 
-const currentSet: Ref<StickerSetDetailResponse | null> = ref(null);
+const currentSet: Ref<StickerSetInfoResponse | null> = ref(null);
 
 const isEditModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
@@ -43,6 +49,10 @@ const fileInput = ref<HTMLInputElement | null>(null);
 const isUploading = ref(false);
 const uploadProgress = ref(0);
 
+const imagePage = ref(1);
+const imagePageSize = 18;
+const imageTotalCount = ref(0);
+const pageStickers = ref<StickerUrlResponse[]>([]);
 const stickerImageUrls = ref<Record<number, string>>({});
 
 async function fetchDetail() {
@@ -53,7 +63,6 @@ async function fetchDetail() {
     });
     if (response.error || !response.data) throw new Error("Unable to fetch StickerSet by id");
     currentSet.value = response.data;
-    stickerImageUrls.value = {};
     await loadStickerImages();
   } catch (e: any) {
     toast.add({
@@ -67,12 +76,19 @@ async function fetchDetail() {
 }
 
 async function loadStickerImages() {
-  if (!currentSet.value) return;
-  const response = await getStickerSetsByIdImages({
-    path: { id: stickerSetId }
+  const response = await getStickerSetsByIdDetails({
+    path: { id: stickerSetId },
+    query: { page: imagePage.value, pageSize: imagePageSize }
   });
   if (response.error || !response.data) return;
-  stickerImageUrls.value = response.data.map(i => i.url!);
+  pageStickers.value = response.data;
+  stickerImageUrls.value = Object.fromEntries(
+    response.data.filter(i => i.id != null && i.url).map(i => [Number(i.id!), i.url!])
+  );
+  imageTotalCount.value = parseInt(
+    response.response.headers?.get?.("x-total-count") ?? "0",
+    10
+  );
 }
 
 function goBack() {
@@ -188,6 +204,7 @@ async function handleUpload() {
 
     isUploadModalOpen.value = false;
     uploadFiles.value = [];
+    imagePage.value = 1;
     await fetchDetail();
   } catch (e: any) {
     toast.remove(toastId);
@@ -220,6 +237,9 @@ async function handleDeleteSticker() {
     })
     toast.add({ title: "贴纸已删除", color: "success" });
     isDeleteStickerModalOpen.value = false;
+    const remaining = imageTotalCount.value - 1;
+    const maxPage = Math.max(1, Math.ceil(remaining / imagePageSize));
+    if (imagePage.value > maxPage) imagePage.value = maxPage;
     await fetchDetail();
   } catch (e: any) {
     toast.add({
@@ -337,6 +357,10 @@ async function handleDelete() {
   }
 }
 
+watch(imagePage, () => {
+  loadStickerImages();
+});
+
 onMounted(() => {
   fetchDetail();
 });
@@ -358,7 +382,7 @@ onMounted(() => {
               {{ currentSet?.name ?? "加载中..." }}
             </h2>
             <UBadge color="neutral" variant="subtle">
-              {{ currentSet?.stickers?.length ?? 0 }} 个贴纸
+              {{ imageTotalCount ?? currentSet?.stickers?.length ?? 0 }} 个贴纸
             </UBadge>
           </div>
           <div class="flex gap-2">
@@ -395,7 +419,7 @@ onMounted(() => {
       </div>
 
       <div
-        v-else-if="currentSet?.stickers?.length === 0"
+        v-else-if="pageStickers.length === 0"
         class="text-center py-16"
       >
         <UIcon name="i-lucide-image-off" class="text-4xl text-muted mb-3" />
@@ -407,7 +431,7 @@ onMounted(() => {
         class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"
       >
         <div
-          v-for="sticker in currentSet?.stickers"
+          v-for="sticker in pageStickers"
           :key="sticker.id"
           class="group relative border border-default rounded-lg p-3 hover:border-primary transition-colors"
         >
@@ -415,9 +439,9 @@ onMounted(() => {
             class="aspect-square bg-elevated rounded flex items-center justify-center mb-2 overflow-hidden"
           >
             <img
-              v-if="stickerImageUrls[sticker.id as number]"
-              :src="stickerImageUrls[sticker.id as number]"
-              :alt="sticker.name"
+              v-if="sticker.url"
+              :src="sticker.url"
+              :alt="sticker.id?.toString()"
               class="w-full h-full object-contain"
               loading="lazy"
             />
@@ -425,9 +449,9 @@ onMounted(() => {
           </div>
           <p
             class="text-xs text-center text-muted truncate"
-            :title="sticker.name"
+            :title="sticker.id?.toString()"
           >
-            {{ sticker.name }}
+            {{ sticker.name }} <code class="mono">#{{ sticker.id }}</code>
           </p>
           <div class="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
               <UButton
@@ -435,18 +459,28 @@ onMounted(() => {
                 variant="ghost"
                 color="neutral"
                 size="xs"
-                @click="openEditStickerModal(sticker)"
+                @click="openEditStickerModal({ id: sticker.id!, name: sticker.name })"
               />
               <UButton
                 icon="i-lucide-trash-2"
                 variant="ghost"
                 color="error"
                 size="xs"
-                @click="deletingStickerId = sticker.id as number; isDeleteStickerModalOpen = true"
+                @click="deletingStickerId = Number(sticker.id); isDeleteStickerModalOpen = true"
               />
             </div>
         </div>
       </div>
+
+      <template #footer>
+        <div v-if="imageTotalCount > imagePageSize" class="flex justify-center">
+          <UPagination
+            v-model:page="imagePage"
+            :total="imageTotalCount"
+            :items-per-page="imagePageSize"
+          />
+        </div>
+      </template>
     </UCard>
 
     <!-- Edit Modal -->

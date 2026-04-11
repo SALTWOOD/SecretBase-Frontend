@@ -156,7 +156,7 @@ export const getStickerSetsResponseTransformer = async (data: any): Promise<GetS
     return data;
 };
 
-const stickerSetDetailResponseSchemaResponseTransformer = (data: any) => {
+const stickerSetInfoResponseSchemaResponseTransformer = (data: any) => {
     if (data.createdAt) {
         data.createdAt = new Date(data.createdAt);
     }
@@ -167,7 +167,7 @@ const stickerSetDetailResponseSchemaResponseTransformer = (data: any) => {
 };
 
 export const getStickerSetsByIdResponseTransformer = async (data: any): Promise<GetStickerSetsByIdResponse> => {
-    data = stickerSetDetailResponseSchemaResponseTransformer(data);
+    data = stickerSetInfoResponseSchemaResponseTransformer(data);
     return data;
 };
 
@@ -352,7 +352,7 @@ export const postAdminStickerSetsResponseTransformer = async (data: any): Promis
 };
 
 export const getAdminStickerSetsByIdResponseTransformer = async (data: any): Promise<GetAdminStickerSetsByIdResponse> => {
-    data = stickerSetDetailResponseSchemaResponseTransformer(data);
+    data = stickerSetInfoResponseSchemaResponseTransformer(data);
     return data;
 };
 
