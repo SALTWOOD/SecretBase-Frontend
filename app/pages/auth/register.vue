@@ -69,6 +69,7 @@
               class="cap-wrapper w-full overflow-hidden rounded-lg border border-default bg-muted/20"
             >
               <cap-widget
+                :key="capKey"
                 :data-cap-api-endpoint="api"
                 @solve="handleCapSolve"
                 @reset="handleCapReset"
@@ -115,6 +116,7 @@ const form = reactive({
 
 const loading = ref(false);
 const capToken = ref("");
+const capKey = ref(0);
 const api = "/api/cap/";
 const toast = useToast();
 
@@ -161,6 +163,8 @@ const handleRegister = async () => {
     }
   } finally {
     loading.value = false;
+    capKey.value++;
+    capToken.value = "";
   }
 };
 </script>

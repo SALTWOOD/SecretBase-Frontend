@@ -37,6 +37,7 @@
               class="cap-wrapper w-full overflow-hidden rounded-lg border border-default bg-muted/20"
             >
               <cap-widget
+                :key="capKey"
                 :data-cap-api-endpoint="api"
                 @solve="handleCapSolve"
                 @reset="handleCapReset"
@@ -152,6 +153,8 @@ const handleLogin = async () => {
     }
   } finally {
     loading.value = false;
+    capKey.value++;
+    capToken.value = "";
   }
 };
 
