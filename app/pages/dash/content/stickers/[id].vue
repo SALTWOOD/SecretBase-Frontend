@@ -190,6 +190,7 @@ async function handleUpload() {
       title: "上传成功",
       description: `已添加 ${uploadedStickers.length} 个贴纸`,
       color: "success",
+      duration: 0,
     });
 
     isUploadModalOpen.value = false;
@@ -201,6 +202,7 @@ async function handleUpload() {
       title: "上传失败",
       description: e.message,
       color: "error",
+      duration: 0,
     });
   } finally {
     isUploading.value = false;
