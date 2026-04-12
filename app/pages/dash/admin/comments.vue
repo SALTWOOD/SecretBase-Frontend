@@ -48,7 +48,7 @@
               {{ getDisplayName(row.original) }}
             </span>
             <UBadge
-              v-if="!row.original.authorId"
+              v-if="isGuest(row.original)"
               variant="subtle"
               color="neutral"
               size="sm"
@@ -188,8 +188,11 @@ const columns = [
 ]
 
 const getDisplayName = (comment: AdminCommentResponse) => {
-  if (comment.authorId) return comment.authorUsername || "用户"
-  return comment.guestNickname || "匿名用户"
+  return comment.author?.username || "匿名用户"
+}
+
+const isGuest = (comment: AdminCommentResponse) => {
+  return !comment.author || comment.author.isGuest
 }
 
 const formatTime = (date: string | Date | undefined) => {

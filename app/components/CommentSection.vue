@@ -273,7 +273,7 @@ onMounted(loadComments);
         <div class="flex items-center justify-between mb-3">
           <div>
             <span class="text-sm font-medium text-primary-600 dark:text-primary-400">
-              回复 @{{ replyTo.authorUsername || replyTo.guestNickname || "匿名用户" }}
+              回复 @{{ replyTo.author?.username || "匿名用户" }}
             </span>
             <p class="text-xs text-gray-500 mt-1 line-clamp-1">
               {{ replyTo.content }}

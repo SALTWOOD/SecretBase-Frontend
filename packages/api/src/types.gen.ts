@@ -10,16 +10,12 @@ export type AdminCommentResponse = {
     id?: number | string;
     content?: string;
     articleId?: number | string;
-    authorId?: null | number | string;
-    authorUsername?: null | string;
+    author?: UserDto;
     parentCommentId?: null | number | string;
     createdAt?: Date;
     updatedAt?: Date;
     isDeleted?: boolean;
     reviewStatus?: ReviewStatus;
-    guestNickname?: null | string;
-    guestEmail?: null | string;
-    guestWebsite?: null | string;
     ipAddress?: null | string;
 };
 
@@ -37,8 +33,7 @@ export type ArticleResponse = {
     id?: number | string;
     title?: string;
     content?: string;
-    authorId?: number | string;
-    authorUsername?: null | string;
+    author?: UserDto;
     createdAt?: Date;
     updatedAt?: Date;
     isPublished?: boolean;
@@ -258,15 +253,12 @@ export type CommentResponse = {
     id?: number | string;
     content?: string;
     articleId?: number | string;
-    authorId?: null | number | string;
-    authorUsername?: null | string;
+    author?: UserDto;
     parentCommentId?: null | number | string;
     createdAt?: Date;
     updatedAt?: Date;
     isDeleted?: boolean;
     replyCount?: number | string;
-    guestNickname?: null | string;
-    guestWebsite?: null | string;
 };
 
 export type CommentUpdateModel = {
@@ -750,7 +742,7 @@ export type ReadOnlyMemoryOfbyte = string;
 export type RecentActivityItem = {
     type: string;
     title: string;
-    actor?: null | string;
+    author?: null | string;
     time?: Date;
 };
 
@@ -819,8 +811,7 @@ export type ShortcodeDetail = {
     isEnabled?: boolean;
     createdAt?: Date;
     updatedAt?: Date;
-    createdByUserId?: number | string;
-    createdByUsername?: string;
+    createdBy?: UserDto;
 };
 
 export type ShortcodeError = {
@@ -946,6 +937,7 @@ export type UpdateProfileModel = {
     newPassword?: null | string;
     username?: null | string;
     oldPassword?: null | string;
+    website?: null | string;
 };
 
 export type UpdateSettingBody = {
@@ -997,6 +989,7 @@ export type User = {
     isBanned?: boolean;
     registerTime?: Date;
     avatar?: string;
+    website?: null | string;
     usedInviteId?: null | number | string;
 };
 
@@ -1008,6 +1001,16 @@ export type UserCredential = {
     signatureCounter?: number | string;
     nickname?: string;
     userId?: number | string;
+};
+
+export type UserDto = {
+    id?: null | number | string;
+    username?: string;
+    role?: number | string;
+    avatar?: string;
+    website?: null | string;
+    email?: null | string;
+    isGuest?: boolean;
 };
 
 export type UserRole = number;

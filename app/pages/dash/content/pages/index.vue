@@ -100,9 +100,9 @@ onMounted(refresh);
 
           <div class="flex items-center justify-between mt-3">
             <div class="flex items-center gap-4 text-xs text-muted">
-              <span v-if="pageItem.authorUsername" class="flex items-center gap-1">
+              <span v-if="pageItem.author?.username" class="flex items-center gap-1">
                 <UIcon name="i-lucide-user" class="size-3" />
-                {{ pageItem.authorUsername }}
+                {{ pageItem.author.username }}
               </span>
               <span v-if="pageItem.updatedAt" class="flex items-center gap-1">
                 <UIcon name="i-lucide-calendar" class="size-3" />

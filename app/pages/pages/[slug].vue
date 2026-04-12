@@ -81,9 +81,9 @@ const formatDate = (date: any) => {
               <div
                 class="flex items-center gap-6 text-sm text-gray-500 dark:text-gray-400"
               >
-                <div v-if="page.authorUsername" class="flex items-center gap-2">
-                  <UAvatar :alt="page.authorUsername" size="xs" />
-                  <span class="font-medium">{{ page.authorUsername }}</span>
+                <div v-if="page.author?.username" class="flex items-center gap-2">
+                  <UAvatar :src="page.author.avatar || undefined" :alt="page.author.username" size="xs" />
+                  <span class="font-medium">{{ page.author.username }}</span>
                 </div>
                 <div v-if="page.updatedAt" class="flex items-center gap-1">
                   <UIcon name="i-lucide-calendar" />

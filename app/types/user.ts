@@ -6,4 +6,5 @@ export interface User {
   isBanned: boolean;
   registerTime: string | Date;
   avatar?: string;
+  website?: string | null;
 }

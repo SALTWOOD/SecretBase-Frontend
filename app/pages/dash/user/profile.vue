@@ -33,6 +33,15 @@
           <UFormField label="电子邮箱">
             <UInput v-model="form.email" disabled variant="subtle" />
           </UFormField>
+          <UFormField label="个人网站">
+            <UInput
+              v-model="form.website"
+              :disabled="loading"
+              placeholder="https://example.com"
+              variant="subtle"
+              icon="i-lucide-globe"
+            />
+          </UFormField>
         </div>
 
         <div class="flex justify-end">
@@ -59,6 +68,7 @@ const form = reactive({
   username: "",
   email: "",
   avatar: "",
+  website: "",
 });
 
 const updateProfile = async () => {
@@ -67,6 +77,7 @@ const updateProfile = async () => {
   const response = await postUserProfile({
     body: {
       username: user.value?.username,
+      website: form.website || null,
     },
   });
   loading.value = false;
@@ -84,6 +95,7 @@ onMounted(async () => {
   form.username = user.value?.username || "";
   form.email = user.value?.email || "";
   form.avatar = user.value?.avatar || "";
+  form.website = user.value?.website || "";
   loading.value = false;
 });
 </script>

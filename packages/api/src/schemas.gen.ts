@@ -26,20 +26,8 @@ export const AdminCommentResponseSchema = {
             ],
             format: 'int32'
         },
-        authorId: {
-            pattern: '^-?(?:0|[1-9]\\d*)$',
-            type: [
-                'null',
-                'integer',
-                'string'
-            ],
-            format: 'int32'
-        },
-        authorUsername: {
-            type: [
-                'null',
-                'string'
-            ]
+        author: {
+            $ref: '#/components/schemas/UserDto'
         },
         parentCommentId: {
             pattern: '^-?(?:0|[1-9]\\d*)$',
@@ -63,24 +51,6 @@ export const AdminCommentResponseSchema = {
         },
         reviewStatus: {
             $ref: '#/components/schemas/ReviewStatus'
-        },
-        guestNickname: {
-            type: [
-                'null',
-                'string'
-            ]
-        },
-        guestEmail: {
-            type: [
-                'null',
-                'string'
-            ]
-        },
-        guestWebsite: {
-            type: [
-                'null',
-                'string'
-            ]
         },
         ipAddress: {
             type: [
@@ -147,19 +117,8 @@ export const ArticleResponseSchema = {
         content: {
             type: 'string'
         },
-        authorId: {
-            pattern: '^-?(?:0|[1-9]\\d*)$',
-            type: [
-                'integer',
-                'string'
-            ],
-            format: 'int32'
-        },
-        authorUsername: {
-            type: [
-                'null',
-                'string'
-            ]
+        author: {
+            $ref: '#/components/schemas/UserDto'
         },
         createdAt: {
             type: 'string',
@@ -1069,20 +1028,8 @@ export const CommentResponseSchema = {
             ],
             format: 'int32'
         },
-        authorId: {
-            pattern: '^-?(?:0|[1-9]\\d*)$',
-            type: [
-                'null',
-                'integer',
-                'string'
-            ],
-            format: 'int32'
-        },
-        authorUsername: {
-            type: [
-                'null',
-                'string'
-            ]
+        author: {
+            $ref: '#/components/schemas/UserDto'
         },
         parentCommentId: {
             pattern: '^-?(?:0|[1-9]\\d*)$',
@@ -1111,18 +1058,6 @@ export const CommentResponseSchema = {
                 'string'
             ],
             format: 'int32'
-        },
-        guestNickname: {
-            type: [
-                'null',
-                'string'
-            ]
-        },
-        guestWebsite: {
-            type: [
-                'null',
-                'string'
-            ]
         }
     }
 } as const;
@@ -2951,7 +2886,7 @@ export const RecentActivityItemSchema = {
         title: {
             type: 'string'
         },
-        actor: {
+        author: {
             type: [
                 'null',
                 'string'
@@ -3198,16 +3133,8 @@ export const ShortcodeDetailSchema = {
             type: 'string',
             format: 'date-time'
         },
-        createdByUserId: {
-            pattern: '^-?(?:0|[1-9]\\d*)$',
-            type: [
-                'integer',
-                'string'
-            ],
-            format: 'int32'
-        },
-        createdByUsername: {
-            type: 'string'
+        createdBy: {
+            $ref: '#/components/schemas/UserDto'
         }
     }
 } as const;
@@ -3669,6 +3596,12 @@ export const UpdateProfileModelSchema = {
                 'null',
                 'string'
             ]
+        },
+        website: {
+            type: [
+                'null',
+                'string'
+            ]
         }
     }
 } as const;
@@ -3850,6 +3783,12 @@ export const UserSchema = {
         avatar: {
             type: 'string'
         },
+        website: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
         usedInviteId: {
             pattern: '^-?(?:0|[1-9]\\d*)$',
             type: [
@@ -3903,6 +3842,50 @@ export const UserCredentialSchema = {
                 'string'
             ],
             format: 'int32'
+        }
+    }
+} as const;
+
+export const UserDtoSchema = {
+    type: 'object',
+    properties: {
+        id: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'null',
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        username: {
+            type: 'string'
+        },
+        role: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        avatar: {
+            type: 'string'
+        },
+        website: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        email: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        isGuest: {
+            type: 'boolean'
         }
     }
 } as const;

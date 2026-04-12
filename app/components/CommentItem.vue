@@ -34,13 +34,19 @@ const sticker = ref<{
 } | null>(null);
 
 const displayName = computed(() => {
-  if (props.comment.authorId) return props.comment.authorUsername || "用户"
-  return props.comment.guestNickname || "匿名用户"
+  const author = props.comment.author
+  if (author && !author.isGuest) return author.username || "用户"
+  return author?.username || "匿名用户"
+})
+
+const isGuest = computed(() => {
+  const author = props.comment.author
+  return !author || author.isGuest
 })
 
 const isOwner = computed(() => {
-  if (!userStore.user || !props.comment.authorId) return false;
-  return String(userStore.user.id) === String(props.comment.authorId);
+  if (!userStore.user || isGuest.value) return false;
+  return String(userStore.user.id) === String(props.comment.author?.id);
 });
 
 // 格式化时间
@@ -211,7 +217,7 @@ onMounted(async () => {
   <div class="comment-item">
     <div class="flex gap-4 py-4 group">
         <UAvatar
-          :src="undefined"
+          :src="comment.author?.avatar || undefined"
           :alt="displayName"
           size="md"
           class="flex-shrink-0"
@@ -224,7 +230,7 @@ onMounted(async () => {
               {{ displayName }}
             </span>
             <UBadge
-              v-if="!comment.authorId"
+              v-if="isGuest"
               variant="subtle"
               color="neutral"
               size="sm"
