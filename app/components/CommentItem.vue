@@ -144,10 +144,6 @@ const handleSaveEdit = async () => {
   }
 };
 
-const insertEditEmoji = (setId: number | string, stickerId: number | string) => {
-  editContent.value += `[emoji:${setId}:${stickerId}]`;
-};
-
 // 加载回复
 const loadReplies = async () => {
   if (showReplies.value) {
@@ -255,7 +251,7 @@ onMounted(async () => {
           <div class="flex items-center justify-between">
             <EmojiSelect
               icon="i-lucide-smile"
-              @select="(e: { setId: number | string; stickerId: number | string }) => insertEditEmoji(e.setId, e.stickerId)"
+              v-model="editContent"
             />
             <div class="flex items-center gap-2">
               <UButton variant="ghost" size="sm" @click="cancelEdit" :disabled="isSaving">

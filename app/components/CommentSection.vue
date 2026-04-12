@@ -161,15 +161,6 @@ const cancelReply = () => {
   replyContent.value = "";
 };
 
-const insertEmoji = (setId: number | string, stickerId: number | string, target: 'comment' | 'reply') => {
-  const text = `[emoji:${setId}:${stickerId}]`;
-  if (target === 'comment') {
-    newComment.value += text;
-  } else {
-    replyContent.value += text;
-  }
-};
-
 onMounted(loadComments);
 </script>
 
@@ -206,7 +197,7 @@ onMounted(loadComments);
         <div class="flex items-center justify-between">
           <EmojiSelect
             icon="i-lucide-smile"
-            @select="(e: { setId: number | string; stickerId: number | string }) => insertEmoji(e.setId, e.stickerId, 'comment')"
+            v-model="newComment"
           />
           <UButton
             :loading="isSubmitting"
@@ -258,7 +249,7 @@ onMounted(loadComments);
           <div class="flex items-center gap-2">
             <EmojiSelect
               icon="i-lucide-smile"
-              @select="(e: { setId: number | string; stickerId: number | string }) => insertEmoji(e.setId, e.stickerId, 'comment')"
+              v-model="newComment"
             />
             <UButton to="/auth/login" variant="ghost" size="sm">
               登录后评论
@@ -323,7 +314,7 @@ onMounted(loadComments);
         <div class="flex items-center justify-between">
           <EmojiSelect
             icon="i-lucide-smile"
-            @select="(e: { setId: number | string; stickerId: number | string }) => insertEmoji(e.setId, e.stickerId, 'reply')"
+            v-model="replyContent"
           />
           <UButton
             :loading="isSubmitting"

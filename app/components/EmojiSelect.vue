@@ -8,12 +8,14 @@ import {
 
 const props = withDefaults(defineProps<{
   icon?: string;
+  modelValue?: string;
 }>(), {
   icon: 'i-heroicons-face-smile',
 });
 
 const emit = defineEmits<{
   (e: 'select', payload: { setId: number | string; stickerId: number | string }): void;
+  (e: 'update:modelValue', value: string): void;
 }>();
 
 const stickerSets = ref<StickerSetInfoResponse[]>([]);
@@ -86,6 +88,7 @@ const isOpen = ref(false);
 const handleSelect = (emoji: StickerUrlResponse) => {
   if (activeTabId.value == null) return;
   emit('select', { setId: activeTabId.value, stickerId: emoji.id! });
+  emit('update:modelValue', `[emoji:${activeTabId.value}:${emoji.id!}]`);
   isOpen.value = false;
 };
 
