@@ -46,7 +46,7 @@ async function fetchStickers(setId: number, isLoadMore = false) {
 
     if (error || !data) return;
 
-    const newStickers = data.map(s => ({ id: s.id!, url: s.url!, loading: false }));
+    const newStickers = data.map(s => ({ id: s.id!, name: s.name || '', url: s.url!, loading: false }));
 
     if (isLoadMore) {
       stickerMap.value[setId] = [...(stickerMap.value[setId] || []), ...newStickers];
@@ -119,6 +119,7 @@ onMounted(async () => {
           <div
             v-for="emoji in currentEmojis"
             :key="emoji.id"
+            :title="emoji.name"
             class="aspect-square flex items-center justify-center rounded hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-colors"
             @click="handleSelect(emoji)"
           >
@@ -140,6 +141,7 @@ onMounted(async () => {
               v-for="set in stickerSets"
               variant="ghost"
               :key="set.id"
+              :title="set.name"
               class="p-1.5 rounded transition-all shrink-0 flex items-center justify-center"
               :class="activeTabId === set.id ? 'bg-blue-500/10 ring-1 ring-blue-500' : 'hover:bg-gray-200 dark:hover:bg-gray-700'"
               @click="handleTabChange(set.id as number)"
