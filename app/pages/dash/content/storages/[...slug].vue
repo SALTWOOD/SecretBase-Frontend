@@ -208,9 +208,9 @@ const handleUploadClick = () => {
 
 const onFileChange = (e: Event) => {
   const target = e.target as HTMLInputElement;
-  const file = target.files?.[0];
-  if (file) {
-    handleUpload(file);
+  const files = target.files;
+  if (files && files.length > 0) {
+    handleUpload(Array.from(files));
     target.value = "";
   }
 };
@@ -241,42 +241,46 @@ const uploadWithProgress = (
   });
 };
 
-const handleUpload = async (file: File) => {
-  if (!file || !bucketName.value) return;
-  const fileKey = `${currentPath.value}${file.name}`;
-  const toastId = `upload-${Date.now()}`;
-  toast.add({
-    id: toastId,
-    title: `准备上传文件`,
-    description: "正在获取上传授权...",
-    color: "info",
-    duration: 0,
-  });
-  try {
-    const { data } = await postAdminStorageBucketByBucketNamePresignUpload({
-      path: { bucketName: bucketName.value },
-      body: { key: fileKey },
-    });
-    if (!data?.url) throw new Error("无法获取上传授权地址");
-    toast.update(toastId, { title: `正在上传文件`, color: "info" });
-    await uploadWithProgress(data.url, file, (percent) => {
-      toast.update(toastId, { description: `已完成 ${percent}%` });
-    });
-    toast.remove(toastId);
-    toast.add({
-      title: "上传成功",
-      description: `文件 ${file.name} 已上传`,
-      color: "success",
-    });
-    await fetchItems(false);
-  } catch (error: any) {
-    toast.add({
-      id: toastId,
-      title: "上传失败",
-      description: error.message,
-      color: "error",
-    });
-  }
+const handleUpload = async (files: File[]) => {
+  if (!files.length || !bucketName.value) return;
+  await Promise.all(
+    files.map(async (file) => {
+      const fileKey = `${currentPath.value}${file.name}`;
+      const toastId = `upload-${file.name}-${Math.random().toString(36).slice(2, 9)}`;
+      toast.add({
+        id: toastId,
+        title: `准备上传: ${file.name}`,
+        description: "正在获取上传授权...",
+        color: "info",
+        duration: 0,
+      });
+      try {
+        const { data } = await postAdminStorageBucketByBucketNamePresignUpload({
+          path: { bucketName: bucketName.value },
+          body: { key: fileKey },
+        });
+        if (!data?.url) throw new Error("无法获取上传授权地址");
+        toast.update(toastId, { title: `正在上传: ${file.name}`, color: "info" });
+        await uploadWithProgress(data.url, file, (percent) => {
+          toast.update(toastId, { description: `已完成 ${percent}%` });
+        });
+        toast.remove(toastId);
+        toast.add({
+          title: "上传成功",
+          description: `文件 ${file.name} 已上传`,
+          color: "success",
+        });
+      } catch (error: any) {
+        toast.add({
+          id: toastId,
+          title: "上传失败",
+          description: `${file.name}: ${error.message}`,
+          color: "error",
+        });
+      }
+    }),
+  );
+  await fetchItems(false);
 };
 
 const openDeleteConfirm = (item: FileObject) => {
@@ -472,6 +476,7 @@ onMounted(() => {
           <input
             ref="fileInput"
             type="file"
+            multiple
             class="hidden"
             @change="onFileChange"
           />
@@ -551,7 +556,7 @@ onMounted(() => {
       </template>
 
       <template #actions-cell="{ row }">
-        <UDropdownMenu :items="dropdownMenu(row.original)">
+        <UDropdownMenu :data="dropdownMenu(row.original)">
           <UButton
             color="secondary"
             variant="ghost"
@@ -575,7 +580,7 @@ onMounted(() => {
         <div
           class="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition-opacity z-10"
         >
-          <UDropdownMenu :items="dropdownMenu(item)">
+          <UDropdownMenu :data="dropdownMenu(item)">
             <UButton
               color="secondary"
               variant="ghost"
