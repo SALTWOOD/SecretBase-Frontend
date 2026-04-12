@@ -161,6 +161,15 @@ const cancelReply = () => {
   replyContent.value = "";
 };
 
+const insertEmoji = (setId: number | string, stickerId: number | string, target: 'comment' | 'reply') => {
+  const text = `[emoji:${setId}:${stickerId}]`;
+  if (target === 'comment') {
+    newComment.value += text;
+  } else {
+    replyContent.value += text;
+  }
+};
+
 onMounted(loadComments);
 </script>
 
@@ -194,7 +203,11 @@ onMounted(loadComments);
             />
           </div>
         </client-only>
-        <div class="flex justify-end">
+        <div class="flex items-center justify-between">
+          <EmojiSelect
+            icon="i-lucide-smile"
+            @select="(e: { setId: number | string; stickerId: number | string }) => insertEmoji(e.setId, e.stickerId, 'comment')"
+          />
           <UButton
             :loading="isSubmitting"
             :disabled="!canSubmitComment"
@@ -242,9 +255,15 @@ onMounted(loadComments);
           </div>
         </client-only>
         <div class="flex items-center justify-between">
-          <UButton to="/auth/login" variant="ghost" size="sm">
-            登录后评论
-          </UButton>
+          <div class="flex items-center gap-2">
+            <EmojiSelect
+              icon="i-lucide-smile"
+              @select="(e: { setId: number | string; stickerId: number | string }) => insertEmoji(e.setId, e.stickerId, 'comment')"
+            />
+            <UButton to="/auth/login" variant="ghost" size="sm">
+              登录后评论
+            </UButton>
+          </div>
           <UButton
             :loading="isSubmitting"
             :disabled="!canSubmitComment"
@@ -301,7 +320,11 @@ onMounted(loadComments);
           class="mb-3"
         />
 
-        <div class="flex justify-end">
+        <div class="flex items-center justify-between">
+          <EmojiSelect
+            icon="i-lucide-smile"
+            @select="(e: { setId: number | string; stickerId: number | string }) => insertEmoji(e.setId, e.stickerId, 'reply')"
+          />
           <UButton
             :loading="isSubmitting"
             :disabled="!canSubmitReply"
