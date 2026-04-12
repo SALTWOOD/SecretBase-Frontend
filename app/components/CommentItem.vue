@@ -3,6 +3,7 @@ import type { CommentResponse, UrlResponse } from "~~/packages/api/src/types.gen
 import {
   deleteCommentsById,
   getCommentsByCommentIdReplies, getStickerSetsStickersByStickerIdImage,
+  putCommentsById,
 } from "~~/packages/api/src/sdk.gen";
 
 const props = defineProps<{
@@ -20,6 +21,9 @@ const userStore = useUserStore();
 const toast = useToast();
 
 const isDeleting = ref(false);
+const isEditing = ref(false);
+const isSaving = ref(false);
+const editContent = ref("");
 const showReplies = ref(false);
 const replies = ref<CommentResponse[]>([]);
 const isLoadingReplies = ref(false);
@@ -97,6 +101,53 @@ const handleDelete = async () => {
   }
 };
 
+const startEdit = () => {
+  editContent.value = props.comment.content || "";
+  isEditing.value = true;
+};
+
+const cancelEdit = () => {
+  isEditing.value = false;
+  editContent.value = "";
+};
+
+const handleSaveEdit = async () => {
+  if (!editContent.value.trim()) return;
+  isSaving.value = true;
+  try {
+    const response = await putCommentsById({
+      path: { id: String(props.comment.id!) },
+      body: { content: editContent.value.trim() },
+    });
+    if (!response.error && response.data) {
+      props.comment.content = response.data.content;
+      sticker.value = null;
+      const match = response.data.content?.match(regex);
+      if (match) {
+        const imgRes = await getStickerSetsStickersByStickerIdImage({
+          path: { stickerId: Number(match[2]) },
+        });
+        if (!imgRes.error && imgRes.data) {
+          sticker.value = { name: "test", src: imgRes.data.url! };
+        }
+      }
+      isEditing.value = false;
+      toast.add({ title: "评论已更新", color: "success" });
+    } else {
+      toast.add({ title: "修改失败", description: "您只能修改自己的评论", color: "error" });
+    }
+  } catch (error) {
+    console.error("Failed to update comment:", error);
+    toast.add({ title: "修改失败", color: "error" });
+  } finally {
+    isSaving.value = false;
+  }
+};
+
+const insertEditEmoji = (setId: number | string, stickerId: number | string) => {
+  editContent.value += `[emoji:${setId}:${stickerId}]`;
+};
+
 // 加载回复
 const loadReplies = async () => {
   if (showReplies.value) {
@@ -125,15 +176,20 @@ const menuItems = computed(() => {
   const items = [];
   if (isOwner.value) {
     items.push({
+      label: "编辑",
+      icon: "i-lucide-pencil",
+      onSelect: startEdit,
+    });
+    items.push({
       label: "删除",
       icon: "i-lucide-trash-2",
-      click: handleDelete,
+      onSelect: handleDelete,
     });
   }
   items.push({
     label: "举报",
     icon: "i-lucide-flag",
-    click: () => {
+    onSelect: () => {
       toast.add({ title: "举报功能暂未开放", color: "info" });
     },
   });
@@ -194,14 +250,32 @@ onMounted(async () => {
           </UDropdownMenu>
         </div>
 
+        <div v-if="isEditing" class="mb-3 space-y-3">
+          <UTextarea v-model="editContent" :rows="3" />
+          <div class="flex items-center justify-between">
+            <EmojiSelect
+              icon="i-lucide-smile"
+              @select="(e: { setId: number | string; stickerId: number | string }) => insertEditEmoji(e.setId, e.stickerId)"
+            />
+            <div class="flex items-center gap-2">
+              <UButton variant="ghost" size="sm" @click="cancelEdit" :disabled="isSaving">
+                取消
+              </UButton>
+              <UButton size="sm" :loading="isSaving" :disabled="!editContent.trim()" @click="handleSaveEdit">
+                保存
+              </UButton>
+            </div>
+          </div>
+        </div>
+
         <div
           class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed mb-3"
-          v-if="!sticker"
+          v-else-if="!sticker"
         >
           {{ comment.content }}
         </div>
 
-        <img :src="sticker?.src" :alt="sticker?.name" v-else/>
+        <img :src="sticker?.src" :alt="sticker?.name" v-else-if="!isEditing" />
 
         <div class="flex items-center gap-4">
           <UButton
