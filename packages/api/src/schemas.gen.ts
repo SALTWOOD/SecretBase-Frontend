@@ -1402,6 +1402,42 @@ export const CredentialUpdateModelSchema = {
     }
 } as const;
 
+export const DashboardStatsResponseSchema = {
+    type: 'object',
+    properties: {
+        totalUsers: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        totalArticles: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        totalComments: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        recentActivities: {
+            type: 'array',
+            items: {
+                $ref: '#/components/schemas/RecentActivityItem'
+            }
+        }
+    }
+} as const;
+
 export const Fido2UserSchema = {
     type: 'object',
     properties: {
@@ -2900,6 +2936,32 @@ export const QueryStringSchema = {
 
 export const ReadOnlyMemoryOfbyteSchema = {
     type: 'string'
+} as const;
+
+export const RecentActivityItemSchema = {
+    required: [
+        'type',
+        'title'
+    ],
+    type: 'object',
+    properties: {
+        type: {
+            type: 'string'
+        },
+        title: {
+            type: 'string'
+        },
+        actor: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        time: {
+            type: 'string',
+            format: 'date-time'
+        }
+    }
 } as const;
 
 export const ResidentKeyRequirementSchema = {} as const;

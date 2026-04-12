@@ -335,6 +335,13 @@ export type CredentialUpdateModel = {
     nickname?: null | string;
 };
 
+export type DashboardStatsResponse = {
+    totalUsers?: number | string;
+    totalArticles?: number | string;
+    totalComments?: number | string;
+    recentActivities?: Array<RecentActivityItem>;
+};
+
 export type Fido2User = {
     name?: null | string;
     id?: unknown;
@@ -739,6 +746,13 @@ export type QueryString = {
 };
 
 export type ReadOnlyMemoryOfbyte = string;
+
+export type RecentActivityItem = {
+    type: string;
+    title: string;
+    actor?: null | string;
+    time?: Date;
+};
 
 export type ResidentKeyRequirement = unknown;
 
@@ -1460,6 +1474,22 @@ export type PutCommentsByIdResponses = {
 };
 
 export type PutCommentsByIdResponse = PutCommentsByIdResponses[keyof PutCommentsByIdResponses];
+
+export type GetDashboardStatsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/dashboard/stats';
+};
+
+export type GetDashboardStatsResponses = {
+    /**
+     * OK
+     */
+    200: DashboardStatsResponse;
+};
+
+export type GetDashboardStatsResponse = GetDashboardStatsResponses[keyof GetDashboardStatsResponses];
 
 export type GetSharedByShortIdData = {
     body?: never;
