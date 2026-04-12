@@ -3009,7 +3009,7 @@ export type GetAdminInvitationsData = {
     path?: never;
     query?: {
         page?: number | string;
-        size?: number | string;
+        pageSize?: number | string;
     };
     url: '/admin/invitations';
 };
@@ -3122,7 +3122,7 @@ export type GetAdminInvitationsByIdUsersData = {
     };
     query?: {
         page?: number | string;
-        size?: number | string;
+        pageSize?: number | string;
     };
     url: '/admin/invitations/{id}/users';
 };
@@ -4059,7 +4059,7 @@ export type GetAdminUsersData = {
     path?: never;
     query?: {
         page?: number | string;
-        size?: number | string;
+        pageSize?: number | string;
     };
     url: '/admin/users';
 };

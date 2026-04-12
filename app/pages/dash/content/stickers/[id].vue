@@ -459,7 +459,7 @@ onMounted(() => {
                 variant="ghost"
                 color="neutral"
                 size="xs"
-                @click="openEditStickerModal({ id: sticker.id!, name: sticker.name })"
+                @click="openEditStickerModal({ id: sticker.id!, name: sticker.name! })"
               />
               <UButton
                 icon="i-lucide-trash-2"

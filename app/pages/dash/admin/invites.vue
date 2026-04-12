@@ -175,7 +175,7 @@ const refresh = async () => {
   const response = await getAdminInvitations({
     query: {
       page: page.value,
-      size: pageSize,
+      pageSize,
     },
   });
   if (!response.error && response.data) {
@@ -218,7 +218,7 @@ const handleCountClick = async (invite: Invite) => {
       path: { id: invite.id as number },
       query: {
         page: page.value,
-        size: pageSize,
+        pageSize,
       },
     });
     if (!response.error && response.data) {

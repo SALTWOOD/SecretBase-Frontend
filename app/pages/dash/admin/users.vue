@@ -214,7 +214,7 @@ const refresh = async () => {
     const response = await getAdminUsers({
       query: {
         page: page.value,
-        size: pageSize,
+        pageSize,
       },
     });
     if (!response.error) {
