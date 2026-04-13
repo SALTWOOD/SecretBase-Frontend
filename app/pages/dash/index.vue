@@ -61,7 +61,7 @@
           </div>
           <div class="flex-1 min-w-0">
             <p class="text-sm text-foreground">
-              <span class="font-medium">{{ item.actor || '匿名' }}</span>
+              <span class="font-medium">{{ item.author || '匿名' }}</span>
               {{ item.type === 'article_published' ? '发布了文章' : '发表了评论' }}
             </p>
             <p class="text-sm text-muted-foreground truncate">{{ item.title }}</p>
