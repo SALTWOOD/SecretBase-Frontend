@@ -138,7 +138,7 @@ const allNavigationItems = computed<NavigationItem[]>(() => [
     defaultOpen: true,
     children: [
       {
-        label: "全部文章",
+        label: "文章",
         icon: "i-lucide-files",
         to: "/dash/content/articles",
       },
