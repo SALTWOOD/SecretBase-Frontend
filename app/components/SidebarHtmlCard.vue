@@ -14,7 +14,10 @@ defineProps<{
         {{ widget.title }}
       </div>
     </template>
-    <div class="text-sm text-muted leading-relaxed prose prose-sm dark:prose-invert max-w-none" v-html="widget.content" />
+    <div
+      class="text-sm text-muted leading-relaxed prose prose-sm dark:prose-invert max-w-none"
+      v-html="widget.content"
+    />
   </UCard>
 </template>
 

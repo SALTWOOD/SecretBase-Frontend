@@ -39,15 +39,24 @@
           <span class="font-bold text-foreground">最近动态</span>
         </div>
       </template>
-      <div v-if="pending" class="text-muted-foreground text-sm py-12 text-center flex flex-col items-center gap-2">
+      <div
+        v-if="pending"
+        class="text-muted-foreground text-sm py-12 text-center flex flex-col items-center gap-2"
+      >
         <UIcon name="i-lucide-refresh-cw" class="animate-spin w-5 h-5" />
         正在加载数据...
       </div>
-      <div v-else-if="error" class="text-muted-foreground text-sm py-12 text-center flex flex-col items-center gap-2">
+      <div
+        v-else-if="error"
+        class="text-muted-foreground text-sm py-12 text-center flex flex-col items-center gap-2"
+      >
         <UIcon name="i-lucide-alert-circle" class="w-5 h-5 text-red-500" />
         加载失败，请稍后重试
       </div>
-      <div v-else-if="activities.length === 0" class="text-muted-foreground text-sm py-12 text-center">
+      <div
+        v-else-if="activities.length === 0"
+        class="text-muted-foreground text-sm py-12 text-center"
+      >
         暂无动态
       </div>
       <div v-else class="divide-y divide-border">
@@ -56,17 +65,30 @@
           :key="index"
           class="flex items-start gap-3 py-3 first:pt-0 last:pb-0"
         >
-          <div class="mt-1 p-1.5 rounded-lg" :class="activityIcon(item.type).bg">
-            <UIcon :name="activityIcon(item.type).icon" class="w-4 h-4" :class="activityIcon(item.type).text" />
+          <div
+            class="mt-1 p-1.5 rounded-lg"
+            :class="activityIcon(item.type).bg"
+          >
+            <UIcon
+              :name="activityIcon(item.type).icon"
+              class="w-4 h-4"
+              :class="activityIcon(item.type).text"
+            />
           </div>
           <div class="flex-1 min-w-0">
             <p class="text-sm text-foreground">
-              <span class="font-medium">{{ item.author || '匿名' }}</span>
-              {{ item.type === 'article_published' ? '发布了文章' : '发表了评论' }}
+              <span class="font-medium">{{ item.author || "匿名" }}</span>
+              {{
+                item.type === "article_published" ? "发布了文章" : "发表了评论"
+              }}
             </p>
-            <p class="text-sm text-muted-foreground truncate">{{ item.title }}</p>
+            <p class="text-sm text-muted-foreground truncate">
+              {{ item.title }}
+            </p>
           </div>
-          <span class="text-xs text-muted-foreground whitespace-nowrap mt-1">{{ formatTime(item.time) }}</span>
+          <span class="text-xs text-muted-foreground whitespace-nowrap mt-1">{{
+            formatTime(item.time)
+          }}</span>
         </div>
       </div>
     </UCard>
@@ -110,9 +132,17 @@ const activities = computed(() => statsData.value?.recentActivities ?? []);
 
 function activityIcon(type: string) {
   if (type === "article_published") {
-    return { icon: "i-lucide-file-text", bg: "bg-emerald-500/10", text: "text-emerald-500" };
+    return {
+      icon: "i-lucide-file-text",
+      bg: "bg-emerald-500/10",
+      text: "text-emerald-500",
+    };
   }
-  return { icon: "i-lucide-message-circle", bg: "bg-amber-500/10", text: "text-amber-500" };
+  return {
+    icon: "i-lucide-message-circle",
+    bg: "bg-amber-500/10",
+    text: "text-amber-500",
+  };
 }
 
 function formatTime(time?: Date | string) {
@@ -140,5 +170,5 @@ onMounted(async () => {
   } finally {
     pending.value = false;
   }
-})
+});
 </script>

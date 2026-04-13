@@ -5,11 +5,7 @@ import {
   putAdminSettingsByKey,
   type SettingListItem,
 } from "~~/packages/api/src";
-import {
-  parseDate,
-  parseDateTime,
-  parseTime,
-} from "@internationalized/date";
+import { parseDate, parseDateTime, parseTime } from "@internationalized/date";
 import { Codemirror } from "vue-codemirror";
 import { javascript } from "@codemirror/lang-javascript";
 import { oneDark } from "@codemirror/theme-one-dark";
@@ -123,7 +119,8 @@ const i18nMap: Record<
   },
   "site.home.header.links": {
     label: "导航链接",
-    description: 'JSON 数组，格式：[{"name":"链接名","url":"https://...","icon":"i-lucide-xxx"}]',
+    description:
+      'JSON 数组，格式：[{"name":"链接名","url":"https://...","icon":"i-lucide-xxx"}]',
   },
   "site.home.header.show_color_mode": {
     label: "显示颜色切换",
@@ -159,12 +156,13 @@ const i18nMap: Record<
   },
   "site.comment.guest.require_approval": {
     label: "访客评论需要审核",
-    description: "控制访客发送的评论是否需要经过审核。如设置为是，则访客的评论需要被审核才会展出；如设置为否，则访客发送的评论会立刻可见"
+    description:
+      "控制访客发送的评论是否需要经过审核。如设置为是，则访客的评论需要被审核才会展出；如设置为否，则访客发送的评论会立刻可见",
   },
   "site.comment.guest.allow_reply": {
     label: "允许访客回复",
-    description: "允许访客回复其他人的评论"
-  }
+    description: "允许访客回复其他人的评论",
+  },
 };
 
 const isListType = (type: string) => type.startsWith("list[");
@@ -196,12 +194,18 @@ const toEditableValue = (value: any, type: string) => {
     return typeof value === "string" ? value : JSON.stringify(value, null, 2);
   }
   if (type === "datetime") {
-    const str = typeof value === "string" ? value : new Date(value as string | number | Date).toISOString();
+    const str =
+      typeof value === "string"
+        ? value
+        : new Date(value as string | number | Date).toISOString();
     const sliced = str.length > 19 ? str.slice(0, 19) : str;
     return parseDateTime(sliced);
   }
   if (type === "date") {
-    const str = typeof value === "string" ? value : new Date(value as string | number | Date).toISOString().slice(0, 10);
+    const str =
+      typeof value === "string"
+        ? value
+        : new Date(value as string | number | Date).toISOString().slice(0, 10);
     return parseDate(str);
   }
   if (type === "time") {
@@ -214,7 +218,11 @@ const toApiValue = (value: any, type: string) => {
   if (value == null) return null;
   if (type === "json") {
     if (typeof value === "string") {
-      try { return JSON.parse(value); } catch { return value; }
+      try {
+        return JSON.parse(value);
+      } catch {
+        return value;
+      }
     }
     return value;
   }
@@ -275,14 +283,19 @@ const codeMirrorExtensions = [javascript(), oneDark];
 const openJsonEditor = (key: string) => {
   jsonEditorKey.value = key;
   const val = editableSettings.value[key];
-  jsonEditorCode.value = typeof val === "string" ? val : JSON.stringify(val, null, 2);
+  jsonEditorCode.value =
+    typeof val === "string" ? val : JSON.stringify(val, null, 2);
   jsonEditorOpen.value = true;
 };
 
 const saveJsonEditor = () => {
   try {
     const parsed = JSON.parse(jsonEditorCode.value);
-    editableSettings.value[jsonEditorKey.value] = JSON.stringify(parsed, null, 2);
+    editableSettings.value[jsonEditorKey.value] = JSON.stringify(
+      parsed,
+      null,
+      2,
+    );
     jsonEditorOpen.value = false;
   } catch {
     // invalid JSON, keep editor open
@@ -508,9 +521,9 @@ onMounted(() => fetchData());
                   <template v-else-if="isListType(setting.type)">
                     <div class="flex flex-col gap-2">
                       <div
-                        v-for="(_, index) in (
-                          editableSettings[setting.key] as any[]
-                        )"
+                        v-for="(_, index) in editableSettings[
+                          setting.key
+                        ] as any[]"
                         :key="index"
                         class="flex gap-2"
                       >
@@ -582,10 +595,9 @@ onMounted(() => fetchData());
                           class="w-32"
                           @update:model-value="
                             (newKey: string) => {
-                              const dict = editableSettings[setting.key] as Record<
-                                string,
-                                any
-                              >;
+                              const dict = editableSettings[
+                                setting.key
+                              ] as Record<string, any>;
                               const oldKey = dKey as string;
                               if (newKey === oldKey) return;
                               const entries = Object.entries(dict);
@@ -604,10 +616,12 @@ onMounted(() => fetchData());
                         <UInput
                           v-if="isNumericType(getDictValueType(setting.type))"
                           :model-value.number="
-                            (editableSettings[setting.key] as Record<
-                              string,
-                              any
-                            >)[dKey]
+                            (
+                              editableSettings[setting.key] as Record<
+                                string,
+                                any
+                              >
+                            )[dKey]
                           "
                           type="number"
                           :step="
@@ -619,28 +633,34 @@ onMounted(() => fetchData());
                           align="right"
                           @update:model-value="
                             (v: any) => {
-                              (editableSettings[setting.key] as Record<
-                                string,
-                                any
-                              >)[dKey] = v;
+                              (
+                                editableSettings[setting.key] as Record<
+                                  string,
+                                  any
+                                >
+                              )[dKey] = v;
                             }
                           "
                         />
                         <UInput
                           v-else
                           :model-value="
-                            (editableSettings[setting.key] as Record<
-                              string,
-                              any
-                            >)[dKey]
+                            (
+                              editableSettings[setting.key] as Record<
+                                string,
+                                any
+                              >
+                            )[dKey]
                           "
                           class="grow"
                           @update:model-value="
                             (v: any) => {
-                              (editableSettings[setting.key] as Record<
-                                string,
-                                any
-                              >)[dKey] = v;
+                              (
+                                editableSettings[setting.key] as Record<
+                                  string,
+                                  any
+                                >
+                              )[dKey] = v;
                             }
                           "
                         />
@@ -650,10 +670,12 @@ onMounted(() => fetchData());
                           variant="ghost"
                           size="xs"
                           @click="
-                            delete (editableSettings[setting.key] as Record<
-                              string,
-                              any
-                            >)[dKey]
+                            delete (
+                              editableSettings[setting.key] as Record<
+                                string,
+                                any
+                              >
+                            )[dKey]
                           "
                         />
                       </div>
@@ -729,8 +751,15 @@ onMounted(() => fetchData());
       <UCard :ui="{ body: 'p-0 overflow-hidden' }">
         <template #header>
           <div class="flex items-center justify-between">
-            <h3 class="font-semibold text-sm">编辑 JSON — {{ jsonEditorKey }}</h3>
-            <UButton icon="i-lucide-x" variant="ghost" size="sm" @click="jsonEditorOpen = false" />
+            <h3 class="font-semibold text-sm">
+              编辑 JSON — {{ jsonEditorKey }}
+            </h3>
+            <UButton
+              icon="i-lucide-x"
+              variant="ghost"
+              size="sm"
+              @click="jsonEditorOpen = false"
+            />
           </div>
         </template>
         <div class="h-[60vh]">
@@ -748,7 +777,9 @@ onMounted(() => fetchData());
         </div>
         <template #footer>
           <div class="flex justify-end gap-2">
-            <UButton variant="ghost" @click="jsonEditorOpen = false">取消</UButton>
+            <UButton variant="ghost" @click="jsonEditorOpen = false"
+              >取消</UButton
+            >
             <UButton color="primary" @click="saveJsonEditor">保存</UButton>
           </div>
         </template>

@@ -17,7 +17,12 @@ defineProps<{
       <h3 class="font-bold text-lg text-highlighted">{{ siteTitle }}</h3>
       <p class="text-xs text-muted mt-1 italic">Maintainer of SecretBase</p>
       <div class="flex gap-4 mt-6">
-        <UButton icon="i-simple-icons-github" color="neutral" variant="ghost" to="https://github.com/SALTWOOD" />
+        <UButton
+          icon="i-simple-icons-github"
+          color="neutral"
+          variant="ghost"
+          to="https://github.com/SALTWOOD"
+        />
         <UButton icon="i-lucide-rss" color="neutral" variant="ghost" />
       </div>
     </div>

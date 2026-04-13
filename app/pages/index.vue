@@ -8,7 +8,11 @@ import {
   getSettingsHomeSidebarRight,
   getSettingsSeoGeneral,
 } from "@secret-base/api/src/sdk.gen";
-import type { SidebarWidget, SidebarLinksWidget, SidebarHtmlWidget } from "~/types/sidebar";
+import type {
+  SidebarWidget,
+  SidebarLinksWidget,
+  SidebarHtmlWidget,
+} from "~/types/sidebar";
 
 definePageMeta({
   layout: "background",
@@ -19,7 +23,7 @@ const router = useRouter();
 
 const page = computed({
   get: () => Number(route.query.page) || 1,
-  set: (val) => router.push({ query: { ...route.query, page: val } })
+  set: (val) => router.push({ query: { ...route.query, page: val } }),
 });
 const pageSize = 10;
 
@@ -32,20 +36,24 @@ const [
 ] = await Promise.all([
   useAsyncData("site-seo", async () => (await getSettingsSeoGeneral()).data),
   useAsyncData("home-banner", async () => (await getSettingsHomeBanner()).data),
-  useAsyncData("articles-list", async () => {
-    const headers = useRequestHeaders(['cookie']) as Record<string, string>;
-    const res = await getArticles({
-      query: { page: page.value, pageSize },
-      headers
-    });
-    const total = Number(res.response.headers.get("x-total-count") ?? 0);
-    return {
-      items: res.data || [],
-      total
-    };
-  }, {
-    watch: [page]
-  }),
+  useAsyncData(
+    "articles-list",
+    async () => {
+      const headers = useRequestHeaders(["cookie"]) as Record<string, string>;
+      const res = await getArticles({
+        query: { page: page.value, pageSize },
+        headers,
+      });
+      const total = Number(res.response.headers.get("x-total-count") ?? 0);
+      return {
+        items: res.data || [],
+        total,
+      };
+    },
+    {
+      watch: [page],
+    },
+  ),
   useAsyncData("footer", async () => (await getSettingsFooter()).data),
 ]);
 
@@ -69,7 +77,9 @@ const isLoading = computed(
   () => seoPending.value || bannerPending.value || articlesPending.value,
 );
 
-const bannerDisplayMode = computed(() => bannerSettings.value?.displayMode || "full");
+const bannerDisplayMode = computed(
+  () => bannerSettings.value?.displayMode || "full",
+);
 const bannerContent = computed(() => bannerSettings.value?.content || "");
 const showBanner = computed(() => bannerDisplayMode.value !== "hidden");
 const isFullScreenMode = computed(() => bannerDisplayMode.value === "screen");
@@ -80,7 +90,7 @@ const masonryColumns = "columns-1 lg:columns-2";
 const uptimeDisplay = ref("0天0时0分0秒");
 
 const computeUptime = (createdAt: Date) => {
-  console.log(typeof createdAt)
+  console.log(typeof createdAt);
   const diff = Date.now() - createdAt.getTime();
   if (diff < 0) return "0天0时0分0秒";
   const totalSeconds = Math.floor(diff / 1000);
@@ -129,26 +139,41 @@ const formatDate = (dateStr: string | Date) => {
 const truncateContent = (content: string, length: number = 100) => {
   if (!content) return "";
   const cleanText = content.replace(/[#*`\->]/g, "");
-  return cleanText.length > length ? cleanText.slice(0, length) + "..." : cleanText;
+  return cleanText.length > length
+    ? cleanText.slice(0, length) + "..."
+    : cleanText;
 };
 
 // SEO Metadata
 useSeoMeta({
   title: () => seoGeneral.value?.title || "Secret Base",
-  description: () => seoGeneral.value?.description || "A mysterious space for tech.",
+  description: () =>
+    seoGeneral.value?.description || "A mysterious space for tech.",
 });
 </script>
 
 <template>
   <main class="min-h-screen">
     <div v-if="showBanner && isFullScreenMode" class="banner-full">
-      <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight text-highlighted mb-6">
+      <h1
+        class="text-5xl md:text-7xl font-extrabold tracking-tight text-highlighted mb-6"
+      >
         {{ seoGeneral?.title || "探索技术与创新" }}
       </h1>
       <p class="text-muted max-w-2xl text-xl mb-8">
-        {{ bannerContent || seoGeneral?.description || "分享最新的技术见解、开发经验和创新思维" }}
+        {{
+          bannerContent ||
+          seoGeneral?.description ||
+          "分享最新的技术见解、开发经验和创新思维"
+        }}
       </p>
-      <UButton to="#content-root" size="xl" icon="i-lucide-chevron-down" variant="soft" class="rounded-full">
+      <UButton
+        to="#content-root"
+        size="xl"
+        icon="i-lucide-chevron-down"
+        variant="soft"
+        class="rounded-full"
+      >
         浏览文章
       </UButton>
     </div>
@@ -162,8 +187,14 @@ useSeoMeta({
               avatar-url="https://github.com/SALTWOOD.png"
             />
             <template v-for="widget in leftSidebarWidgets" :key="widget.id">
-              <SidebarLinksCard v-if="widget.type === 'links'" :widget="widget as SidebarLinksWidget" />
-              <SidebarHtmlCard v-else-if="widget.type === 'html'" :widget="widget as SidebarHtmlWidget" />
+              <SidebarLinksCard
+                v-if="widget.type === 'links'"
+                :widget="widget as SidebarLinksWidget"
+              />
+              <SidebarHtmlCard
+                v-else-if="widget.type === 'html'"
+                :widget="widget as SidebarHtmlWidget"
+              />
             </template>
           </aside>
 
@@ -172,7 +203,12 @@ useSeoMeta({
               v-if="showBanner && !isFullScreenMode"
               :class="['mb-12', isMiniMode ? 'text-center' : 'text-left']"
             >
-              <h1 :class="['font-extrabold text-highlighted mb-4', isMiniMode ? 'text-3xl' : 'text-4xl md:text-5xl']">
+              <h1
+                :class="[
+                  'font-extrabold text-highlighted mb-4',
+                  isMiniMode ? 'text-3xl' : 'text-4xl md:text-5xl',
+                ]"
+              >
                 {{ seoGeneral?.title || "探索技术与创新" }}
               </h1>
               <p class="text-muted max-w-2xl text-lg">
@@ -181,11 +217,18 @@ useSeoMeta({
             </header>
 
             <div v-if="isLoading" :class="[masonryColumns, 'gap-6 space-y-6']">
-              <USkeleton v-for="i in 4" :key="i" class="h-80 w-full rounded-2xl" />
+              <USkeleton
+                v-for="i in 4"
+                :key="i"
+                class="h-80 w-full rounded-2xl"
+              />
             </div>
 
             <template v-else>
-              <div v-if="articles.length" :class="[masonryColumns, 'gap-6 space-y-6']">
+              <div
+                v-if="articles.length"
+                :class="[masonryColumns, 'gap-6 space-y-6']"
+              >
                 <article
                   v-for="article in articles"
                   :key="article.id"
@@ -208,17 +251,29 @@ useSeoMeta({
 
                   <div class="p-6">
                     <div class="flex items-center justify-between mb-3">
-                      <UBadge :color="article.isPublished ? 'primary' : 'neutral'" variant="subtle" size="sm">
+                      <UBadge
+                        :color="article.isPublished ? 'primary' : 'neutral'"
+                        variant="subtle"
+                        size="sm"
+                      >
                         {{ article.isPublished ? "Published" : "Draft" }}
                       </UBadge>
-                      <time class="text-[10px] uppercase tracking-wider text-muted font-mono">
+                      <time
+                        class="text-[10px] uppercase tracking-wider text-muted font-mono"
+                      >
                         {{ formatDate(article.createdAt) }}
                       </time>
                     </div>
-                    <h2 class="text-lg font-bold text-highlighted mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-                      <NuxtLink :to="`/articles/${article.id}`">{{ article.title }}</NuxtLink>
+                    <h2
+                      class="text-lg font-bold text-highlighted mb-2 line-clamp-2 group-hover:text-primary transition-colors"
+                    >
+                      <NuxtLink :to="`/articles/${article.id}`">{{
+                        article.title
+                      }}</NuxtLink>
                     </h2>
-                    <p class="text-sm text-muted line-clamp-2 mb-4 leading-relaxed">
+                    <p
+                      class="text-sm text-muted line-clamp-2 mb-4 leading-relaxed"
+                    >
                       {{ truncateContent(article.content || "") }}
                     </p>
                     <div class="flex items-center justify-end">
@@ -228,7 +283,8 @@ useSeoMeta({
                         color="neutral"
                         size="xs"
                         :to="`/articles/${article.id}`"
-                      >阅读全文</UButton>
+                        >阅读全文</UButton
+                      >
                     </div>
                   </div>
                 </article>
@@ -244,9 +300,17 @@ useSeoMeta({
                 />
               </div>
 
-              <div v-else class="flex flex-col items-center justify-center py-24 text-center">
-                <UIcon name="i-lucide-ghost" class="size-16 text-muted mb-4 opacity-20" />
-                <p class="text-muted text-lg font-medium">这里的代码库空空如也喵...</p>
+              <div
+                v-else
+                class="flex flex-col items-center justify-center py-24 text-center"
+              >
+                <UIcon
+                  name="i-lucide-ghost"
+                  class="size-16 text-muted mb-4 opacity-20"
+                />
+                <p class="text-muted text-lg font-medium">
+                  这里的代码库空空如也喵...
+                </p>
               </div>
             </template>
           </div>
@@ -255,7 +319,9 @@ useSeoMeta({
             <div class="sticky top-24 space-y-6">
               <UCard class="side-card">
                 <template #header>
-                  <div class="flex items-center gap-2 font-bold text-highlighted">
+                  <div
+                    class="flex items-center gap-2 font-bold text-highlighted"
+                  >
                     <UIcon name="i-lucide-chart-bar" class="text-primary" />
                     运行统计
                   </div>
@@ -273,7 +339,10 @@ useSeoMeta({
               </UCard>
 
               <template v-for="widget in rightSidebarWidgets" :key="widget.id">
-                <SidebarHtmlCard v-if="widget.type === 'html'" :widget="widget as SidebarHtmlWidget" />
+                <SidebarHtmlCard
+                  v-if="widget.type === 'html'"
+                  :widget="widget as SidebarHtmlWidget"
+                />
               </template>
             </div>
           </aside>
@@ -291,12 +360,20 @@ useSeoMeta({
       }"
     >
       <div v-if="footer?.beian" class="flex flex-col items-center gap-2">
-        <a v-if="footer?.beian?.icp" v-text="footer.beian.icp" href="https://beian.miit.gov.cn/" target="_blank" />
+        <a
+          v-if="footer?.beian?.icp"
+          v-text="footer.beian.icp"
+          href="https://beian.miit.gov.cn/"
+          target="_blank"
+        />
         <div v-if="footer?.beian?.police">
           <a v-text="footer.beian.police" :href="policeLink" target="_blank" />
         </div>
       </div>
-      <a href="https://github.com/SALTWOOD/SecretBase-Frontend" class="flex items-center gap-2">
+      <a
+        href="https://github.com/SALTWOOD/SecretBase-Frontend"
+        class="flex items-center gap-2"
+      >
         <UIcon name="i-simple-icons-github" />
         SALTWOOD/SecretBase-Frontend
       </a>
@@ -310,7 +387,11 @@ useSeoMeta({
 .banner-full {
   @apply h-[100vh] flex flex-col items-center justify-center text-center px-4;
   @apply border-b dark:border-white/5;
-  background: radial-gradient(circle at center, rgba(var(--ui-primary), 0.05) 0%, transparent 70%);
+  background: radial-gradient(
+    circle at center,
+    rgba(var(--ui-primary), 0.05) 0%,
+    transparent 70%
+  );
 }
 
 .side-card {

@@ -241,7 +241,9 @@ onMounted(() => {
               <ConfirmButton
                 icon="i-lucide-trash"
                 title="确认删除此简码？"
-                @confirm="(confirmed: boolean) => confirmed && handleDelete(item.id!)"
+                @confirm="
+                  (confirmed: boolean) => confirmed && handleDelete(item.id!)
+                "
               />
             </div>
           </div>

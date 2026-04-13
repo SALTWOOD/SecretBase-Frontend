@@ -5,7 +5,7 @@ import {
   getStickerSets,
   postAdminStickerSets,
   putAdminStickerSetsById,
-  type StickerSetResponse
+  type StickerSetResponse,
 } from "~~/packages/api/src";
 
 const toast = useToast();
@@ -68,7 +68,8 @@ async function fetchStickerSets() {
   isLoading.value = true;
   try {
     const response = await getStickerSets();
-    if (response.error || !response.data) throw new Error("Unable to fetch StickerSet");
+    if (response.error || !response.data)
+      throw new Error("Unable to fetch StickerSet");
     stickerSets.value = response.data;
     totalCount.value = parseInt(
       (response as any).$response?.headers?.get?.("x-total-count") ??
@@ -128,8 +129,8 @@ async function handleCreate() {
   try {
     await postAdminStickerSets({
       body: {
-        name: formData.value.name.trim()
-      }
+        name: formData.value.name.trim(),
+      },
     });
     toast.add({ title: "创建成功", color: "success" });
     isCreateModalOpen.value = false;
@@ -156,9 +157,9 @@ async function handleEdit() {
     await putAdminStickerSetsById({
       path: { id: editingSet.value.id as number },
       body: {
-        name: formData.value.name.trim()
-      }
-    })
+        name: formData.value.name.trim(),
+      },
+    });
     toast.add({ title: "更新成功", color: "success" });
     isEditModalOpen.value = false;
     await fetchStickerSets();
@@ -178,7 +179,7 @@ async function handleDelete() {
   isDeleting.value = true;
   try {
     await deleteAdminStickerSetsById({
-      path: { id: deletingSet.value.id as number }
+      path: { id: deletingSet.value.id as number },
     });
     toast.add({ title: "删除成功", color: "success" });
     isDeleteModalOpen.value = false;

@@ -25,9 +25,7 @@ const { data: headerSettings } = await useAsyncData(
   },
 );
 
-const settings = computed(
-  () => headerSettings.value ?? ({} as HeaderSettings),
-);
+const settings = computed(() => headerSettings.value ?? ({} as HeaderSettings));
 </script>
 
 <template>
@@ -45,9 +43,7 @@ const settings = computed(
           :name="settings.icon || 'i-lucide-zap'"
           class="text-primary size-6"
         />
-        <span
-          class="text-lg font-bold tracking-tight text-highlighted"
-        >
+        <span class="text-lg font-bold tracking-tight text-highlighted">
           {{ settings.title || "Secret Base" }}
         </span>
       </NuxtLink>

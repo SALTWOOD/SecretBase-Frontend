@@ -239,10 +239,10 @@ const handleFormSubmit = async (data: Record<string, any>) => {
     const apiCall =
       isEditMode.value && currentEditId.value
         ? await putAdminInvitationsById({
-          path: {id: currentEditId.value},
-          body: data as UpdateInviteFormData,
-        })
-        : await postAdminInvitations({body: data as CreateInviteFormData});
+            path: { id: currentEditId.value },
+            body: data as UpdateInviteFormData,
+          })
+        : await postAdminInvitations({ body: data as CreateInviteFormData });
 
     const response = await apiCall;
 

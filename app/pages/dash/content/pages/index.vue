@@ -4,8 +4,6 @@ import type { ArticleResponse } from "~~/packages/api/src/types.gen";
 
 import { getArticleCover } from "~/utils/article-cover";
 
-
-
 const pages: Ref<ArticleResponse[]> = ref([]);
 const page = ref(1);
 const pageSize = 20;
@@ -14,7 +12,11 @@ const searchQuery = ref("");
 
 const refresh = async () => {
   const response = await getPages({
-    query: { page: page.value, pageSize, ...(searchQuery.value ? { search: searchQuery.value } : {}) },
+    query: {
+      page: page.value,
+      pageSize,
+      ...(searchQuery.value ? { search: searchQuery.value } : {}),
+    },
   });
   if (!response.error && response.data) {
     pages.value = response.data;
@@ -69,7 +71,8 @@ onMounted(refresh);
           to="/dash/content/pages/create"
           icon="i-heroicons-plus"
           color="primary"
-        >创建新页面</UButton>
+          >创建新页面</UButton
+        >
       </div>
     </div>
 
@@ -85,22 +88,22 @@ onMounted(refresh);
               <h2 class="text-lg font-semibold text-highlighted truncate">
                 {{ pageItem.title }}
               </h2>
-              <p class="text-sm text-muted mt-1">
-                /{{ pageItem.slug }}
-              </p>
+              <p class="text-sm text-muted mt-1">/{{ pageItem.slug }}</p>
             </div>
             <UBadge
               :color="pageItem.isPublished ? 'success' : 'neutral'"
               variant="subtle"
               size="sm"
-            >{{
-              pageItem.isPublished ? "已发布" : "草稿"
- }}</UBadge>
+              >{{ pageItem.isPublished ? "已发布" : "草稿" }}</UBadge
+            >
           </div>
 
           <div class="flex items-center justify-between mt-3">
             <div class="flex items-center gap-4 text-xs text-muted">
-              <span v-if="pageItem.author?.username" class="flex items-center gap-1">
+              <span
+                v-if="pageItem.author?.username"
+                class="flex items-center gap-1"
+              >
                 <UIcon name="i-lucide-user" class="size-3" />
                 {{ pageItem.author.username }}
               </span>
@@ -115,17 +118,24 @@ onMounted(refresh);
                 v-if="pageItem.slug && pageItem.isPublished"
                 :to="`/pages/${pageItem.slug}`"
                 variant="ghost"
- size="sm" icon="i-lucide-eye"
- color="neutral"
- target="_blank"
- />
+                size="sm"
+                icon="i-lucide-eye"
+                color="neutral"
+                target="_blank"
+              />
               <UButton
                 :to="`/dash/content/pages/${pageItem.id}`"
-                variant="ghost" size="sm" icon="i-lucide-pencil" />
+                variant="ghost"
+                size="sm"
+                icon="i-lucide-pencil"
+              />
               <UButton
                 color="error"
- variant="ghost" size="sm" icon="i-lucide-trash"
- @click="pageItem.id && deletePage(pageItem.id)" />
+                variant="ghost"
+                size="sm"
+                icon="i-lucide-trash"
+                @click="pageItem.id && deletePage(pageItem.id)"
+              />
             </div>
           </div>
         </div>
@@ -134,18 +144,27 @@ onMounted(refresh);
 
     <div
       v-else
- class="flex flex-col items-center justify-center py-20 text-center"
- >
-      <UIcon name="i-lucide-file-x" class="size-16 text-muted mb-4 opacity-30" />
+      class="flex flex-col items-center justify-center py-20 text-center"
+    >
+      <UIcon
+        name="i-lucide-file-x"
+        class="size-16 text-muted mb-4 opacity-30"
+      />
       <p class="text-muted mb-4">暂无页面</p>
       <UButton
         to="/dash/content/pages/create"
- icon="i-heroicons-plus" color="primary">创建第一个页面</UButton>
+        icon="i-heroicons-plus"
+        color="primary"
+        >创建第一个页面</UButton
+      >
     </div>
 
     <div v-if="totalCount > 0" class="flex justify-center mt-6">
       <UPagination
-        v-model:page="page" :total="totalCount" :items-per-page="pageSize" />
+        v-model:page="page"
+        :total="totalCount"
+        :items-per-page="pageSize"
+      />
     </div>
   </UContainer>
 </template>

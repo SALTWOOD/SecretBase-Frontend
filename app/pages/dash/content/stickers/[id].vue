@@ -59,9 +59,10 @@ async function fetchDetail() {
   isLoading.value = true;
   try {
     const response = await getStickerSetsById({
-      path: { id: stickerSetId }
+      path: { id: stickerSetId },
     });
-    if (response.error || !response.data) throw new Error("Unable to fetch StickerSet by id");
+    if (response.error || !response.data)
+      throw new Error("Unable to fetch StickerSet by id");
     currentSet.value = response.data;
     await loadStickerImages();
   } catch (e: any) {
@@ -78,16 +79,18 @@ async function fetchDetail() {
 async function loadStickerImages() {
   const response = await getStickerSetsByIdDetails({
     path: { id: stickerSetId },
-    query: { page: imagePage.value, pageSize: imagePageSize }
+    query: { page: imagePage.value, pageSize: imagePageSize },
   });
   if (response.error || !response.data) return;
   pageStickers.value = response.data;
   stickerImageUrls.value = Object.fromEntries(
-    response.data.filter(i => i.id != null && i.url).map(i => [Number(i.id!), i.url!])
+    response.data
+      .filter((i) => i.id != null && i.url)
+      .map((i) => [Number(i.id!), i.url!]),
   );
   imageTotalCount.value = parseInt(
     response.response.headers?.get?.("x-total-count") ?? "0",
-    10
+    10,
   );
 }
 
@@ -172,8 +175,8 @@ async function handleUpload() {
         items: uploadFiles.value.map((f) => ({
           name: f.name,
           contentType: f.file.type,
-        }))
-      }
+        })),
+      },
     });
     if (response.error || !response.data) throw new Error("Unable to upload");
     const uploadedStickers = response.data;
@@ -183,15 +186,19 @@ async function handleUpload() {
     for (let i = 0; i < uploadedStickers.length; i++) {
       const sticker = uploadedStickers[i]!;
       const uploadFile = uploadFiles.value[i]!;
-      await uploadWithProgress(sticker.uploadUrl!, uploadFile.file, (percent) => {
-        const overall = Math.round(
-          ((i + percent / 100) / uploadedStickers.length) * 100,
-        );
-        uploadProgress.value = overall;
-        toast.update(toastId, {
-          description: `已上传 ${i + 1}/${uploadedStickers.length} (${percent}%)`,
-        });
-      });
+      await uploadWithProgress(
+        sticker.uploadUrl!,
+        uploadFile.file,
+        (percent) => {
+          const overall = Math.round(
+            ((i + percent / 100) / uploadedStickers.length) * 100,
+          );
+          uploadProgress.value = overall;
+          toast.update(toastId, {
+            description: `已上传 ${i + 1}/${uploadedStickers.length} (${percent}%)`,
+          });
+        },
+      );
     }
 
     toast.remove(toastId);
@@ -232,9 +239,9 @@ async function handleDeleteSticker() {
     await deleteAdminStickerSetsByIdStickersByStickerId({
       path: {
         id: currentSet.value.id as number,
-        stickerId: deletingStickerId.value
-      }
-    })
+        stickerId: deletingStickerId.value,
+      },
+    });
     toast.add({ title: "贴纸已删除", color: "success" });
     isDeleteStickerModalOpen.value = false;
     const remaining = imageTotalCount.value - 1;
@@ -262,9 +269,9 @@ async function handleEdit() {
     await putAdminStickerSetsById({
       path: { id: stickerSetId },
       body: {
-        name: formData.value.name.trim()
-      }
-    })
+        name: formData.value.name.trim(),
+      },
+    });
     toast.add({ title: "更新成功", color: "success" });
     isEditModalOpen.value = false;
     await fetchDetail();
@@ -311,12 +318,17 @@ async function handleEditSticker() {
       body: {
         name: editStickerForm.value.name.trim(),
         contentType: editStickerFile.value?.type ?? null,
-      }
+      },
     });
-    if (response.error || !response.data) throw new Error("Unable to update sticker");
+    if (response.error || !response.data)
+      throw new Error("Unable to update sticker");
 
     if (editStickerFile.value && response.data.uploadUrl) {
-      await uploadWithProgress(response.data.uploadUrl, editStickerFile.value, () => {});
+      await uploadWithProgress(
+        response.data.uploadUrl,
+        editStickerFile.value,
+        () => {},
+      );
     }
 
     toast.add({ title: "贴纸已更新", color: "success" });
@@ -341,7 +353,7 @@ async function handleDelete() {
   isDeleting.value = true;
   try {
     await deleteAdminStickerSetsById({
-      path: { id: stickerSetId }
+      path: { id: stickerSetId },
     });
     toast.add({ title: "删除成功", color: "success" });
     isDeleteModalOpen.value = false;
@@ -418,10 +430,7 @@ onMounted(() => {
         <USkeleton v-for="i in 6" :key="i" class="h-32 w-full rounded-lg" />
       </div>
 
-      <div
-        v-else-if="pageStickers.length === 0"
-        class="text-center py-16"
-      >
+      <div v-else-if="pageStickers.length === 0" class="text-center py-16">
         <UIcon name="i-lucide-image-off" class="text-4xl text-muted mb-3" />
         <p class="text-muted">暂无贴纸，点击"添加贴纸"上传</p>
       </div>
@@ -453,22 +462,29 @@ onMounted(() => {
           >
             {{ sticker.name }} <code class="mono">#{{ sticker.id }}</code>
           </p>
-          <div class="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-              <UButton
-                icon="i-lucide-pencil"
-                variant="ghost"
-                color="neutral"
-                size="xs"
-                @click="openEditStickerModal({ id: sticker.id!, name: sticker.name! })"
-              />
-              <UButton
-                icon="i-lucide-trash-2"
-                variant="ghost"
-                color="error"
-                size="xs"
-                @click="deletingStickerId = Number(sticker.id); isDeleteStickerModalOpen = true"
-              />
-            </div>
+          <div
+            class="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+          >
+            <UButton
+              icon="i-lucide-pencil"
+              variant="ghost"
+              color="neutral"
+              size="xs"
+              @click="
+                openEditStickerModal({ id: sticker.id!, name: sticker.name! })
+              "
+            />
+            <UButton
+              icon="i-lucide-trash-2"
+              variant="ghost"
+              color="error"
+              size="xs"
+              @click="
+                deletingStickerId = Number(sticker.id);
+                isDeleteStickerModalOpen = true;
+              "
+            />
+          </div>
         </div>
       </div>
 
@@ -545,16 +561,29 @@ onMounted(() => {
     <!-- Edit Sticker Modal -->
     <UModal v-model:open="isEditStickerModalOpen">
       <template #content>
-        <div class="p-4 border-b border-default flex justify-between items-center">
+        <div
+          class="p-4 border-b border-default flex justify-between items-center"
+        >
           <span class="font-bold text-foreground">编辑贴纸</span>
-          <UButton color="neutral" variant="ghost" icon="i-lucide-x" @click="isEditStickerModalOpen = false" />
+          <UButton
+            color="neutral"
+            variant="ghost"
+            icon="i-lucide-x"
+            @click="isEditStickerModalOpen = false"
+          />
         </div>
         <div class="p-4 space-y-4">
           <div class="flex gap-4">
-            <div class="w-24 h-24 bg-elevated rounded-lg flex items-center justify-center shrink-0 overflow-hidden">
+            <div
+              class="w-24 h-24 bg-elevated rounded-lg flex items-center justify-center shrink-0 overflow-hidden"
+            >
               <img
-                v-if="editStickerPreview || stickerImageUrls[editStickerForm.id]"
-                :src="editStickerPreview || stickerImageUrls[editStickerForm.id]"
+                v-if="
+                  editStickerPreview || stickerImageUrls[editStickerForm.id]
+                "
+                :src="
+                  editStickerPreview || stickerImageUrls[editStickerForm.id]
+                "
                 alt="预览"
                 class="w-full h-full object-contain"
               />
@@ -562,7 +591,11 @@ onMounted(() => {
             </div>
             <div class="flex-1 space-y-3">
               <UFormField label="贴纸名称" required>
-                <UInput v-model="editStickerForm.name" placeholder="请输入贴纸名称" :maxlength="100" />
+                <UInput
+                  v-model="editStickerForm.name"
+                  placeholder="请输入贴纸名称"
+                  :maxlength="100"
+                />
               </UFormField>
               <div class="flex items-center gap-2">
                 <UButton
@@ -572,7 +605,10 @@ onMounted(() => {
                   size="sm"
                   @click="editStickerFileInput?.click()"
                 />
-                <span v-if="editStickerFile" class="text-xs text-muted truncate">
+                <span
+                  v-if="editStickerFile"
+                  class="text-xs text-muted truncate"
+                >
                   {{ editStickerFile.name }}
                 </span>
                 <input
@@ -587,10 +623,17 @@ onMounted(() => {
           </div>
         </div>
         <div class="p-4 border-t border-default flex justify-end gap-2">
-          <UButton color="neutral" variant="ghost" :disabled="isUpdatingSticker" @click="isEditStickerModalOpen = false">
+          <UButton
+            color="neutral"
+            variant="ghost"
+            :disabled="isUpdatingSticker"
+            @click="isEditStickerModalOpen = false"
+          >
             取消
           </UButton>
-          <UButton :loading="isUpdatingSticker" @click="handleEditSticker">保存</UButton>
+          <UButton :loading="isUpdatingSticker" @click="handleEditSticker"
+            >保存</UButton
+          >
         </div>
       </template>
     </UModal>
@@ -629,7 +672,10 @@ onMounted(() => {
             </span>
           </div>
 
-          <div v-if="uploadFiles.length > 0" class="space-y-3 max-h-[50vh] overflow-y-auto">
+          <div
+            v-if="uploadFiles.length > 0"
+            class="space-y-3 max-h-[50vh] overflow-y-auto"
+          >
             <div
               v-for="(item, index) in uploadFiles"
               :key="index"

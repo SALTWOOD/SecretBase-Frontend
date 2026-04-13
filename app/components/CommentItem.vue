@@ -1,8 +1,12 @@
 <script setup lang="ts">
-import type { CommentResponse, UrlResponse } from "~~/packages/api/src/types.gen";
+import type {
+  CommentResponse,
+  UrlResponse,
+} from "~~/packages/api/src/types.gen";
 import {
   deleteCommentsById,
-  getCommentsByCommentIdReplies, getStickerSetsStickersByStickerIdImage,
+  getCommentsByCommentIdReplies,
+  getStickerSetsStickersByStickerIdImage,
   putCommentsById,
 } from "~~/packages/api/src/sdk.gen";
 
@@ -34,15 +38,15 @@ const sticker = ref<{
 } | null>(null);
 
 const displayName = computed(() => {
-  const author = props.comment.author
-  if (author && !author.isGuest) return author.username || "用户"
-  return author?.username || "匿名用户"
-})
+  const author = props.comment.author;
+  if (author && !author.isGuest) return author.username || "用户";
+  return author?.username || "匿名用户";
+});
 
 const isGuest = computed(() => {
-  const author = props.comment.author
-  return !author || author.isGuest
-})
+  const author = props.comment.author;
+  return !author || author.isGuest;
+});
 
 const isOwner = computed(() => {
   if (!userStore.user || isGuest.value) return false;
@@ -140,7 +144,11 @@ const handleSaveEdit = async () => {
       isEditing.value = false;
       toast.add({ title: "评论已更新", color: "success" });
     } else {
-      toast.add({ title: "修改失败", description: "您只能修改自己的评论", color: "error" });
+      toast.add({
+        title: "修改失败",
+        description: "您只能修改自己的评论",
+        color: "error",
+      });
     }
   } catch (error) {
     console.error("Failed to update comment:", error);
@@ -207,21 +215,21 @@ onMounted(async () => {
     if (response.error || !response.data) return;
     sticker.value = {
       name: "test",
-      src: response.data.url!
+      src: response.data.url!,
     };
   }
-})
+});
 </script>
 
 <template>
   <div class="comment-item">
     <div class="flex gap-4 py-4 group">
-        <UAvatar
-          :src="comment.author?.avatar || undefined"
-          :alt="displayName"
-          size="md"
-          class="flex-shrink-0"
-        />
+      <UAvatar
+        :src="comment.author?.avatar || undefined"
+        :alt="displayName"
+        size="md"
+        class="flex-shrink-0"
+      />
 
       <div class="flex-1 min-w-0">
         <div class="flex items-center justify-between mb-1">
@@ -229,12 +237,9 @@ onMounted(async () => {
             <span class="font-medium text-sm text-gray-900 dark:text-white">
               {{ displayName }}
             </span>
-            <UBadge
-              v-if="isGuest"
-              variant="subtle"
-              color="neutral"
-              size="sm"
-            >游客</UBadge>
+            <UBadge v-if="isGuest" variant="subtle" color="neutral" size="sm"
+              >游客</UBadge
+            >
             <span class="text-xs text-gray-500 dark:text-gray-400">
               {{ timeAgo(comment.createdAt) }}
             </span>
@@ -255,15 +260,22 @@ onMounted(async () => {
         <div v-if="isEditing" class="mb-3 space-y-3">
           <UTextarea v-model="editContent" :rows="3" />
           <div class="flex items-center justify-between">
-            <EmojiSelect
-              icon="i-lucide-smile"
-              v-model="editContent"
-            />
+            <EmojiSelect icon="i-lucide-smile" v-model="editContent" />
             <div class="flex items-center gap-2">
-              <UButton variant="ghost" size="sm" @click="cancelEdit" :disabled="isSaving">
+              <UButton
+                variant="ghost"
+                size="sm"
+                @click="cancelEdit"
+                :disabled="isSaving"
+              >
                 取消
               </UButton>
-              <UButton size="sm" :loading="isSaving" :disabled="!editContent.trim()" @click="handleSaveEdit">
+              <UButton
+                size="sm"
+                :loading="isSaving"
+                :disabled="!editContent.trim()"
+                @click="handleSaveEdit"
+              >
                 保存
               </UButton>
             </div>

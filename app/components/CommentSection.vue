@@ -76,7 +76,10 @@ const loadComments = async () => {
   }
 };
 
-const buildBody = (content: string, parentCommentId: number | string | null = null) => {
+const buildBody = (
+  content: string,
+  parentCommentId: number | string | null = null,
+) => {
   const body: Record<string, unknown> = {
     content,
     parentCommentId,
@@ -185,7 +188,9 @@ onMounted(loadComments);
           :rows="5"
         />
         <client-only>
-          <div class="cap-wrapper w-full overflow-hidden rounded-lg border border-default bg-muted/20">
+          <div
+            class="cap-wrapper w-full overflow-hidden rounded-lg border border-default bg-muted/20"
+          >
             <cap-widget
               :key="capKey"
               :data-cap-api-endpoint="capApi"
@@ -195,10 +200,7 @@ onMounted(loadComments);
           </div>
         </client-only>
         <div class="flex items-center justify-between">
-          <EmojiSelect
-            icon="i-lucide-smile"
-            v-model="newComment"
-          />
+          <EmojiSelect icon="i-lucide-smile" v-model="newComment" />
           <UButton
             :loading="isSubmitting"
             :disabled="!canSubmitComment"
@@ -236,7 +238,9 @@ onMounted(loadComments);
           :rows="5"
         />
         <client-only>
-          <div class="cap-wrapper w-full overflow-hidden rounded-lg border border-default bg-muted/20">
+          <div
+            class="cap-wrapper w-full overflow-hidden rounded-lg border border-default bg-muted/20"
+          >
             <cap-widget
               :key="capKey"
               :data-cap-api-endpoint="capApi"
@@ -247,10 +251,7 @@ onMounted(loadComments);
         </client-only>
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
-            <EmojiSelect
-              icon="i-lucide-smile"
-              v-model="newComment"
-            />
+            <EmojiSelect icon="i-lucide-smile" v-model="newComment" />
             <UButton to="/auth/login" variant="ghost" size="sm">
               登录后评论
             </UButton>
@@ -272,7 +273,9 @@ onMounted(loadComments);
       >
         <div class="flex items-center justify-between mb-3">
           <div>
-            <span class="text-sm font-medium text-primary-600 dark:text-primary-400">
+            <span
+              class="text-sm font-medium text-primary-600 dark:text-primary-400"
+            >
               回复 @{{ replyTo.author?.username || "匿名用户" }}
             </span>
             <p class="text-xs text-gray-500 mt-1 line-clamp-1">
@@ -312,10 +315,7 @@ onMounted(loadComments);
         />
 
         <div class="flex items-center justify-between">
-          <EmojiSelect
-            icon="i-lucide-smile"
-            v-model="replyContent"
-          />
+          <EmojiSelect icon="i-lucide-smile" v-model="replyContent" />
           <UButton
             :loading="isSubmitting"
             :disabled="!canSubmitReply"

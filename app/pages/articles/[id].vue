@@ -96,8 +96,14 @@ const handleCommentCountChange = (count: number) => {
                 class="flex items-center gap-6 text-sm text-gray-500 dark:text-gray-400"
               >
                 <div class="flex items-center gap-2">
-                  <UAvatar :src="article.author?.avatar || undefined" :alt="article.author?.username || ''" size="xs" />
-                  <span class="font-medium">{{ article.author?.username }}</span>
+                  <UAvatar
+                    :src="article.author?.avatar || undefined"
+                    :alt="article.author?.username || ''"
+                    size="xs"
+                  />
+                  <span class="font-medium">{{
+                    article.author?.username
+                  }}</span>
                 </div>
                 <div class="flex items-center gap-1">
                   <UIcon name="i-lucide-calendar" />

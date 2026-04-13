@@ -260,7 +260,10 @@ const handleUpload = async (files: File[]) => {
           body: { key: fileKey },
         });
         if (!data?.url) throw new Error("无法获取上传授权地址");
-        toast.update(toastId, { title: `正在上传: ${file.name}`, color: "info" });
+        toast.update(toastId, {
+          title: `正在上传: ${file.name}`,
+          color: "info",
+        });
         await uploadWithProgress(data.url, file, (percent) => {
           toast.update(toastId, { description: `已完成 ${percent}%` });
         });

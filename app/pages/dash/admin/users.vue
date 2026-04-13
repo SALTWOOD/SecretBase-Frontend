@@ -156,9 +156,9 @@ const filteredUsers = computed(() => {
 
     // Permission (Role)
     const roleMap: Record<string, number[]> = {
-      "管理": [2, 3],
-      "用户": [1],
-      "访客": [0],
+      管理: [2, 3],
+      用户: [1],
+      访客: [0],
     };
     const matchesRole =
       selectedRole.value === "全部等级" ||
