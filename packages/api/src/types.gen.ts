@@ -2864,6 +2864,33 @@ export type PutAdminCommentsByIdApproveResponses = {
 
 export type PutAdminCommentsByIdApproveResponse = PutAdminCommentsByIdApproveResponses[keyof PutAdminCommentsByIdApproveResponses];
 
+export type PutAdminCommentsByIdPendData = {
+    body?: never;
+    path: {
+        id: number | string;
+    };
+    query?: never;
+    url: '/admin/comments/{id}/pend';
+};
+
+export type PutAdminCommentsByIdPendErrors = {
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+};
+
+export type PutAdminCommentsByIdPendError = PutAdminCommentsByIdPendErrors[keyof PutAdminCommentsByIdPendErrors];
+
+export type PutAdminCommentsByIdPendResponses = {
+    /**
+     * OK
+     */
+    200: MessageResponse;
+};
+
+export type PutAdminCommentsByIdPendResponse = PutAdminCommentsByIdPendResponses[keyof PutAdminCommentsByIdPendResponses];
+
 export type PutAdminCommentsByIdRejectData = {
     body?: never;
     path: {

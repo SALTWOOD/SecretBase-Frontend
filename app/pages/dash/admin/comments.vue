@@ -93,7 +93,7 @@
         <template #actions-cell="{ row }">
           <div class="flex gap-1">
             <UButton
-              v-if="row.original.reviewStatus === 0"
+              v-if="row.original.reviewStatus !== 1"
               icon="i-lucide-check"
               variant="ghost"
               color="success"
@@ -104,7 +104,18 @@
               批准
             </UButton>
             <UButton
-              v-if="row.original.reviewStatus === 0"
+              v-if="row.original.reviewStatus !== 0"
+              icon="i-lucide-clock"
+              variant="ghost"
+              color="warning"
+              size="xs"
+              :loading="pendingId === row.original.id"
+              @click="handlePend(row.original)"
+            >
+              挂起
+            </UButton>
+            <UButton
+              v-if="row.original.reviewStatus !== 2"
               icon="i-lucide-x"
               variant="ghost"
               color="error"
@@ -134,6 +145,7 @@ import type { AdminCommentResponse } from "~~/packages/api/src/types.gen";
 import {
   getAdminComments,
   putAdminCommentsByIdApprove,
+  putAdminCommentsByIdPend,
   putAdminCommentsByIdReject,
 } from "~~/packages/api/src/sdk.gen";
 
@@ -170,6 +182,7 @@ const loading = ref(false)
 const selectedStatus = ref(ReviewStatusFilter.All)
 const comments = ref<AdminCommentResponse[]>([])
 const approvingId = ref<number | string | null>(null)
+const pendingId = ref<number | string | null>(null)
 const rejectingId = ref<number | string | null>(null)
 
 const page = ref({
@@ -244,7 +257,7 @@ const handleApprove = async (comment: AdminCommentResponse) => {
       path: { id: comment.id! },
     })
     if (!response.error) {
-      toast.add({ title: "已批准", color: "success" })
+      toast.add({ title: "已批准该评论", color: "success" })
       await refresh()
     } else {
       toast.add({ title: "操作失败", color: "error" })
@@ -256,6 +269,25 @@ const handleApprove = async (comment: AdminCommentResponse) => {
   }
 }
 
+const handlePend = async (comment: AdminCommentResponse) => {
+  pendingId.value = comment.id!
+  try {
+    const response = await putAdminCommentsByIdPend({
+      path: { id: comment.id! },
+    })
+    if (!response.error) {
+      toast.add({ title: "已挂起该评论", color: "success" }) // 真不知道这句该怎么描述
+      await refresh()
+    } else {
+      toast.add({ title: "操作失败", color: "error" })
+    }
+  } catch {
+    toast.add({ title: "操作失败", color: "error" })
+  } finally {
+    pendingId.value = null
+  }
+}
+
 const handleReject = async (comment: AdminCommentResponse) => {
   rejectingId.value = comment.id!
   try {
@@ -263,7 +295,7 @@ const handleReject = async (comment: AdminCommentResponse) => {
       path: { id: comment.id! },
     })
     if (!response.error) {
-      toast.add({ title: "已拒绝", color: "success" })
+      toast.add({ title: "已拒绝该评论", color: "success" })
       await refresh()
     } else {
       toast.add({ title: "操作失败", color: "error" })
