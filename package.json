@@ -41,6 +41,7 @@
     "@iconify-json/lucide": "^1.2.101",
     "@iconify-json/simple-icons": "^1.2.76",
     "@tailwindcss/typography": "^0.5.19",
+    "@types/node": "^25.6.0",
     "nuxt-qrcode": "^0.4.9"
   }
 }
