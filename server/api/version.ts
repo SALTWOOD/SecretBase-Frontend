@@ -3,7 +3,7 @@ import { defineEventHandler } from 'h3'
 
 let cachedCommitHash: string | null = null
 
-defineEventHandler(() => {
+export default defineEventHandler(() => {
   // Return cached value if it exists
   if (cachedCommitHash !== null) {
     return { hash: cachedCommitHash }
