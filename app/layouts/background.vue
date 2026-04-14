@@ -41,6 +41,7 @@ const backgroundStyle = computed(() => {
         <div class="pt-16">
           <slot />
         </div>
+        <AppFooter />
       </div>
     </main>
   </div>

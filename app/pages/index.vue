@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {
   getArticles,
-  getSettingsFooter,
   getSettingsGeneralInfo,
   getSettingsHomeBanner,
   getSettingsHomeSidebarLeft,
@@ -32,7 +31,6 @@ const [
   { data: seoGeneral, pending: seoPending },
   { data: bannerSettings, pending: bannerPending },
   { data: articleResult, pending: articlesPending },
-  { data: footer },
 ] = await Promise.all([
   useAsyncData("site-seo", async () => (await getSettingsSeoGeneral()).data),
   useAsyncData("home-banner", async () => (await getSettingsHomeBanner()).data),
@@ -54,7 +52,6 @@ const [
       watch: [page],
     },
   ),
-  useAsyncData("footer", async () => (await getSettingsFooter()).data),
 ]);
 
 const leftSidebarWidgets = ref<SidebarWidget[] | null>(null);
@@ -63,15 +60,6 @@ const rightSidebarWidgets = ref<SidebarWidget[] | null>(null);
 // Computed shorthands
 const articles = computed(() => articleResult.value?.items || []);
 const totalCount = computed(() => articleResult.value?.total || 0);
-
-const policeLink = computed(() => {
-  const policeStr = footer.value?.beian?.police;
-  if (!policeStr) return "https://beian.mps.gov.cn/";
-  const code = policeStr.match(/\d+/)?.[0];
-  return code
-    ? `https://beian.mps.gov.cn/#/query/webSearch?code=${code}`
-    : "https://beian.mps.gov.cn/";
-});
 
 const isLoading = computed(
   () => seoPending.value || bannerPending.value || articlesPending.value,
@@ -350,35 +338,6 @@ useSeoMeta({
       </UContainer>
     </div>
   </main>
-
-  <footer class="footer-card">
-    <UCard
-      class="w-full max-w-4xl shadow-xl shadow-gray-950/20"
-      :ui="{
-        root: 'bg-neutral-800/80 backdrop-blur-md border-0 rounded-2xl ring-1 ring-white/10',
-        body: 'flex flex-col items-center gap-3 p-8 text-center',
-      }"
-    >
-      <div v-if="footer?.beian" class="flex flex-col items-center gap-2">
-        <a
-          v-if="footer?.beian?.icp"
-          v-text="footer.beian.icp"
-          href="https://beian.miit.gov.cn/"
-          target="_blank"
-        />
-        <div v-if="footer?.beian?.police">
-          <a v-text="footer.beian.police" :href="policeLink" target="_blank" />
-        </div>
-      </div>
-      <a
-        href="https://github.com/SALTWOOD/SecretBase-Frontend"
-        class="flex items-center gap-2"
-      >
-        <UIcon name="i-simple-icons-github" />
-        SALTWOOD/SecretBase-Frontend
-      </a>
-    </UCard>
-  </footer>
 </template>
 
 <style scoped>
@@ -406,19 +365,5 @@ useSeoMeta({
 
 .article-card-v2:hover {
   @apply -translate-y-1 shadow-xl ring-1 bg-white/80 dark:bg-neutral-900/80;
-}
-
-.footer-card {
-  @apply w-full flex justify-center py-10 px-4;
-
-  & a,
-  & span {
-    @apply text-neutral-400 underline-offset-4 transition-all duration-300 ease-in-out;
-  }
-
-  & a:hover {
-    color: var(--ui-primary);
-    @apply underline;
-  }
 }
 </style>
