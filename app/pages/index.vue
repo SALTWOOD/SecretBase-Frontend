@@ -78,7 +78,6 @@ const masonryColumns = "columns-1 lg:columns-2";
 const uptimeDisplay = ref("0天0时0分0秒");
 
 const computeUptime = (createdAt: Date) => {
-  console.log(typeof createdAt);
   const diff = Date.now() - createdAt.getTime();
   if (diff < 0) return "0天0时0分0秒";
   const totalSeconds = Math.floor(diff / 1000);
@@ -249,7 +248,7 @@ useSeoMeta({
                       <time
                         class="text-[10px] uppercase tracking-wider text-muted font-mono"
                       >
-                        {{ formatDate(article.createdAt) }}
+                        {{ formatDate(article.createdAt!) }}
                       </time>
                     </div>
                     <h2
