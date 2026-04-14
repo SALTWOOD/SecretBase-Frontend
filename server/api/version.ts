@@ -2,11 +2,11 @@ import { execSync } from 'node:child_process'
 import { defineEventHandler } from 'h3'
 
 let cachedCommitHash: string | null = null
+let cachedTag: string | null = null
 
 export default defineEventHandler(() => {
-  // Return cached value if it exists
-  if (cachedCommitHash !== null) {
-    return { hash: cachedCommitHash }
+  if (cachedCommitHash !== null && cachedTag !== null) {
+    return { tag: cachedTag, hash: cachedCommitHash }
   }
 
   try {
@@ -22,7 +22,20 @@ export default defineEventHandler(() => {
     cachedCommitHash = 'unknown'
   }
 
+  try {
+    const tag = execSync('git describe --tags --abbrev=0', {
+      cwd: process.cwd(),
+      stdio: ['ignore', 'pipe', 'ignore'],
+      encoding: 'utf-8'
+    }).trim()
+
+    cachedTag = tag || 'dev'
+  } catch {
+    cachedTag = 'dev'
+  }
+
   return {
+    tag: cachedTag,
     hash: cachedCommitHash
   }
 })

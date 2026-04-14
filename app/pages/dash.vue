@@ -3,13 +3,16 @@
     <UDashboardSidebar collapsible resizable>
       <template #default="{ collapsed }">
         <div
-          class="flex items-center justify-center py-4 shrink-0 overflow-hidden transition-all"
+          class="flex items-center justify-center py-4 px-4 shrink-0 overflow-hidden transition-all"
         >
-          <div v-if="!collapsed" class="font-black tracking-tighter text-xl whitespace-nowrap">
-            <span class="text-primary">SECRET</span>
-            <span class="text-highlighted ml-1">BASE</span>
+          <div class="relative">
+            <div v-if="!collapsed" class="font-black tracking-tighter text-xl whitespace-nowrap">
+              <span class="text-primary">SECRET</span>
+              <span class="text-highlighted ml-1">BASE</span>
+            </div>
+            <UIcon v-else name="i-lucide-star" class="text-primary text-2xl" />
+            <span v-if="versionData && !collapsed" class="absolute -right-8 -bottom-1.5 text-[12px] text-dimmed leading-none">{{ versionData.tag }}@{{ versionData.hash }}</span>
           </div>
-          <UIcon v-else name="i-lucide-star" class="text-primary text-2xl" />
         </div>
 
         <UDashboardSearchButton :collapsed="collapsed" />
@@ -101,6 +104,10 @@ const isAdmin = ref(true);
 const toast = useToast();
 const user: Ref<User | null> = ref(null);
 const userStore = useUserStore();
+
+const { data: versionData } = await useAsyncData('version', () =>
+  $fetch<{ tag: string; hash: string }>('/api/version')
+);
 
 const allNavigationItems = computed<NavigationItem[]>(() => [
   {
