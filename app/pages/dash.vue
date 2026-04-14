@@ -5,10 +5,11 @@
         <div
           class="flex items-center justify-center py-4 shrink-0 overflow-hidden transition-all"
         >
-          <div class="font-black tracking-tighter text-xl whitespace-nowrap">
+          <div v-if="!collapsed" class="font-black tracking-tighter text-xl whitespace-nowrap">
             <span class="text-primary">SECRET</span>
-            <span v-show="!collapsed" class="text-highlighted ml-1">BASE</span>
+            <span class="text-highlighted ml-1">BASE</span>
           </div>
+          <UIcon v-else name="i-lucide-star" class="text-primary text-2xl" />
         </div>
 
         <UDashboardSearchButton :collapsed="collapsed" />
