@@ -65,8 +65,7 @@ const draw = () => {
 
   const len = points.length;
   for (let i = 0; i < len; i++) {
-    const p = points[i];
-
+    const p = points[i]!;
     p.x += p.vx;
     p.y += p.vy;
 
@@ -80,7 +79,7 @@ const draw = () => {
 
     // Connections
     for (let j = i + 1; j < len; j++) {
-      const p2 = points[j];
+      const p2 = points[j]!;
       const dx = p.x - p2.x;
       const dy = p.y - p2.y;
       const d2 = dx * dx + dy * dy;

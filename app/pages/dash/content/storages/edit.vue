@@ -185,7 +185,7 @@ const handleSave = async () => {
     await fetch(presign.data!.url, {
       method: "PUT",
       headers: { "Content-Type": "application/octet-stream" },
-      body: payload,
+      body: payload as BodyInit,
     });
 
     // Refresh baselines

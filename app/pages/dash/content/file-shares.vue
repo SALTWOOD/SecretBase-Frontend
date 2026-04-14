@@ -94,7 +94,7 @@ const formState = ref({
   isEnabled: true,
 });
 
-const dropdownMenu = (row: any) => [
+const dropdownMenu = (row: any): (Record<string, any> & { onSelect?: () => void })[][] => [
   [
     {
       label: "复制链接",

@@ -77,7 +77,7 @@ const draw = () => {
     // 计算魏尔斯特拉斯函数
     let val = 0;
     for (let n = 0; n < iterations; n++) {
-      val += aPowers[n] * Math.cos(bPowers[n] * Math.PI * x);
+      val += aPowers[n]! * Math.cos(bPowers[n]! * Math.PI * x);
     }
 
     const sy = centerY - val * amplitude;

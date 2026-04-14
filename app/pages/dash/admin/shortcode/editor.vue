@@ -15,7 +15,9 @@ const extensions = [javascript(), oneDark];
 const shortcodes = ref<ShortcodeDetail[]>([]);
 
 // 选中的状态：ID 和 编辑模式
-const currentId = ref(route.query.id || route.params.id);
+const currentId = ref<number | string | null>(
+  (route.query.id as string) || (route.params.id as string) || null,
+);
 const editMode = ref<"backendCode" | "frontendCode">("backendCode");
 
 const isSaving = ref(false);
@@ -28,7 +30,7 @@ const fetchList = async () => {
     const { data } = await getAdminShortcodes();
     shortcodes.value = data || [];
     if (shortcodes.value.length > 0 && !currentId.value) {
-      currentId.value = shortcodes.value[0].id;
+      currentId.value = shortcodes.value[0]!.id ?? null;
     }
   } catch (error) {
     console.error("[Error] Fetch failed:", error);
@@ -57,7 +59,7 @@ const code = computed({
 
 // 4. 操作方法
 const selectItem = (
-  id: string | number,
+  id: number | string,
   mode: "backendCode" | "frontendCode",
 ) => {
   currentId.value = id;
@@ -69,7 +71,7 @@ const saveCode = async () => {
   isSaving.value = true;
   try {
     await putAdminShortcodesById({
-      path: { id: currentId.value },
+      path: { id: currentId.value as number },
       body: {
         backendCode: currentShortcode.value.backendCode,
         frontendCode: currentShortcode.value.frontendCode,

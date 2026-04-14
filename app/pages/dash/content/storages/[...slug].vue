@@ -30,7 +30,7 @@ const isDeleteModalOpen = ref(false);
 const isDeleting = ref(false);
 const itemToDelete = ref<FileObject | null>(null);
 
-let searchTimer: number | null = null;
+let searchTimer: ReturnType<typeof setTimeout> | null = null;
 
 type FileObject = S3ObjectResponse & {
   type: "directory" | "file";
@@ -154,8 +154,8 @@ const fetchItems = async (isSearch: boolean = false) => {
 
   const newItems = response.data.map((i: S3ObjectResponse) => ({
     ...i,
-    type: i.key.endsWith("/") ? "directory" : "file",
-  }));
+    type: (i.key.endsWith("/") ? "directory" : "file") as "directory" | "file",
+  })) as FileObject[];
 
   allItems.value = newItems;
 

@@ -9,7 +9,7 @@ const pending = ref(true);
 const buckets: Ref<BucketResponse[]> = ref([]);
 
 // Row actions generator
-const getActionItems = (row: BucketResponse) => [
+const getActionItems = (row: BucketResponse): (Record<string, any> & { onSelect?: () => void })[][] => [
   [
     {
       label: "进入",

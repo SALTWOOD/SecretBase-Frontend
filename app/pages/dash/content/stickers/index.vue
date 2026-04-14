@@ -36,7 +36,7 @@ const columns = [
   { accessorKey: "actions", header: "操作" },
 ];
 
-const dropdownMenu = (row: any) => [
+const dropdownMenu = (row: any): (Record<string, any> & { onSelect?: () => void })[][] => [
   [
     {
       label: "查看详情",

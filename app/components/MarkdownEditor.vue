@@ -52,7 +52,7 @@ const handleFileSelected = async (url: string) => {
   if (response.error || !response.data) return;
   const file = `/api/v1/shared/${response.data.shortId}`;
 
-  const isImage = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(urlObject);
+  const isImage = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(url);
   const insertText = isImage ? `![image](${file})` : `[文件](${file})`;
 
   editorRef.value.insert(() => ({

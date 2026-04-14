@@ -46,7 +46,7 @@ watch(
   { immediate: true },
 );
 
-const previewCover = computed(() => articleData.value?.cover);
+const previewCover = computed(() => articleData.value?.coverUrl);
 
 const isSaving = ref(false);
 const handleSave = async () => {
