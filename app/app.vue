@@ -9,6 +9,7 @@
 
 <script setup lang="ts">
 import { getShortcodes, postAuthRenew } from "~~/packages/api/src/sdk.gen";
+import { createShortcodeApi } from "~/utils/shortcode-api";
 const { openChallengeModal } = useChallenge();
 
 const userStore = useUserStore();
@@ -20,13 +21,16 @@ async function loadShortcodes() {
   if (!response.data) return;
   const list = response.data.shortcodes!;
 
+  const { instances } = useShortcodes();
+
   for (const i of list) {
     const module = await import(
       /* @vite-ignore */
       `/api/v1/shortcodes/${i.name}/frontend`
     );
-    if (!module) return;
-    if (module?.init) module.init();
+    if (!module?.default) continue;
+    const api = createShortcodeApi(i.name!);
+    instances.set(i.name!, new module.default(api));
   }
 }
 
