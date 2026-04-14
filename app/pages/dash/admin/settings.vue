@@ -171,12 +171,12 @@ const isJsonType = (type: string) => type === "json";
 
 const getListInnerType = (type: string): string | null => {
   const match = type.match(/^list\[(.+)\]$/);
-  return match ? match[1].trim() : null;
+  return match ? match[1]!.trim() : null;
 };
 
 const getDictValueType = (type: string): string | null => {
   const match = type.match(/^dict\[.+,\s*(.+)\]$/);
-  return match ? match[1].trim() : null;
+  return match ? match[1]!.trim() : null;
 };
 
 const isNumericType = (t: string | null | undefined) =>
@@ -441,7 +441,7 @@ onMounted(() => fetchData());
               <h3
                 class="font-semibold uppercase tracking-wider text-sm text-gray-600 dark:text-gray-400"
               >
-                {{ getCardLabel(item.slot.replace(/_/g, "."), cardKey) }}
+                {{ getCardLabel(item.slot.replace(/_/g, "."), String(cardKey)) }}
               </h3>
             </template>
 
@@ -601,8 +601,9 @@ onMounted(() => fetchData());
                               );
                               const updated: Record<string, any> = {};
                               for (let i = 0; i < entries.length; i++) {
-                                if (i === idx) updated[newKey] = entries[i][1];
-                                else updated[entries[i][0]] = entries[i][1];
+                                const entry = entries[i]!;
+                                if (i === idx) updated[newKey] = entry[1];
+                                else updated[entry[0]] = entry[1];
                               }
                               editableSettings[setting.key] = updated;
                             }
@@ -741,7 +742,7 @@ onMounted(() => fetchData());
     </UTabs>
   </UContainer>
 
-  <UModal v-model:open="jsonEditorOpen" :ui="{ width: '80vw' }">
+  <UModal v-model:open="jsonEditorOpen" :ui="{ content: 'sm:max-w-[80vw]' }">
     <template #content>
       <UCard :ui="{ body: 'p-0 overflow-hidden' }">
         <template #header>
