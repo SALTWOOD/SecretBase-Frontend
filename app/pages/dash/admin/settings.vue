@@ -369,12 +369,9 @@ const getCardLabel = (tabKey: string, cardKey: string) => {
 };
 
 const isModified = (item: SettingItem) => {
-  const current = editableSettings.value[item.key];
-  const original = item.currentValue;
-  if (typeof current === "object" && current !== null) {
-    return JSON.stringify(current) !== JSON.stringify(original);
-  }
-  return current !== original;
+  const currentApi = toApiValue(editableSettings.value[item.key], item.type);
+  const originalApi = toApiValue(item.currentValue, item.type);
+  return JSON.stringify(currentApi) !== JSON.stringify(originalApi);
 };
 
 const handleReset = async (item: SettingItem) => {
@@ -403,9 +400,7 @@ const handleSave = async (item: SettingItem) => {
         value: newValue,
       },
     });
-    item.currentValue = JSON.parse(
-      JSON.stringify(editableSettings.value[item.key]),
-    );
+    item.currentValue = JSON.parse(JSON.stringify(newValue));
     console.log(`[Settings]: ${item.key} updated.`);
   } catch (error) {
     console.error(`[Settings]: Save failed.`, error);
