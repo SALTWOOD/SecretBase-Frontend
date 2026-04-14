@@ -88,8 +88,8 @@
       <div class="mt-4 flex justify-center">
         <UPagination
           v-model:page="page"
-          :total="pageSize"
-          :items-per-page="totalCount"
+          :total="totalCount"
+          :items-per-page="pageSize"
         />
       </div>
     </UCard>
