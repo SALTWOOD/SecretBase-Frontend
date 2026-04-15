@@ -5,7 +5,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 COPY packages/api/package.json ./packages/api/package.json
 
-RUN npm ci --workspace=@secret-base/api && npm ci --workspace=frontend || npm ci
+RUN npm i
 
 COPY . .
 
