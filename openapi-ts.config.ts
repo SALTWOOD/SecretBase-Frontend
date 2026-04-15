@@ -3,9 +3,8 @@ import { defineConfig } from "@hey-api/openapi-ts";
 export default defineConfig({
   input: "http://localhost:5170/openapi/v1.json",
   output: {
-    format: "prettier",
-    lint: "eslint",
     path: "./packages/api/src",
+    postProcess: ["prettier", "eslint"],
   },
   plugins: [
     "@hey-api/schemas",
