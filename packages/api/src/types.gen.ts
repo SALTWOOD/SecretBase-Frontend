@@ -894,6 +894,13 @@ export type StorageStatusResponse = {
 
 export type Stream = Blob | File;
 
+export type ThirdPartyBindingDto = {
+    provider?: string;
+    providerUsername?: string;
+    providerAvatarUrl?: null | string;
+    createdAt?: Date;
+};
+
 export type TokenRenewResponse = {
     message?: string;
     user?: User;
@@ -2051,6 +2058,49 @@ export type PostUserProfileResponses = {
 
 export type PostUserProfileResponse = PostUserProfileResponses[keyof PostUserProfileResponses];
 
+export type GetUserBindingsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/user/bindings';
+};
+
+export type GetUserBindingsResponses = {
+    /**
+     * OK
+     */
+    200: Array<ThirdPartyBindingDto>;
+};
+
+export type GetUserBindingsResponse = GetUserBindingsResponses[keyof GetUserBindingsResponses];
+
+export type DeleteUserBindingsByProviderData = {
+    body?: never;
+    path: {
+        provider: string;
+    };
+    query?: never;
+    url: '/user/bindings/{provider}';
+};
+
+export type DeleteUserBindingsByProviderErrors = {
+    /**
+     * Not Found
+     */
+    404: MessageResponse;
+};
+
+export type DeleteUserBindingsByProviderError = DeleteUserBindingsByProviderErrors[keyof DeleteUserBindingsByProviderErrors];
+
+export type DeleteUserBindingsByProviderResponses = {
+    /**
+     * OK
+     */
+    200: MessageResponse;
+};
+
+export type DeleteUserBindingsByProviderResponse = DeleteUserBindingsByProviderResponses[keyof DeleteUserBindingsByProviderResponses];
+
 export type PostUserAvatarData = {
     body: {
         file?: IFormFile;
@@ -2514,6 +2564,30 @@ export type GetOauthPublicAppInfoResponses = {
 };
 
 export type GetOauthPublicAppInfoResponse = GetOauthPublicAppInfoResponses[keyof GetOauthPublicAppInfoResponses];
+
+export type GetAuthGithubLoginData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/auth/github/login';
+};
+
+export type GetAuthGithubBindData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/auth/github/bind';
+};
+
+export type GetAuthGithubCallbackData = {
+    body?: never;
+    path?: never;
+    query?: {
+        code?: string;
+        state?: string;
+    };
+    url: '/auth/github/callback';
+};
 
 export type PostAuthWebauthnRegisterOptionsData = {
     body?: never;

@@ -73,6 +73,15 @@ const i18nMap: Record<
     label: "强制邀请码",
     description: "注册时是否必须填写邀请码",
   },
+  "site.user.github": { label: "GitHub 集成" },
+  "site.user.github.client_id": {
+    label: "Client ID",
+    description: "GitHub OAuth App 的 Client ID",
+  },
+  "site.user.github.client_secret": {
+    label: "Client Secret",
+    description: "GitHub OAuth App 的 Client Secret",
+  },
   "site.home.background": { label: "背景展示" },
   "site.home.background.url": {
     label: "图片地址",

@@ -51,18 +51,71 @@
         </div>
       </form>
     </UCard>
+
+    <UCard>
+      <template #header>
+        <h3 class="font-bold text-highlighted">账号绑定</h3>
+      </template>
+
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <UIcon name="i-simple-icons-github" class="w-6 h-6" />
+          <div>
+            <div class="font-medium text-sm">GitHub</div>
+            <div v-if="githubBinding" class="text-xs text-muted">
+              {{ githubBinding.providerUsername }}
+            </div>
+            <div v-else class="text-xs text-muted">尚未绑定 GitHub 账号</div>
+          </div>
+          <UAvatar
+            v-if="githubBinding?.providerAvatarUrl"
+            :src="githubBinding.providerAvatarUrl"
+            size="sm"
+          />
+        </div>
+        <div class="flex items-center gap-2">
+          <UButton
+            v-if="!githubBinding"
+            color="neutral"
+            variant="subtle"
+            icon="i-simple-icons-github"
+            @click="bindGitHub"
+          >
+            绑定 GitHub
+          </UButton>
+          <UButton
+            v-else
+            color="error"
+            variant="ghost"
+            icon="i-lucide-unlink"
+            @click="unbindGitHub"
+          >
+            解绑
+          </UButton>
+        </div>
+      </div>
+    </UCard>
   </div>
 </template>
 
 <script setup lang="ts">
 import type { User } from "~/types/user";
-import { getUserProfile, postUserProfile } from "~~/packages/api/src/sdk.gen";
+import type { ThirdPartyBindingDto } from "~~/packages/api/src/types.gen";
+import {
+  getUserProfile,
+  postUserProfile,
+  getUserBindings,
+  deleteUserBindingsByProvider,
+} from "~~/packages/api/src/sdk.gen";
 import { isValidAvatarUrl } from "~/utils/url-validator";
 
 const loading = ref(true);
 const user: Ref<User | null> = ref(null);
 const userStore = useUserStore();
 const toast = useToast();
+const route = useRoute();
+
+const githubBinding = ref<ThirdPartyBindingDto | null>(null);
 
 const form = reactive({
   username: "",
@@ -89,6 +142,30 @@ const updateProfile = async () => {
   toast.add({ title: response.data.message, color: "success" });
 };
 
+const fetchBindings = async () => {
+  const response = await getUserBindings();
+  if (!response.error && response.data) {
+    githubBinding.value =
+      response.data.find((b) => b.provider === "GitHub") ?? null;
+  }
+};
+
+const bindGitHub = () => {
+  window.location.href = "/api/v1/auth/github/bind";
+};
+
+const unbindGitHub = async () => {
+  const response = await deleteUserBindingsByProvider({
+    path: { provider: "GitHub" },
+  });
+  if (response.error) {
+    toast.add({ title: "解绑失败", color: "error" });
+    return;
+  }
+  githubBinding.value = null;
+  toast.add({ title: "已解绑 GitHub 账号", color: "success" });
+};
+
 onMounted(async () => {
   await userStore.fetch();
   user.value = userStore.user;
@@ -96,6 +173,19 @@ onMounted(async () => {
   form.email = user.value?.email || "";
   form.avatar = user.value?.avatar || "";
   form.website = user.value?.website || "";
+
+  await fetchBindings();
+
+  const status = route.query.github_status as string;
+  if (status === "bound") {
+    toast.add({ title: "GitHub 账号绑定成功", color: "success" });
+    await fetchBindings();
+  } else if (status === "already_bound") {
+    toast.add({ title: "该 GitHub 账号已绑定", color: "warning" });
+  } else if (status === "bound_by_other") {
+    toast.add({ title: "该 GitHub 账号已被其他用户绑定", color: "error" });
+  }
+
   loading.value = false;
 });
 </script>

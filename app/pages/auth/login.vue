@@ -58,6 +58,26 @@
         </UButton>
       </form>
 
+      <div class="relative my-6">
+        <div class="absolute inset-0 flex items-center">
+          <div class="w-full border-t border-default"></div>
+        </div>
+        <div class="relative flex justify-center text-xs">
+          <span class="bg-gray-50 dark:bg-gray-900 px-2 text-muted-foreground">或</span>
+        </div>
+      </div>
+
+      <UButton
+        block
+        color="neutral"
+        variant="subtle"
+        size="lg"
+        icon="i-simple-icons-github"
+        @click="loginWithGitHub"
+      >
+        使用 GitHub 登录
+      </UButton>
+
       <template #footer>
         <p class="text-center text-sm text-muted-foreground">
           还没有账号？
@@ -132,7 +152,7 @@ const handleLogin = async () => {
               "Two-factor authentication component was not initialized.",
             );
           const result = await openChallengeModal.value();
-          if (!result) return; // intended; fallthrough to "success" case and store user information
+          if (!result) return;
         /* fallthrough */
         case "success":
           userStore.$patch({
@@ -174,6 +194,33 @@ const handleWebAuthn = async () => {
     },
   });
 };
+
+const loginWithGitHub = () => {
+  window.location.href = "/api/v1/auth/github/login";
+};
+
+onMounted(() => {
+  const error = route.query.error as string;
+  if (error === "github_not_bound") {
+    toast.add({
+      title: "该 GitHub 账号未绑定本站账号",
+      description: "请先使用邮箱密码登录，然后在个人资料中绑定 GitHub。",
+      color: "error",
+    });
+  } else if (error === "github_callback_failed") {
+    toast.add({ title: "GitHub 登录回调失败", color: "error" });
+  } else if (error === "github_state_expired") {
+    toast.add({ title: "GitHub 登录已过期，请重试", color: "error" });
+  } else if (error === "github_misconfigured") {
+    toast.add({ title: "GitHub OAuth 未正确配置", color: "error" });
+  } else if (error === "github_token_failed") {
+    toast.add({ title: "GitHub 令牌获取失败", color: "error" });
+  } else if (error === "github_user_failed") {
+    toast.add({ title: "获取 GitHub 用户信息失败", color: "error" });
+  } else if (error === "user_banned") {
+    toast.add({ title: "该账号已被封禁", color: "error" });
+  }
+});
 </script>
 
 <style scoped>

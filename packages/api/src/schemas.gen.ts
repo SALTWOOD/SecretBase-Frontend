@@ -3444,6 +3444,28 @@ export const StreamSchema = {
     format: 'binary'
 } as const;
 
+export const ThirdPartyBindingDtoSchema = {
+    type: 'object',
+    properties: {
+        provider: {
+            type: 'string'
+        },
+        providerUsername: {
+            type: 'string'
+        },
+        providerAvatarUrl: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        createdAt: {
+            type: 'string',
+            format: 'date-time'
+        }
+    }
+} as const;
+
 export const TokenRenewResponseSchema = {
     type: 'object',
     properties: {
