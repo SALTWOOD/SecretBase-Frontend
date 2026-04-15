@@ -11,9 +11,9 @@ export default defineNuxtConfig({
   ],
   css: ["~/assets/css/main.css"],
   runtimeConfig: {
-    capSecretKey: "",
+    capSecretKey: process.env.NUXT_CAP_SECRET_KEY,
     public: {
-      apiBase: "/api/v1",
+      apiBase: process.env.NUXT_PUBLIC_API_BASE,
     },
   },
   vue: {
