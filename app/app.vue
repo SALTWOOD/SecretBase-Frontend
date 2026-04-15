@@ -37,15 +37,8 @@ async function loadShortcodes() {
 onMounted(async () => {
   await loadShortcodes();
   openChallengeModal.value = () => tfModal.value?.open();
-  if (userStore.isLoggedIn) {
+  if (!userStore.isLoggedIn) {
     await userStore.fetch();
-    if (
-      userStore.expires &&
-      userStore.expires.getTime() - 12 * 60 * 60 * 1000 > Date.now()
-    ) {
-      await postAuthRenew();
-      await userStore.fetch();
-    }
   }
 });
 </script>
