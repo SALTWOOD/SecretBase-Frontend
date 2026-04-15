@@ -3,7 +3,9 @@ import { client } from "@secret-base/api/src/client.gen";
 export default defineNuxtPlugin(() => {
   const config = useRuntimeConfig();
   client.setConfig({
-    baseUrl: config.public.apiBase as string,
+    baseUrl: (import.meta.server
+      ? config.apiBase
+      : config.public.apiBase) as string,
     credentials: "include",
   });
 
