@@ -16,11 +16,6 @@ export default defineNuxtConfig({
       apiBase: "/api/v1",
     },
   },
-  routeRules: {
-    "/api/v1/**": {
-      proxy: "http://localhost:5170/**",
-    },
-  },
   vue: {
     compilerOptions: {
       isCustomElement: (tag) => tag.startsWith("cap-"),
