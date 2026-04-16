@@ -8,6 +8,7 @@ import {
   type S3ObjectResponse,
 } from "~~/packages/api/src";
 import ConfirmDialog from "~/components/ConfirmDialog.vue";
+import type { DropdownMenuItem } from "#ui/components/DropdownMenu.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -314,7 +315,7 @@ const executeDelete = async () => {
   }
 };
 
-const dropdownMenu = (row: FileObject) => [
+const dropdownMenu = (row: FileObject): DropdownMenuItem[][] => [
   [
     {
       label: "下载",
@@ -559,7 +560,7 @@ onMounted(() => {
       </template>
 
       <template #actions-cell="{ row }">
-        <UDropdownMenu :data="dropdownMenu(row.original)">
+        <UDropdownMenu :items="dropdownMenu(row.original)">
           <UButton
             color="secondary"
             variant="ghost"
@@ -583,7 +584,7 @@ onMounted(() => {
         <div
           class="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition-opacity z-10"
         >
-          <UDropdownMenu :data="dropdownMenu(item)">
+          <UDropdownMenu :items="dropdownMenu(item)">
             <UButton
               color="secondary"
               variant="ghost"
