@@ -167,7 +167,10 @@ const unbindGitHub = async () => {
 };
 
 onMounted(async () => {
-  await userStore.fetch();
+  const profileResponse = await getUserProfile();
+  if (!profileResponse.error && profileResponse.response.status === 200) {
+    userStore.setUser(profileResponse.data as any);
+  }
   user.value = userStore.user;
   form.username = user.value?.username || "";
   form.email = user.value?.email || "";

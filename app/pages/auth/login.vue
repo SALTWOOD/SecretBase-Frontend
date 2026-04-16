@@ -108,9 +108,9 @@ import {
   postAuthLogin,
   postAuthWebauthnLoginOptions,
   postAuthWebauthnLoginVerify,
+  getUserProfile,
 } from "@secret-base/api/src/sdk.gen";
 import { startAuthentication } from "@simplewebauthn/browser";
-import { useUserStore } from "~/stores/user";
 import { isValidRedirectUrl } from "~/utils/url-validator";
 
 const form = reactive({ email: "", password: "" });
@@ -155,11 +155,9 @@ const handleLogin = async () => {
           if (!result) return;
         /* fallthrough */
         case "success":
-          userStore.$patch({
-            user: response.data.data!.user,
-            isLoggedIn: true,
-            expires: response.data.data!.expires,
-          });
+          if (response.data.data?.user) {
+            userStore.setUser(response.data.data.user as any);
+          }
           const redirectUrl = route.query.redirect as string;
           navigateTo(isValidRedirectUrl(redirectUrl) ? redirectUrl : "/dash");
           break;
@@ -187,38 +185,67 @@ const handleWebAuthn = async () => {
     optionsJSON: optionsResponse.data as any,
   });
 
-  await postAuthWebauthnLoginVerify({
+  const verifyResponse = await postAuthWebauthnLoginVerify({
     body: assertionResponse,
     query: {
       isLogin: true,
     },
   });
+
+  if (!verifyResponse.error) {
+    const profileResponse = await getUserProfile();
+    if (!profileResponse.error && profileResponse.response.status === 200) {
+      userStore.setUser(profileResponse.data as any);
+    }
+    navigateTo("/dash");
+  }
 };
 
 const loginWithGitHub = () => {
   window.location.href = "/api/v1/auth/github/login";
 };
 
-onMounted(() => {
-  const error = route.query.error as string;
-  if (error === "github_not_bound") {
-    toast.add({
-      title: "该 GitHub 账号未绑定本站账号",
-      description: "请先使用邮箱密码登录，然后在个人资料中绑定 GitHub。",
-      color: "error",
-    });
-  } else if (error === "github_callback_failed") {
-    toast.add({ title: "GitHub 登录回调失败", color: "error" });
-  } else if (error === "github_state_expired") {
-    toast.add({ title: "GitHub 登录已过期，请重试", color: "error" });
-  } else if (error === "github_misconfigured") {
-    toast.add({ title: "GitHub OAuth 未正确配置", color: "error" });
-  } else if (error === "github_token_failed") {
-    toast.add({ title: "GitHub 令牌获取失败", color: "error" });
-  } else if (error === "github_user_failed") {
-    toast.add({ title: "获取 GitHub 用户信息失败", color: "error" });
-  } else if (error === "user_banned") {
-    toast.add({ title: "该账号已被封禁", color: "error" });
+onMounted(async () => {
+  const state = route.query.state as string;
+
+  switch (state) {
+    case "github_callback_success":
+      toast.add({ title: "GitHub 登录回调成功，正在跳转……", color: "success" });
+      const response = await getUserProfile();
+      if (response.error || !response.data) {
+        toast.add({ title: "获取用户信息失败", color: "error" });
+        return;
+      }
+      userStore.setUser(response.data as any);
+      await navigateTo("/dash");
+      break;
+    case "github_callback_failed":
+      toast.add({ title: "GitHub 登录回调失败", color: "error" });
+      break;
+    case "github_not_bound":
+      toast.add({
+        title: "该 GitHub 账号未绑定本站账号",
+        description: "请先使用邮箱密码登录，然后在个人资料中绑定 GitHub。",
+        color: "error",
+      });
+      break;
+    case "github_state_expired":
+      toast.add({ title: "GitHub 登录已过期，请重试", color: "error" });
+      break;
+    case "github_misconfigured":
+      toast.add({ title: "GitHub OAuth 未正确配置", color: "error" });
+      break;
+    case "github_token_failed":
+      toast.add({ title: "GitHub 令牌获取失败", color: "error" });
+      break;
+    case "github_user_failed":
+      toast.add({ title: "获取 GitHub 用户信息失败", color: "error" });
+      break;
+    case "user_banned":
+      toast.add({ title: "该账号已被封禁", color: "error" });
+      break;
+    default:
+      break;
   }
 });
 </script>

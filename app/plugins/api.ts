@@ -9,6 +9,22 @@ export default defineNuxtPlugin(() => {
     credentials: "include",
   });
 
+  client.interceptors.response.use(async (response) => {
+    if (response.status === 401) {
+      const userStore = useUserStore();
+      userStore.reset();
+
+      if (import.meta.client) {
+        const protectedPrefixes = ["/dash"];
+        const currentPath = window.location.pathname;
+        if (protectedPrefixes.some((prefix) => currentPath.startsWith(prefix))) {
+          navigateTo(`/auth/login?redirect=${encodeURIComponent(currentPath)}`);
+        }
+      }
+    }
+    return response;
+  });
+
   client.interceptors.response.use(async (response, request) => {
     if (!response.ok) {
       console.log(response);

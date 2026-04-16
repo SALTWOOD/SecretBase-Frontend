@@ -8,11 +8,10 @@
 </template>
 
 <script setup lang="ts">
-import { getShortcodes, postAuthRenew } from "~~/packages/api/src/sdk.gen";
+import { getShortcodes } from "~~/packages/api/src/sdk.gen";
 import { createShortcodeApi } from "~/utils/shortcode-api";
 const { openChallengeModal } = useChallenge();
 
-const userStore = useUserStore();
 const tfModal = ref();
 
 async function loadShortcodes() {
@@ -37,9 +36,6 @@ async function loadShortcodes() {
 onMounted(async () => {
   await loadShortcodes();
   openChallengeModal.value = () => tfModal.value?.open();
-  if (!userStore.isLoggedIn) {
-    await userStore.fetch();
-  }
 });
 </script>
 

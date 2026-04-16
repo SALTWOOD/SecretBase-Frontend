@@ -104,7 +104,7 @@
 
 <script setup lang="ts">
 import "@cap.js/widget";
-import { postAuthRegister } from "@secret-base/api/src/sdk.gen";
+import { postAuthRegister, getUserProfile } from "@secret-base/api/src/sdk.gen";
 
 const form = reactive({
   username: "",
@@ -119,6 +119,7 @@ const capToken = ref("");
 const capKey = ref(0);
 const api = "/api/cap/";
 const toast = useToast();
+const userStore = useUserStore();
 
 const handleCapSolve = (e: CustomEvent) => {
   capToken.value = e.detail.token;
@@ -149,6 +150,10 @@ const handleRegister = async () => {
     });
 
     if (!response.error) {
+      const profileResponse = await getUserProfile();
+      if (!profileResponse.error && profileResponse.response.status === 200) {
+        userStore.setUser(profileResponse.data as any);
+      }
       toast.add({
         title: "Registration successful",
         color: "success",
