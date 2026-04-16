@@ -4,7 +4,6 @@ import {
   getCommentsArticleByArticleId,
   postComments,
 } from "~~/packages/api/src/sdk.gen";
-import "@cap.js/widget";
 
 const props = defineProps<{
   articleId: string | number;
@@ -28,8 +27,7 @@ const guestNickname = ref("");
 const guestEmail = ref("");
 const guestWebsite = ref("");
 const capToken = ref("");
-const capApi = "/api/cap/";
-const capKey = ref(0);
+const capWidgetRef = ref<{ reset: () => void } | null>(null);
 
 const isGuest = computed(() => !userStore.isLoggedIn);
 
@@ -50,14 +48,6 @@ const canSubmitReply = computed(() => {
 const commentTree = computed(() => {
   return comments.value.filter((c) => !c.parentCommentId);
 });
-
-const handleCapSolve = (e: CustomEvent) => {
-  capToken.value = e.detail.token;
-};
-
-const handleCapReset = () => {
-  capToken.value = "";
-};
 
 const loadComments = async () => {
   isLoading.value = true;
@@ -117,8 +107,7 @@ const handleSubmit = async () => {
     afterSubmit(!response.error && !!response.data, "评论");
     if (!response.error) {
       newComment.value = "";
-      capKey.value++;
-      capToken.value = "";
+      capWidgetRef.value?.reset();
     }
   } catch (error) {
     console.error("Failed to submit comment:", error);
@@ -140,8 +129,7 @@ const handleReply = async () => {
     if (!response.error) {
       replyContent.value = "";
       replyTo.value = null;
-      capKey.value++;
-      capToken.value = "";
+      capWidgetRef.value?.reset();
     }
   } catch (error) {
     console.error("Failed to submit reply:", error);
@@ -187,18 +175,7 @@ onMounted(loadComments);
           placeholder="写下你的评论..."
           :rows="5"
         />
-        <client-only>
-          <div
-            class="cap-wrapper w-full overflow-hidden rounded-lg border border-default bg-muted/20"
-          >
-            <cap-widget
-              :key="capKey"
-              :data-cap-api-endpoint="capApi"
-              @solve="handleCapSolve"
-              @reset="handleCapReset"
-            />
-          </div>
-        </client-only>
+        <CapWidget ref="capWidgetRef" v-model="capToken" />
         <div class="flex items-center justify-between">
           <EmojiSelect icon="i-lucide-smile" v-model="newComment" />
           <UButton
@@ -237,18 +214,7 @@ onMounted(loadComments);
           placeholder="写下你的评论..."
           :rows="5"
         />
-        <client-only>
-          <div
-            class="cap-wrapper w-full overflow-hidden rounded-lg border border-default bg-muted/20"
-          >
-            <cap-widget
-              :key="capKey"
-              :data-cap-api-endpoint="capApi"
-              @solve="handleCapSolve"
-              @reset="handleCapReset"
-            />
-          </div>
-        </client-only>
+        <CapWidget ref="capWidgetRef" v-model="capToken" />
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
             <EmojiSelect icon="i-lucide-smile" v-model="newComment" />
@@ -369,9 +335,5 @@ onMounted(loadComments);
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
-}
-
-.cap-wrapper {
-  --cap-widget-width: 100%;
 }
 </style>

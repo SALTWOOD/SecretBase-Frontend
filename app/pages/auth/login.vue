@@ -31,20 +31,9 @@
           />
         </UFormField>
 
-        <client-only>
-          <UFormField label="人机验证">
-            <div
-              class="cap-wrapper w-full overflow-hidden rounded-lg border border-default bg-muted/20"
-            >
-              <cap-widget
-                :key="capKey"
-                :data-cap-api-endpoint="api"
-                @solve="handleCapSolve"
-                @reset="handleCapReset"
-              />
-            </div>
-          </UFormField>
-        </client-only>
+        <UFormField label="人机验证">
+          <CapWidget ref="capWidgetRef" v-model="capToken" />
+        </UFormField>
 
         <UButton
           type="submit"
@@ -103,34 +92,23 @@
 </template>
 
 <script setup lang="ts">
-import "@cap.js/widget";
 import {
   postAuthLogin,
   postAuthWebauthnLoginOptions,
   postAuthWebauthnLoginVerify,
   getUserProfile,
-} from "@secret-base/api/src/sdk.gen";
+} from "~~/packages/api/src";
+
 import { startAuthentication } from "@simplewebauthn/browser";
 import { isValidRedirectUrl } from "~/utils/url-validator";
 
 const form = reactive({ email: "", password: "" });
 const loading = ref(false);
 const capToken = ref("");
-const capKey = ref(0);
-const api = "/api/cap/";
+const capWidgetRef = ref<{ reset: () => void } | null>(null);
 const toast = useToast();
 const userStore = useUserStore();
 const route = useRoute();
-
-const handleCapSolve = (e: CustomEvent) => {
-  capToken.value = e.detail.token;
-  console.log("CAP Solved");
-};
-
-const handleCapReset = () => {
-  capToken.value = "";
-  console.log("CAP Expired");
-};
 
 const handleLogin = async () => {
   loading.value = true;
@@ -171,8 +149,7 @@ const handleLogin = async () => {
     }
   } finally {
     loading.value = false;
-    capKey.value++;
-    capToken.value = "";
+    capWidgetRef.value?.reset();
   }
 };
 
@@ -250,8 +227,3 @@ onMounted(async () => {
 });
 </script>
 
-<style scoped>
-.cap-wrapper {
-  --cap-widget-width: 100%;
-}
-</style>
