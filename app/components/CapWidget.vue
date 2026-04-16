@@ -4,17 +4,18 @@ import "@cap.js/widget";
 const props = withDefaults(
   defineProps<{
     modelValue?: string;
-    apiEndpoint?: string;
   }>(),
   {
     modelValue: "",
-    apiEndpoint: "/api/cap/",
   },
 );
 
 const emit = defineEmits<{
   "update:modelValue": [value: string];
 }>();
+
+const config = useRuntimeConfig();
+const apiEndpoint = config.public.capApi as string;
 
 const capKey = ref(0);
 
@@ -41,7 +42,7 @@ defineExpose({ reset });
     >
       <cap-widget
         :key="capKey"
-        :data-cap-api-endpoint="props.apiEndpoint"
+        :data-cap-api-endpoint="apiEndpoint"
         @solve="handleCapSolve"
         @reset="handleCapReset"
       />
