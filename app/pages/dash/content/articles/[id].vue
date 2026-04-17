@@ -131,7 +131,7 @@ const handleSave = async () => {
 
       <div
         v-if="previewCover"
-        class="relative w-full h-40 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800"
+        class="relative w-full h-40 rounded-lg overflow-hidden bg-elevated"
       >
         <img
           :src="previewCover"

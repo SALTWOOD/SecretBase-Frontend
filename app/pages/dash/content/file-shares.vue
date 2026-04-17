@@ -330,7 +330,7 @@ onMounted(() => {
 
       <UTable :data="fileShares" :columns="columns" :loading="isLoading">
         <template #short-id-cell="{ row }">
-          <span class="font-mono text-xs text-gray-500">{{
+          <span class="font-mono text-xs text-muted">{{
             row.original.shortId
           }}</span>
         </template>

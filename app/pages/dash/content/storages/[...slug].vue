@@ -430,14 +430,14 @@ onMounted(() => {
             >
               存储
             </NuxtLink>
-            <span class="text-gray-400">/</span>
+            <span class="text-dimmed">/</span>
             <span
               class="hover:text-primary cursor-pointer underline decoration-dotted"
               @click="router.push(`/dash/content/storages/${bucketName}`)"
               >{{ bucketName }}</span
             >
             <template v-for="(part, i) in slug.slice(1)" :key="i">
-              <span class="text-gray-400">/</span>
+              <span class="text-dimmed">/</span>
               <span
                 class="hover:text-primary cursor-pointer underline decoration-dotted"
                 @click="
@@ -496,7 +496,7 @@ onMounted(() => {
               class="rounded-none border-none"
               @click="viewMode = 'list'"
             />
-            <div class="w-px h-4 bg-gray-200 dark:bg-gray-800" />
+            <div class="w-px h-4 bg-default" />
             <UButton
               icon="i-lucide-layout-grid"
               square
@@ -590,7 +590,7 @@ onMounted(() => {
               variant="ghost"
               icon="i-lucide-more-vertical"
               size="xs"
-              class="rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm"
+              class="rounded-full bg-elevated/80 backdrop-blur-sm"
             />
           </UDropdownMenu>
         </div>

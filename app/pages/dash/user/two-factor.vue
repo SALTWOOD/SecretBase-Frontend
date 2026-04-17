@@ -78,9 +78,9 @@
             class="w-48 h-48 border p-2 bg-white rounded"
           />
           <div class="text-center">
-            <p class="text-xs text-gray-400 mb-1">密钥 (Secret Key)</p>
+            <p class="text-xs text-muted mb-1">密钥 (Secret Key)</p>
             <code
-              class="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-sm font-mono"
+              class="px-2 py-1 bg-elevated rounded text-sm font-mono"
               >{{ totpSecret }}</code
             >
           </div>

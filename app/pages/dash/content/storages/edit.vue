@@ -230,7 +230,7 @@ const formatSize = (bytes: number) => {
             {{ fileName }}
           </h1>
           <nav
-            class="flex items-center gap-1 text-sm text-gray-500 mt-2 font-mono"
+            class="flex items-center gap-1 text-sm text-muted mt-2 font-mono"
           >
             <NuxtLink
               to="/dash/content/storages"

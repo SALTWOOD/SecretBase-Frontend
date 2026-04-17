@@ -66,7 +66,7 @@ onMounted(refresh);
         class="group flex gap-4 p-4 rounded-xl bg-white dark:bg-gray-900 border border-default hover:border-primary/50 transition-colors"
       >
         <div
-          class="shrink-0 w-24 h-24 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 flex items-center justify-center"
+          class="shrink-0 w-24 h-24 rounded-lg overflow-hidden bg-elevated flex items-center justify-center"
         >
           <img
             v-if="getArticleCover(article)"

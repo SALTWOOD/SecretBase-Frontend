@@ -78,7 +78,7 @@ onMounted(async () => {
       </template>
 
       <template #creation-date-cell="{ row }">
-        <span class="text-sm text-gray-500">
+        <span class="text-sm text-muted">
           {{ row.original.creationDate?.toLocaleString() }}
         </span>
       </template>

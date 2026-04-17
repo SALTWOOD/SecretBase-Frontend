@@ -129,7 +129,7 @@ onMounted(async () => {
 
     <template #content>
       <div
-        class="w-[28rem] flex flex-col bg-white dark:bg-gray-900 shadow-xl rounded-lg overflow-hidden border border-gray-200 dark:border-gray-800"
+        class="w-[28rem] flex flex-col bg-elevated shadow-xl rounded-lg overflow-hidden border border-default"
       >
         <div
           class="h-80 overflow-y-auto p-3 grid grid-cols-5 gap-2 custom-scrollbar"

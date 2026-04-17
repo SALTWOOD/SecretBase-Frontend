@@ -2,7 +2,7 @@
   <UModal v-model:open="isOpen" prevent-close>
     <template #content>
       <UCard
-        class="backdrop-blur-xl border-default shadow-2xl bg-gray-50/50 dark:bg-gray-900/50"
+        class="backdrop-blur-xl border-default shadow-2xl bg-default/50"
         :ui="{ body: 'p-6', header: 'p-4 border-b border-default' }"
       >
         <template #header>
