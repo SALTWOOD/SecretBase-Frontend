@@ -25,6 +25,6 @@ defineProps<{
 @reference 'tailwindcss';
 
 .side-card {
-  @apply border-0 ring-1 ring-white/5 bg-white/40 dark:bg-neutral-900/40 backdrop-blur-md shadow-sm;
+  @apply ring-1 ring-neutral-200 bg-white/80 dark:ring-white/5 dark:bg-neutral-900/40 backdrop-blur-md shadow-sm;
 }
 </style>
