@@ -4,4 +4,65 @@
 @layer base, components, utilities, site-custom;
 
 @layer site-custom {
+  .glass-card {
+    @apply border-0 ring-1 ring-white/10 backdrop-blur-md shadow-sm;
+    background: rgba(0, 0, 0, 0.55);
+    color: #fff;
+  }
+
+  .glass-card :deep(*) {
+    --ui-text-highlighted: #fff;
+    --ui-text-muted: rgba(255, 255, 255, 0.6);
+    --ui-text-dimmed: rgba(255, 255, 255, 0.4);
+    --ui-bg-elevated: rgba(255, 255, 255, 0.08);
+    --ui-border: rgba(0, 0, 0, 0.2);
+    --ui-border-accented: rgba(0, 0, 0, 0.25);
+    --ui-border-subtle: rgba(0, 0, 0, 0.15);
+    color: #fff;
+  }
+
+  .glass-card :deep(hr) {
+    border-color: rgba(0, 0, 0, 0.2);
+  }
+
+  .content-card {
+    @apply p-4 md:p-8 rounded-xl shadow-xl transition-colors duration-300;
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .dark .content-card {
+    background-color: rgba(23, 23, 23, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-border rounded;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .custom-md-preview {
+    background-color: transparent;
+    --md-bk-color: transparent;
+  }
+
+  .custom-catalog .md-editor-catalog-link span:hover {
+    color: var(--ui-primary);
+  }
+
+  .custom-catalog .md-editor-catalog-active > span {
+    color: var(--ui-primary);
+    font-weight: 600;
+  }
 }
