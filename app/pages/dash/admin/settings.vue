@@ -425,6 +425,10 @@ const addDictEntry = (item: SettingItem) => {
   newDictKey.value = "";
 };
 
+const preventWheel = (e: Event) => {
+  e.preventDefault();
+};
+
 onMounted(() => fetchData());
 </script>
 
@@ -496,6 +500,7 @@ onMounted(() => fetchData());
                       :step="setting.type === 'double' ? '0.1' : '1'"
                       class="w-32"
                       align="right"
+                      @wheel="preventWheel"
                     />
                   </template>
 
@@ -544,6 +549,7 @@ onMounted(() => fetchData());
                           "
                           class="grow"
                           align="right"
+                          @wheel="preventWheel"
                         />
                         <UInput
                           v-else
@@ -636,6 +642,7 @@ onMounted(() => fetchData());
                           "
                           class="grow"
                           align="right"
+                          @wheel="preventWheel"
                           @update:model-value="
                             (v: any) => {
                               (
