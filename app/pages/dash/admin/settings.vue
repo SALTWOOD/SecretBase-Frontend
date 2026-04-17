@@ -426,7 +426,7 @@ const addDictEntry = (item: SettingItem) => {
 };
 
 const preventWheel = (e: Event) => {
-  e.preventDefault();
+  e.stopPropagation();
 };
 
 onMounted(() => fetchData());
