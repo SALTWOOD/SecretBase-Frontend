@@ -24,9 +24,10 @@ const mainStyle = computed(() => {
 
 const backgroundStyle = computed(() => {
   const blur = homeSettings.value?.blur || 0;
-  const brightness = homeSettings.value?.brightness || 0;
+  const brightness = homeSettings.value?.brightness ?? 100;
   return {
-    backdropFilter: `blur(${blur}px) brightness(${brightness}%)`,
+    backdropFilter: `blur(${blur}px)`,
+    filter: brightness !== 100 ? `brightness(${brightness}%)` : undefined,
     minHeight: "100vh",
   };
 });
@@ -34,7 +35,7 @@ const backgroundStyle = computed(() => {
 
 <template>
   <div
-    class="min-h-screen bg-default bg-grid-slate selection:bg-(--ui-primary)/30"
+    class="min-h-screen selection:bg-(--ui-primary)/30"
   >
     <AppHeader />
     <main :style="mainStyle" class="transition-[filter] duration-700">
