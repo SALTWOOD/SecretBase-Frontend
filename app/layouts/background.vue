@@ -24,8 +24,9 @@ const mainStyle = computed(() => {
 
 const backgroundStyle = computed(() => {
   const blur = homeSettings.value?.blur || 0;
+  const brightness = homeSettings.value?.brightness || 0;
   return {
-    backdropFilter: `blur(${blur}px)`,
+    backdropFilter: `blur(${blur}px) brightness(${brightness}%)`,
     minHeight: "100vh",
   };
 });

@@ -91,9 +91,9 @@ const i18nMap: Record<
     label: "模糊度 (px)",
     description: "背景图的高斯模糊程度",
   },
-  "site.home.background.opacity": {
-    label: "不透明度",
-    description: "范围 0.0 到 1.0",
+  "site.home.background.brightness": {
+    label: "亮度",
+    description: "为百分数，默认值为 100%",
   },
   "site.home.banner": { label: "横幅通告" },
   "site.home.banner.content": {

@@ -395,7 +395,7 @@ export type GeneralInfoSettings = {
 export type HomeBackgroundSettings = {
     url: string;
     blur: number | string;
-    opacity: number | string;
+    brightness: number | string;
 };
 
 export type HomeBannerSettings = {

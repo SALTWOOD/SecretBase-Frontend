@@ -1625,7 +1625,7 @@ export const HomeBackgroundSettingsSchema = {
     required: [
         'url',
         'blur',
-        'opacity'
+        'brightness'
     ],
     type: 'object',
     properties: {
@@ -1640,13 +1640,13 @@ export const HomeBackgroundSettingsSchema = {
             ],
             format: 'int32'
         },
-        opacity: {
-            pattern: '^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$',
+        brightness: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
             type: [
-                'number',
+                'integer',
                 'string'
             ],
-            format: 'double'
+            format: 'int32'
         }
     }
 } as const;
