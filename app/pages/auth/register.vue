@@ -1,18 +1,9 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-background p-4">
-    <UCard
-      class="w-full max-w-md backdrop-blur-xl border-default shadow-2xl bg-gray-50/50 dark:bg-gray-900/50"
-    >
-      <template #header>
-        <div class="text-center">
-          <h2 class="text-2xl font-bold">创建账号</h2>
-          <p class="text-muted-foreground text-sm mt-1">
-            加入秘密基地，开启你的旅程
-          </p>
-        </div>
-      </template>
+  <AuthLayout>
+    <template #title>创建账号</template>
+    <template #description>加入秘密基地，开启你的旅程</template>
 
-      <form @submit.prevent="handleRegister" class="space-y-4">
+    <form @submit.prevent="handleRegister" class="space-y-4">
         <UFormField label="用户名">
           <UInput
             v-model="form.username"
@@ -80,15 +71,14 @@
       </form>
 
       <template #footer>
-        <p class="text-center text-sm text-muted-foreground">
+        <p class="text-center text-sm text-muted">
           已有账号？
           <NuxtLink to="/auth/login" class="text-primary hover:underline"
             >返回登录</NuxtLink
           >
         </p>
       </template>
-    </UCard>
-  </div>
+    </AuthLayout>
 </template>
 
 <script setup lang="ts">

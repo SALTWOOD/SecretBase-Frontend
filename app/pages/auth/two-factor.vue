@@ -1,25 +1,18 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-background p-4">
-    <UCard
-      class="w-full max-w-md backdrop-blur-xl border-default shadow-2xl bg-gray-50/50 dark:bg-gray-900/50"
-    >
-      <template #header>
-        <div class="text-center relative">
-          <UButton
-            v-if="step !== 'select'"
-            variant="ghost"
-            icon="i-lucide-arrow-left"
-            class="absolute left-0 top-1/2 -translate-y-1/2"
-            @click="step = 'select'"
-          />
-          <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
-            安全验证
-          </h2>
-          <p class="text-muted-foreground text-sm mt-1">
-            {{ stepDescriptions[step] }}
-          </p>
-        </div>
-      </template>
+  <AuthLayout>
+    <template #headerExtra>
+      <UButton
+        v-if="step !== 'select'"
+        variant="ghost"
+        icon="i-lucide-arrow-left"
+        class="absolute left-0 top-1/2 -translate-y-1/2"
+        @click="step = 'select'"
+      />
+    </template>
+    <template #title>
+      <span :class="isSuccess ? 'text-green-500' : ''">安全验证</span>
+    </template>
+    <template #description>{{ stepDescriptions[step] }}</template>
 
       <div v-if="step === 'select'" class="space-y-3">
         <UButton
@@ -83,12 +76,11 @@
       </div>
 
       <template #footer>
-        <p class="text-center text-xs text-muted-foreground">
+        <p class="text-center text-xs text-muted">
           遇到问题？请尝试使用备用恢复码
         </p>
       </template>
-    </UCard>
-  </div>
+    </AuthLayout>
 </template>
 
 <script setup lang="ts">
