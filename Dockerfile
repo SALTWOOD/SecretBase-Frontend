@@ -1,26 +1,23 @@
-FROM node:22-alpine AS builder
+FROM node:20-slim AS builder
+
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
 
 WORKDIR /app
 
-RUN corepack enable && corepack prepare pnpm@latest --activate
+COPY package.json pnpm-lock.yaml ./
 
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY packages/api/package.json ./packages/api/package.json
-
-RUN pnpm i --frozen-lockfile
+RUN pnpm install --frozen-lockfile
 
 COPY . .
+RUN pnpm build
 
-RUN pnpm run build
-
-FROM node:22-alpine AS production
+FROM node:20-slim AS runner
 
 WORKDIR /app
 
-COPY --from=builder /app/.output .output
-
-ENV HOST=0.0.0.0
-ENV PORT=3000
+COPY --from=builder /app/.output ./.output
 
 EXPOSE 3000
 
