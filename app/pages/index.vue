@@ -353,8 +353,18 @@ useSeoMeta({
 }
 
 .article-card-v2 {
-  @apply glass-card relative flex flex-col overflow-hidden rounded-xl transition-all duration-300;
-  @apply border border-white/10 backdrop-blur-sm;
+  @apply relative flex flex-col overflow-hidden rounded-xl transition-all duration-300;
+  @apply border border-white/10 backdrop-blur-sm shadow-sm;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+}
+
+.article-card-v2 :deep(*) {
+  --ui-text-highlighted: #fff;
+  --ui-text-muted: rgba(255, 255, 255, 0.6);
+  --ui-text-dimmed: rgba(255, 255, 255, 0.4);
+  --ui-bg-elevated: rgba(255, 255, 255, 0.08);
+  color: #fff;
 }
 
 .article-card-v2:hover {

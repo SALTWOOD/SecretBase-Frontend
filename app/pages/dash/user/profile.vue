@@ -197,6 +197,7 @@ onMounted(async () => {
 @reference "tailwindcss";
 
 :deep(.u-form-field-label) {
-  @apply text-highlighted font-semibold;
+  color: var(--ui-text-highlighted);
+  font-weight: 600;
 }
 </style>
