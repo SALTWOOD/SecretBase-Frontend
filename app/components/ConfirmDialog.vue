@@ -68,7 +68,7 @@ const onCancel = () => {
 
         <div class="flex-1">
           <h3
-            class="text-lg font-semibold text-gray-900 dark:text-white leading-6"
+            class="text-lg font-semibold text-highlighted leading-6"
           >
             {{ subtitle }}
           </h3>

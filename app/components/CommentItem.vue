@@ -335,7 +335,7 @@ onMounted(async () => {
               @reply="(id) => emit('reply', id)"
             />
           </template>
-          <div v-else class="py-4 text-center text-gray-500 text-sm">
+          <div v-else class="py-4 text-center text-muted text-sm">
             暂无回复
           </div>
         </div>

@@ -45,7 +45,7 @@
           <div class="w-full border-t border-default"></div>
         </div>
         <div class="relative flex justify-center text-xs">
-          <span class="bg-gray-50 dark:bg-gray-900 px-2 text-muted-foreground">或</span>
+          <span class="bg-default px-2 text-muted">或</span>
         </div>
       </div>
 

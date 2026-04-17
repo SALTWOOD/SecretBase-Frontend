@@ -7,7 +7,7 @@
         <h1 class="text-3xl font-bold text-foreground tracking-tight">
           {{ greetings() }}，{{ userStore.user?.username }}
         </h1>
-        <p class="text-muted-foreground mt-1">
+        <p class="text-muted mt-1">
           欢迎回到秘密基地，今天想处理些什么？
         </p>
       </div>
@@ -23,7 +23,7 @@
             <UIcon :name="stat.icon" class="w-6 h-6" :class="stat.iconClass" />
           </div>
           <div>
-            <p class="text-sm text-muted-foreground font-medium">
+            <p class="text-sm text-muted font-medium">
               {{ stat.label }}
             </p>
             <p class="text-2xl font-bold text-foreground">{{ stat.value }}</p>
@@ -41,21 +41,21 @@
       </template>
       <div
         v-if="pending"
-        class="text-muted-foreground text-sm py-12 text-center flex flex-col items-center gap-2"
+        class="text-muted text-sm py-12 text-center flex flex-col items-center gap-2"
       >
         <UIcon name="i-lucide-refresh-cw" class="animate-spin w-5 h-5" />
         正在加载数据...
       </div>
       <div
         v-else-if="error"
-        class="text-muted-foreground text-sm py-12 text-center flex flex-col items-center gap-2"
+        class="text-muted text-sm py-12 text-center flex flex-col items-center gap-2"
       >
         <UIcon name="i-lucide-alert-circle" class="w-5 h-5 text-red-500" />
         加载失败，请稍后重试
       </div>
       <div
         v-else-if="activities.length === 0"
-        class="text-muted-foreground text-sm py-12 text-center"
+        class="text-muted text-sm py-12 text-center"
       >
         暂无动态
       </div>
@@ -82,11 +82,11 @@
                 item.type === "article_published" ? "发布了文章" : "发表了评论"
               }}
             </p>
-            <p class="text-sm text-muted-foreground truncate">
+            <p class="text-sm text-muted truncate">
               {{ item.title }}
             </p>
           </div>
-          <span class="text-xs text-muted-foreground whitespace-nowrap mt-1">{{
+          <span class="text-xs text-muted whitespace-nowrap mt-1">{{
             formatTime(item.time)
           }}</span>
         </div>

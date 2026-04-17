@@ -314,7 +314,7 @@ onMounted(loadComments);
 
       <div
         v-else
-        class="space-y-0 divide-y divide-gray-100 dark:divide-gray-800"
+        class="space-y-0 divide-y divide-default"
       >
         <CommentItem
           v-for="comment in commentTree"
