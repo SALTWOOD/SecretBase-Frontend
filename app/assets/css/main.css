@@ -51,18 +51,4 @@
     scrollbar-width: none;
     -ms-overflow-style: none;
   }
-
-  .custom-md-preview {
-    background-color: transparent;
-    --md-bk-color: transparent;
-  }
-
-  .custom-catalog .md-editor-catalog-link span:hover {
-    color: var(--ui-primary);
-  }
-
-  .custom-catalog .md-editor-catalog-active > span {
-    color: var(--ui-primary);
-    font-weight: 600;
-  }
 }

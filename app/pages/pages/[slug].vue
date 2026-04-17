@@ -141,3 +141,22 @@ const formatDate = (date: any) => {
   </UContainer>
 </template>
 
+<style scoped>
+:deep(.custom-md-preview) {
+  background-color: transparent;
+  --md-bk-color: transparent;
+}
+
+:deep(.md-editor-catalog-link span:hover) {
+  color: var(--ui-primary);
+}
+
+:deep(.md-editor-catalog-active > span) {
+  color: var(--ui-primary);
+  font-weight: 600;
+}
+
+:deep(.custom-md-preview table tr:nth-child(2n)) {
+  background-color: transparent !important;
+}
+</style>
