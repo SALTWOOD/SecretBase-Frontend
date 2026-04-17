@@ -38,10 +38,7 @@ const backgroundStyle = computed(() => {
   >
     <AppHeader />
     <main :style="mainStyle" class="transition-[filter] duration-700">
-      <div
-        :style="backgroundStyle"
-        class="bg-white/70 dark:bg-black/60"
-      >
+      <div :style="backgroundStyle">
         <div class="pt-16">
           <slot />
         </div>
