@@ -353,16 +353,43 @@ useSeoMeta({
 }
 
 .side-card {
-  @apply border-0 ring-1 ring-white/5 bg-white/40 dark:bg-neutral-900/40 backdrop-blur-md shadow-sm;
+  @apply border-0 ring-1 ring-white/10 backdrop-blur-md shadow-sm;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+}
+
+.side-card :deep(*) {
+  --ui-text-highlighted: #fff;
+  --ui-text-muted: rgba(255, 255, 255, 0.6);
+  --ui-text-dimmed: rgba(255, 255, 255, 0.4);
+  --ui-bg-elevated: rgba(255, 255, 255, 0.08);
+  --ui-border: rgba(0, 0, 0, 0.2);
+  --ui-border-accented: rgba(0, 0, 0, 0.25);
+  --ui-border-subtle: rgba(0, 0, 0, 0.15);
+  color: #fff;
+}
+
+.side-card :deep(hr) {
+  border-color: rgba(0, 0, 0, 0.2);
 }
 
 .article-card-v2 {
   @apply relative flex flex-col overflow-hidden rounded-xl transition-all duration-300;
-  @apply bg-white/50 dark:bg-neutral-900/50 backdrop-blur-sm;
-  @apply border border-white/50 dark:border-white/10 shadow-sm;
+  @apply border border-white/10 shadow-sm backdrop-blur-sm;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+}
+
+.article-card-v2 :deep(*) {
+  --ui-text-highlighted: #fff;
+  --ui-text-muted: rgba(255, 255, 255, 0.6);
+  --ui-text-dimmed: rgba(255, 255, 255, 0.4);
+  --ui-bg-elevated: rgba(255, 255, 255, 0.08);
+  color: #fff;
 }
 
 .article-card-v2:hover {
-  @apply -translate-y-1 shadow-xl ring-1 bg-white/80 dark:bg-neutral-900/80;
+  @apply -translate-y-1 shadow-xl ring-1;
+  background: rgba(0, 0, 0, 0.72);
 }
 </style>
