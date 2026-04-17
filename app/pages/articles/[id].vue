@@ -46,7 +46,7 @@ const handleCommentCountChange = (count: number) => {
   <UContainer class="py-10 relative">
     <div v-if="isLoading" class="space-y-6">
       <USkeleton class="h-12 w-3/4 rounded-lg" />
-      <UCard class="article-card">
+      <UCard class="content-card">
         <div class="space-y-4">
           <USkeleton class="h-4 w-full" />
           <USkeleton class="h-4 w-5/6" />
@@ -65,7 +65,7 @@ const handleCommentCountChange = (count: number) => {
     />
 
     <div v-else-if="article" class="flex flex-col gap-8">
-      <UCard class="article-card overflow-visible!">
+      <UCard class="content-card overflow-visible!">
         <article class="grid grid-cols-1 lg:grid-cols-[1fr_260px] gap-12">
           <div class="min-w-0">
             <header class="mb-10">
@@ -87,13 +87,13 @@ const handleCommentCountChange = (count: number) => {
               />
 
               <h1
-                class="text-4xl md:text-5xl font-extrabold tracking-tight mb-6 text-gray-900 dark:text-white"
+                class="text-4xl md:text-5xl font-extrabold tracking-tight mb-6 text-highlighted"
               >
                 {{ article.title }}
               </h1>
 
               <div
-                class="flex items-center gap-6 text-sm text-gray-500 dark:text-gray-400"
+                class="flex items-center gap-6 text-sm text-muted"
               >
                 <div class="flex items-center gap-2">
                   <UAvatar
@@ -126,10 +126,10 @@ const handleCommentCountChange = (count: number) => {
 
           <aside class="hidden lg:block">
             <div
-              class="sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto pl-8 border-l border-gray-100 dark:border-gray-800"
+              class="sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto pl-8 border-l border-default"
             >
               <div
-                class="flex items-center gap-2 mb-4 text-gray-900 dark:text-white"
+                class="flex items-center gap-2 mb-4 text-highlighted"
               >
                 <UIcon name="i-lucide-list-tree" class="w-4 h-4" />
                 <span class="text-sm font-bold uppercase tracking-widest"
@@ -151,7 +151,7 @@ const handleCommentCountChange = (count: number) => {
         </article>
       </UCard>
 
-      <UCard class="article-card">
+      <UCard class="content-card">
         <template #header>
           <div class="flex items-center gap-2">
             <UIcon
@@ -171,33 +171,3 @@ const handleCommentCountChange = (count: number) => {
   </UContainer>
 </template>
 
-<style scoped>
-@reference 'tailwindcss';
-
-.article-card {
-  @apply p-4 md:p-8 rounded-xl shadow-xl transition-colors duration-300;
-  background-color: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.dark .article-card {
-  background-color: rgba(23, 23, 23, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-}
-
-:deep(.custom-md-preview) {
-  background-color: transparent;
-  --md-bk-color: transparent;
-}
-
-:deep(.md-editor-catalog-link span:hover) {
-  color: var(--ui-primary);
-}
-
-:deep(.md-editor-catalog-active > span) {
-  color: var(--ui-primary);
-  font-weight: 600;
-}
-</style>
