@@ -353,16 +353,16 @@ useSeoMeta({
 }
 
 .side-card {
-  @apply ring-1 ring-neutral-200 bg-white/80 dark:ring-white/5 dark:bg-neutral-900/40 backdrop-blur-md shadow-sm;
+  @apply ring-1 ring-neutral-200/80 bg-white/50 dark:ring-white/5 dark:bg-neutral-900/40 backdrop-blur-md shadow-sm;
 }
 
 .article-card-v2 {
   @apply relative flex flex-col overflow-hidden rounded-xl transition-all duration-300;
-  @apply bg-white/80 dark:bg-neutral-900/50 backdrop-blur-sm;
-  @apply border border-neutral-200 dark:border-white/10 shadow-sm;
+  @apply bg-white/60 dark:bg-neutral-900/50 backdrop-blur-sm;
+  @apply border border-neutral-200/60 dark:border-white/10 shadow-sm;
 }
 
 .article-card-v2:hover {
-  @apply -translate-y-1 shadow-xl ring-1 bg-white dark:bg-neutral-900/80 ring-neutral-300 dark:ring-white/10;
+  @apply -translate-y-1 shadow-xl ring-1 bg-white/80 dark:bg-neutral-900/80 ring-neutral-300 dark:ring-white/10;
 }
 </style>
