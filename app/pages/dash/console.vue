@@ -166,14 +166,8 @@ const getLogClass = (type: Log["type"]) => {
 </script>
 
 <style scoped>
-@reference '~/assets/css/main.css';
+@reference 'tailwindcss';
 
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  @apply bg-border rounded;
-}
 pre {
   font-family: "Fira Code", "Cascadia Code", ui-monospace, monospace;
 }

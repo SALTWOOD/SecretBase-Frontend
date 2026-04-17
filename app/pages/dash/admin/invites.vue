@@ -317,6 +317,3 @@ watch(page, refresh);
 onMounted(refresh);
 </script>
 
-<style scoped>
-@reference "~/assets/css/main.css";
-</style>

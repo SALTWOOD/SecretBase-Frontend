@@ -472,6 +472,3 @@ async function copyToClipboard(text: string) {
 onMounted(refresh);
 </script>
 
-<style scoped>
-@reference "~/assets/css/main.css";
-</style>

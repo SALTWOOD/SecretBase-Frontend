@@ -89,6 +89,3 @@ const markAllAsRead = () => {
 };
 </script>
 
-<style scoped>
-@reference "~/assets/css/main.css";
-</style>

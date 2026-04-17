@@ -206,11 +206,4 @@ onMounted(async () => {
 .custom-scrollbar::-webkit-scrollbar-thumb {
   @apply bg-gray-300 dark:bg-gray-600 rounded;
 }
-.no-scrollbar::-webkit-scrollbar {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
 </style>

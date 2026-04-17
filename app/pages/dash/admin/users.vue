@@ -236,7 +236,7 @@ onMounted(refresh);
 </script>
 
 <style scoped>
-@reference "~/assets/css/main.css";
+@reference "tailwindcss";
 
 :deep(table) {
   @apply text-sm;

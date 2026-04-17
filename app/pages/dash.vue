@@ -289,16 +289,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-@reference '~/assets/css/main.css';
-
-.bg-grid-slate {
-  background-image: radial-gradient(
-    circle at 2px 2px,
-    rgba(51, 65, 85, 0.15) 1px,
-    transparent 0
-  );
-  background-size: 24px 24px;
-}
+@reference 'tailwindcss';
 
 :deep(.UDashboardSidebar) {
   @apply h-full;

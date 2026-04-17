@@ -194,7 +194,7 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-@reference "~/assets/css/main.css";
+@reference "tailwindcss";
 
 :deep(.u-form-field-label) {
   @apply text-highlighted font-semibold;

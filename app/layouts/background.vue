@@ -28,7 +28,6 @@ const backgroundStyle = computed(() => {
   return {
     backdropFilter: `blur(${blur}px)`,
     filter: brightness !== 100 ? `brightness(${brightness}%)` : undefined,
-    minHeight: "100vh",
   };
 });
 </script>
