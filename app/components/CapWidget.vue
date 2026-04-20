@@ -42,7 +42,7 @@ defineExpose({ reset });
     >
       <cap-widget
         :key="capKey"
-        :data-cap-api-endpoint="apiEndpoint"
+        data-cap-api-endpoint="/api/cap"
         @solve="handleCapSolve"
         @reset="handleCapReset"
       />
