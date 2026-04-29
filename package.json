@@ -25,6 +25,7 @@
     "@secret-base/api": "workspace:*",
     "@simplewebauthn/browser": "^13.3.0",
     "axios": "^1.15.0",
+    "hls.js": "^1.6.16",
     "md-editor-v3": "^6.4.2",
     "nuxt": "^4.4.2",
     "pinia": "^3.0.4",
