@@ -3,6 +3,7 @@ import Hls from "hls.js";
 import { getLiveRoomsByRoomId } from "~~/packages/api/src/sdk.gen";
 
 const route = useRoute();
+const requestUrl = useRequestURL();
 
 const loading = ref(false);
 const room = ref<any>(null);
@@ -10,21 +11,13 @@ const unavailableReason = ref("");
 const videoRef = ref<HTMLVideoElement | null>(null);
 const statusText = ref("等待初始化...");
 const status = ref("idle");
-const requestUrl = useRequestURL();
 
 const roomId = computed(() => Number(route.params.id));
 
 const resolvePlaybackUrl = (rawUrl?: string) => {
   if (!rawUrl) return "";
-
-  if (/^[a-z][a-z\d+.-]*:\/\//i.test(rawUrl)) {
-    return rawUrl;
-  }
-
-  if (rawUrl.startsWith("//")) {
-    return `${requestUrl.protocol}${rawUrl}`;
-  }
-
+  if (/^[a-z][a-z\d+.-]*:\/\//i.test(rawUrl)) return rawUrl;
+  if (rawUrl.startsWith("//")) return `${requestUrl.protocol}${rawUrl}`;
   const normalizedPath = rawUrl.startsWith("/") ? rawUrl : `/${rawUrl}`;
   return `${requestUrl.protocol}//${requestUrl.host}${normalizedPath}`;
 };
@@ -63,7 +56,7 @@ const initHls = () => {
     hls.on(Hls.Events.MANIFEST_PARSED, () => {
       statusText.value = "解析成功，准备播放";
       video.play().catch(() => {
-        statusText.value = "自动播放受阻，请点击播放";
+        statusText.value = "已就绪，请点击播放";
       });
       status.value = "success";
     });
@@ -77,22 +70,22 @@ const initHls = () => {
             hls?.startLoad();
             break;
           case Hls.ErrorTypes.MEDIA_ERROR:
-            statusText.value = "解码错误：请尝试更换浏览器或播放器";
+            statusText.value = "解码错误：请尝试更换浏览器";
             hls?.recoverMediaError();
             break;
           default:
-            statusText.value = "不可恢复的错误，请检查网络或稍后重试";
+            statusText.value = "不可恢复的错误";
             destroyHls();
             break;
         }
       }
     });
   } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-    statusText.value = "原生模式";
     video.src = streamUrl;
+    statusText.value = "原生播放模式";
     status.value = "success";
   } else {
-    statusText.value = "浏览器不支持 MSE 或 HLS 解码";
+    statusText.value = "浏览器不支持 HLS";
     status.value = "error";
   }
 };
@@ -106,36 +99,18 @@ const fetchRoom = async () => {
     });
 
     if (response.error) {
-      if (response.response.status === 403) {
-        unavailableReason.value = "直播功能未开放。";
-        room.value = null;
-        return;
-      }
-      if (response.response.status === 404) {
-        unavailableReason.value = "直播间不存在或已关闭。";
-        room.value = null;
-        return;
-      }
-      unavailableReason.value = "加载直播间失败，请稍后重试。";
+      const code = response.response.status;
+      if (code === 403) unavailableReason.value = "直播功能未开放。";
+      else if (code === 404) unavailableReason.value = "直播间不存在。";
+      else unavailableReason.value = "加载失败，请重试。";
       room.value = null;
       return;
     }
 
     room.value = response.data;
-
-    if (!room.value?.playbackUrl) {
-      statusText.value = "当前直播间暂无可播放地址";
-      status.value = "idle";
-      return;
-    }
-
-    statusText.value = "等待初始化...";
-    status.value = "idle";
-
-    await nextTick();
-    initHls();
+    // 这里不需要手动调 initHls，上面的 watch 会自动发现 room 变化并执行
   } catch {
-    unavailableReason.value = "加载直播间失败，请稍后重试。";
+    unavailableReason.value = "网络请求失败。";
     room.value = null;
     statusText.value = "加载失败";
     status.value = "error";
@@ -144,7 +119,10 @@ const fetchRoom = async () => {
   }
 };
 
-onMounted(fetchRoom);
+onMounted(() => {
+  fetchRoom();
+  initHls();
+});
 
 onBeforeUnmount(() => {
   destroyHls();
@@ -153,6 +131,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="py-6 space-y-6">
+    <!-- 头部区域保持你的样式 -->
     <div class="flex items-center justify-between gap-3">
       <div>
         <h1 class="text-2xl font-bold">直播观看</h1>
@@ -163,10 +142,12 @@ onBeforeUnmount(() => {
       </UButton>
     </div>
 
+    <!-- 加载中样式 -->
     <UCard v-if="loading">
       <div class="py-8 text-center text-muted">正在加载直播间...</div>
     </UCard>
 
+    <!-- 错误/警告样式 -->
     <UAlert
       v-else-if="unavailableReason"
       color="warning"
@@ -176,6 +157,7 @@ onBeforeUnmount(() => {
       icon="i-lucide-alert-triangle"
     />
 
+    <!-- 直播间内容区 -->
     <template v-else-if="room">
       <UCard>
         <template #header>
@@ -190,27 +172,29 @@ onBeforeUnmount(() => {
           </div>
         </template>
 
-          <div class="space-y-4">
-            <div class="rounded-xl overflow-hidden border border-default bg-black/90">
-              <video
-                ref="videoRef"
-                class="w-full aspect-video"
-                controls
-                playsinline
-              />
-            </div>
+        <div class="space-y-4">
+          <!-- 播放器容器 -->
+          <div class="rounded-xl overflow-hidden border border-default bg-black/90">
+            <!-- 建议加上 muted 以提高自动播放成功率 -->
+            <video
+              ref="videoRef"
+              class="w-full aspect-video"
+              controls
+              playsinline
+            />
+          </div>
 
-            <div class="text-sm">
-              <span>状态: </span>
-              <span :class="status">{{ statusText }}</span>
-            </div>
+          <div class="text-sm flex items-center gap-2">
+            <span class="text-muted">播放状态:</span>
+            <span :class="status" class="font-medium">{{ statusText }}</span>
+          </div>
 
-            <p class="text-xs text-muted">
-              如当前浏览器无法直接播放 HLS，可复制播放地址到 VLC 等播放器观看。
-            </p>
+          <p class="text-xs text-muted">
+            如当前浏览器无法直接播放，可复制播放地址到 VLC 观看。
+          </p>
 
           <UFormField label="播放地址">
-            <UInput :model-value="playbackUrl" readonly />
+            <UInput :model-value="playbackUrl" readonly icon="i-lucide-link" />
           </UFormField>
         </div>
       </UCard>
@@ -219,15 +203,8 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-.success {
-  color: #4ade80;
-}
-
-.error {
-  color: #f87171;
-}
-
-.idle {
-  color: #9ca3af;
+video {
+  outline: none;
+  object-fit: contain;
 }
 </style>
