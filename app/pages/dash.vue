@@ -100,7 +100,10 @@ interface NavigationItem {
 }
 
 const route = useRoute();
-const isAdmin = ref(true);
+const isAdmin = computed(() => {
+  const role = Number(userStore.user?.role ?? 0);
+  return role >= 2;
+});
 const toast = useToast();
 const user: Ref<User | null> = ref(null);
 const userStore = useUserStore();
@@ -186,6 +189,25 @@ const allNavigationItems = computed<NavigationItem[]>(() => [
     ],
   },
   {
+    label: "直播",
+    icon: "i-lucide-radio",
+    type: "trigger",
+    defaultOpen: true,
+    children: [
+      {
+        label: "直播间列表",
+        icon: "i-lucide-tv",
+        to: "/dash/live/rooms",
+      },
+      {
+        label: "推流控制",
+        icon: "i-lucide-wifi",
+        to: "/dash/live/publish",
+        condition: () => isAdmin.value,
+      },
+    ],
+  },
+  {
     label: "管理后台",
     icon: "i-lucide-shield-check",
     type: "trigger",
@@ -230,9 +252,27 @@ const allNavigationItems = computed<NavigationItem[]>(() => [
 ]);
 
 const sidebarItems = computed(() => {
+  const normalize = (item: NavigationItem): NavigationItem | null => {
+    if (item.hidden) return null;
+    if (item.condition && !item.condition()) return null;
+
+    if (!item.children) return item;
+
+    const children = item.children
+      .map((child) => normalize(child))
+      .filter((child): child is NavigationItem => child !== null);
+
+    if (children.length === 0) return null;
+
+    return {
+      ...item,
+      children,
+    };
+  };
+
   return allNavigationItems.value
-    .filter((item) => !item.hidden)
-    .filter((item) => !item.condition || item.condition());
+    .map((item) => normalize(item))
+    .filter((item): item is NavigationItem => item !== null);
 });
 
 const breadcrumbItems = computed(() => {

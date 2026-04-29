@@ -2218,10 +2218,169 @@ export const KeyValuePairOfTypeAndObjectSchema = {
 
 export const LargeBlobSupportSchema = {} as const;
 
+export const LivePublishHookBodySchema = {
+    type: 'object',
+    properties: {
+        roomId: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        streamKey: {
+            type: 'string'
+        }
+    }
+} as const;
+
+export const LiveRoomDetailsResponseSchema = {
+    type: 'object',
+    properties: {
+        roomId: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        ownerUserId: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        ownerUsername: {
+            type: 'string'
+        },
+        title: {
+            type: 'string'
+        },
+        coverUrl: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        isEnabled: {
+            type: 'boolean'
+        },
+        isLive: {
+            type: 'boolean'
+        },
+        lastLiveAt: {
+            type: [
+                'null',
+                'string'
+            ],
+            format: 'date-time'
+        },
+        playbackUrl: {
+            type: 'string'
+        }
+    }
+} as const;
+
+export const LiveRoomListItemSchema = {
+    type: 'object',
+    properties: {
+        roomId: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        ownerUsername: {
+            type: 'string'
+        },
+        title: {
+            type: 'string'
+        },
+        coverUrl: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        isLive: {
+            type: 'boolean'
+        },
+        lastLiveAt: {
+            type: [
+                'null',
+                'string'
+            ],
+            format: 'date-time'
+        }
+    }
+} as const;
+
+export const LiveUnpublishHookBodySchema = {
+    type: 'object',
+    properties: {
+        roomId: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        }
+    }
+} as const;
+
 export const MessageResponseSchema = {
     type: 'object',
     properties: {
         message: {
+            type: 'string'
+        }
+    }
+} as const;
+
+export const MyLiveChannelResponseSchema = {
+    type: 'object',
+    properties: {
+        roomId: {
+            pattern: '^-?(?:0|[1-9]\\d*)$',
+            type: [
+                'integer',
+                'string'
+            ],
+            format: 'int32'
+        },
+        title: {
+            type: 'string'
+        },
+        coverUrl: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        isEnabled: {
+            type: 'boolean'
+        },
+        isLive: {
+            type: 'boolean'
+        },
+        lastLiveAt: {
+            type: [
+                'null',
+                'string'
+            ],
+            format: 'date-time'
+        },
+        rtmpServer: {
+            type: 'string'
+        },
+        streamKeyPreview: {
             type: 'string'
         }
     }
@@ -2895,6 +3054,15 @@ export const RecentActivityItemSchema = {
         time: {
             type: 'string',
             format: 'date-time'
+        }
+    }
+} as const;
+
+export const ResetStreamKeyResponseSchema = {
+    type: 'object',
+    properties: {
+        streamKey: {
+            type: 'string'
         }
     }
 } as const;
@@ -3594,6 +3762,24 @@ export const UpdateInvitationRequestSchema = {
                 'string'
             ],
             format: 'int32'
+        }
+    }
+} as const;
+
+export const UpdateMyLiveChannelBodySchema = {
+    type: 'object',
+    properties: {
+        title: {
+            type: [
+                'null',
+                'string'
+            ]
+        },
+        coverUrl: {
+            type: [
+                'null',
+                'string'
+            ]
         }
     }
 } as const;

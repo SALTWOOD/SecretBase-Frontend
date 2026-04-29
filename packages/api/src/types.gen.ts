@@ -554,8 +554,49 @@ export type KeyValuePairOfTypeAndObject = {
 
 export type LargeBlobSupport = unknown;
 
+export type LivePublishHookBody = {
+    roomId?: number | string;
+    streamKey?: string;
+};
+
+export type LiveRoomDetailsResponse = {
+    roomId?: number | string;
+    ownerUserId?: number | string;
+    ownerUsername?: string;
+    title?: string;
+    coverUrl?: null | string;
+    isEnabled?: boolean;
+    isLive?: boolean;
+    lastLiveAt?: null | Date;
+    playbackUrl?: string;
+};
+
+export type LiveRoomListItem = {
+    roomId?: number | string;
+    ownerUsername?: string;
+    title?: string;
+    coverUrl?: null | string;
+    isLive?: boolean;
+    lastLiveAt?: null | Date;
+};
+
+export type LiveUnpublishHookBody = {
+    roomId?: number | string;
+};
+
 export type MessageResponse = {
     message?: string;
+};
+
+export type MyLiveChannelResponse = {
+    roomId?: number | string;
+    title?: string;
+    coverUrl?: null | string;
+    isEnabled?: boolean;
+    isLive?: boolean;
+    lastLiveAt?: null | Date;
+    rtmpServer?: string;
+    streamKeyPreview?: string;
 };
 
 export type NewSecretResponse = {
@@ -744,6 +785,10 @@ export type RecentActivityItem = {
     title: string;
     author?: null | string;
     time?: Date;
+};
+
+export type ResetStreamKeyResponse = {
+    streamKey?: string;
 };
 
 export type ResidentKeyRequirement = unknown;
@@ -938,6 +983,11 @@ export type UpdateInvitationRequest = {
     isDisabled: null | boolean;
     uses: null | number | string;
     hoursValid: null | number | string;
+};
+
+export type UpdateMyLiveChannelBody = {
+    title?: null | string;
+    coverUrl?: null | string;
 };
 
 export type UpdateProfileModel = {
@@ -1526,6 +1576,265 @@ export type GetSharedByShortIdErrors = {
 };
 
 export type GetSharedByShortIdError = GetSharedByShortIdErrors[keyof GetSharedByShortIdErrors];
+
+export type GetLiveRoomsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        onlineOnly?: boolean;
+    };
+    url: '/live/rooms';
+};
+
+export type GetLiveRoomsErrors = {
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+};
+
+export type GetLiveRoomsError = GetLiveRoomsErrors[keyof GetLiveRoomsErrors];
+
+export type GetLiveRoomsResponses = {
+    /**
+     * OK
+     */
+    200: Array<LiveRoomListItem>;
+};
+
+export type GetLiveRoomsResponse = GetLiveRoomsResponses[keyof GetLiveRoomsResponses];
+
+export type GetLiveRoomsByRoomIdData = {
+    body?: never;
+    path: {
+        roomId: number;
+    };
+    query?: never;
+    url: '/live/rooms/{roomId}';
+};
+
+export type GetLiveRoomsByRoomIdErrors = {
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+};
+
+export type GetLiveRoomsByRoomIdError = GetLiveRoomsByRoomIdErrors[keyof GetLiveRoomsByRoomIdErrors];
+
+export type GetLiveRoomsByRoomIdResponses = {
+    /**
+     * OK
+     */
+    200: LiveRoomDetailsResponse;
+};
+
+export type GetLiveRoomsByRoomIdResponse = GetLiveRoomsByRoomIdResponses[keyof GetLiveRoomsByRoomIdResponses];
+
+export type GetLiveMeChannelData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/live/me/channel';
+};
+
+export type GetLiveMeChannelErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+};
+
+export type GetLiveMeChannelError = GetLiveMeChannelErrors[keyof GetLiveMeChannelErrors];
+
+export type GetLiveMeChannelResponses = {
+    /**
+     * OK
+     */
+    200: MyLiveChannelResponse;
+};
+
+export type GetLiveMeChannelResponse = GetLiveMeChannelResponses[keyof GetLiveMeChannelResponses];
+
+export type PutLiveMeChannelData = {
+    body: UpdateMyLiveChannelBody;
+    path?: never;
+    query?: never;
+    url: '/live/me/channel';
+};
+
+export type PutLiveMeChannelErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+};
+
+export type PutLiveMeChannelError = PutLiveMeChannelErrors[keyof PutLiveMeChannelErrors];
+
+export type PutLiveMeChannelResponses = {
+    /**
+     * OK
+     */
+    200: MyLiveChannelResponse;
+};
+
+export type PutLiveMeChannelResponse = PutLiveMeChannelResponses[keyof PutLiveMeChannelResponses];
+
+export type PostLiveMeChannelEnableData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/live/me/channel/enable';
+};
+
+export type PostLiveMeChannelEnableErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+};
+
+export type PostLiveMeChannelEnableError = PostLiveMeChannelEnableErrors[keyof PostLiveMeChannelEnableErrors];
+
+export type PostLiveMeChannelEnableResponses = {
+    /**
+     * No Content
+     */
+    204: unknown;
+};
+
+export type PostLiveMeChannelDisableData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/live/me/channel/disable';
+};
+
+export type PostLiveMeChannelDisableErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+};
+
+export type PostLiveMeChannelDisableError = PostLiveMeChannelDisableErrors[keyof PostLiveMeChannelDisableErrors];
+
+export type PostLiveMeChannelDisableResponses = {
+    /**
+     * No Content
+     */
+    204: unknown;
+};
+
+export type PostLiveMeChannelStreamKeyResetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/live/me/channel/stream-key/reset';
+};
+
+export type PostLiveMeChannelStreamKeyResetErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+};
+
+export type PostLiveMeChannelStreamKeyResetError = PostLiveMeChannelStreamKeyResetErrors[keyof PostLiveMeChannelStreamKeyResetErrors];
+
+export type PostLiveMeChannelStreamKeyResetResponses = {
+    /**
+     * OK
+     */
+    200: ResetStreamKeyResponse;
+};
+
+export type PostLiveMeChannelStreamKeyResetResponse = PostLiveMeChannelStreamKeyResetResponses[keyof PostLiveMeChannelStreamKeyResetResponses];
+
+export type PostLiveHooksPublishData = {
+    body: LivePublishHookBody;
+    headers?: {
+        'X-Live-Hook-Secret'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/live/hooks/publish';
+};
+
+export type PostLiveHooksPublishErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Forbidden
+     */
+    403: ProblemDetails;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+};
+
+export type PostLiveHooksPublishError = PostLiveHooksPublishErrors[keyof PostLiveHooksPublishErrors];
+
+export type PostLiveHooksPublishResponses = {
+    /**
+     * No Content
+     */
+    204: unknown;
+};
+
+export type PostLiveHooksUnpublishData = {
+    body: LiveUnpublishHookBody;
+    headers?: {
+        'X-Live-Hook-Secret'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/live/hooks/unpublish';
+};
+
+export type PostLiveHooksUnpublishErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+};
+
+export type PostLiveHooksUnpublishError = PostLiveHooksUnpublishErrors[keyof PostLiveHooksUnpublishErrors];
+
+export type PostLiveHooksUnpublishResponses = {
+    /**
+     * No Content
+     */
+    204: unknown;
+};
 
 export type GetPagesData = {
     body?: never;
