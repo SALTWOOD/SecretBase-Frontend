@@ -45,6 +45,7 @@ const danmakuMode = ref<DanmakuMode>('scroll');
 const danmakuConnected = ref(false);
 const danmakuError = ref('');
 const danmakuMessages = ref<DanmakuMessage[]>([]);
+const danmakuListRef = ref<HTMLDivElement | null>(null);
 const scrollOverlayItems = ref<ScrollOverlayItem[]>([]);
 const topOverlayItems = ref<StaticOverlayItem[]>([]);
 const bottomOverlayItems = ref<StaticOverlayItem[]>([]);
@@ -224,10 +225,14 @@ const fetchRoom = async () => {
 };
 
 const appendMessage = (message: DanmakuMessage) => {
-  danmakuMessages.value.unshift(message);
+  danmakuMessages.value.push(message);
   if (danmakuMessages.value.length > MAX_LIST_ITEMS) {
-    danmakuMessages.value.length = MAX_LIST_ITEMS;
+    danmakuMessages.value.splice(0, danmakuMessages.value.length - MAX_LIST_ITEMS);
   }
+  nextTick(() => {
+    if (!danmakuListRef.value) return;
+    danmakuListRef.value.scrollTop = danmakuListRef.value.scrollHeight;
+  });
 };
 
 const spawnScrollOverlay = (content: string, color: string) => {
@@ -464,7 +469,7 @@ onBeforeUnmount(async () => {
           </template>
 
           <div class="space-y-4">
-            <div class="danmaku-list border border-default rounded-lg p-3 bg-muted/20">
+            <div ref="danmakuListRef" class="danmaku-list border border-default rounded-lg p-3 bg-muted/20">
               <div v-if="!danmakuMessages.length" class="text-xs text-muted">当前暂无弹幕</div>
               <div v-for="item in danmakuMessages" :key="`${item.createdAt}-${item.username}-${item.content}`" class="text-sm leading-6">
                 <span class="font-semibold text-primary">{{ item.username }}</span>
