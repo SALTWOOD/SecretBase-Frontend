@@ -20,9 +20,11 @@ const form = reactive({
   coverUrl: "",
 });
 
-const pushUrl = computed(() => {
-  if (!data.value?.rtmpServer || !data.value?.roomId || !streamKey.value) return "";
-  return `${data.value.rtmpServer}/${data.value.roomId}?key=${encodeURIComponent(streamKey.value)}`;
+const pushServer = computed(() => data.value?.rtmpServer || "");
+
+const pushCode = computed(() => {
+  if (!data.value?.roomId || !streamKey.value) return "";
+  return `${data.value.roomId}?key=${streamKey.value}`;
 });
 
 const loadChannel = async () => {
@@ -182,30 +184,24 @@ onMounted(loadChannel);
         <div class="space-y-4">
           <UFormField label="服务器">
             <div class="flex gap-2">
-              <UInput :model-value="data?.rtmpServer || ''" readonly class="flex-1" />
-              <UButton variant="outline" @click="copyText(data?.rtmpServer || '', '服务器地址')">
+              <UInput :model-value="pushServer" readonly class="flex-1" />
+              <UButton variant="outline" :disabled="!pushServer" @click="copyText(pushServer, '服务器')">
                 复制
               </UButton>
             </div>
           </UFormField>
 
-          <UFormField label="推流密钥">
+          <UFormField label="推流码">
             <div class="flex gap-2">
-              <UInput :model-value="streamKey || ''" type="password" placeholder="点击重置后显示新密钥" readonly class="flex-1" />
+              <UInput :model-value="pushCode" placeholder="点击重置后显示新推流码" readonly class="flex-1" />
               <UButton color="warning" variant="outline" @click="resetStreamKey">
-                重置并显示
+                重置并刷新
               </UButton>
-            </div>
-            <p class="text-xs text-muted mt-1">密钥只会在重置后显示一次，请立即保存。</p>
-          </UFormField>
-
-          <UFormField label="完整推流地址">
-            <div class="flex gap-2">
-              <UInput :model-value="pushUrl" readonly class="flex-1" />
-              <UButton variant="outline" :disabled="!pushUrl" @click="copyText(pushUrl, '完整推流地址')">
+              <UButton variant="outline" :disabled="!pushCode" @click="copyText(pushCode, '推流码')">
                 复制
               </UButton>
             </div>
+            <p class="text-xs text-muted mt-1">推流码只会在重置后显示一次，请立即保存。</p>
           </UFormField>
         </div>
       </UCard>
