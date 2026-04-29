@@ -202,7 +202,7 @@ onBeforeUnmount(() => {
           </p>
 
           <UFormField label="播放地址">
-            <UInput :model-value="playbackResolvedUrl" readonly icon="i-lucide-link" />
+            <UInput :model-value="playbackResolvedUrl" readonly icon="i-lucide-link" class="w-full" />
           </UFormField>
         </div>
       </UCard>
