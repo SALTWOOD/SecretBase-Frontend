@@ -499,18 +499,15 @@ onMounted(() => fetchData());
                     <span class="text-sm font-medium">{{
                       getSubKeyLabel(setting.key)
                     }}</span>
-                    <UTooltip
-                      v-if="i18nMap[setting.key]?.description"
-                      :text="i18nMap[setting.key]?.description"
-                    >
+                    <UTooltip :text="setting.key">
                       <UIcon
                         name="i-lucide-info"
                         class="size-4 text-gray-400 cursor-help"
                       />
                     </UTooltip>
                   </div>
-                  <div class="text-xs text-gray-400 font-mono mt-0.5">
-                    {{ setting.key }}
+                  <div v-if="i18nMap[setting.key]?.description" class="text-xs text-gray-500 mt-0.5">
+                    {{ i18nMap[setting.key]?.description }}
                   </div>
                 </div>
 
