@@ -20,6 +20,7 @@ const i18nMap: Record<
   "site.home": { label: "首页定制", icon: "i-lucide-layout-template" },
   "site.footer": { label: "页脚配置", icon: "i-lucide-panel-bottom" },
   "site.general": { label: "站点信息", icon: "i-lucide-globe" },
+  "site.live": { label: "直播设置", icon: "i-lucide-radio" },
   "site.seo.general": { label: "常规 SEO" },
   "site.seo.general.title": {
     label: "站点标题",
@@ -156,6 +157,35 @@ const i18nMap: Record<
   "site.general.info.site_created_at": {
     label: "建站时间",
     description: "站点创建的日期时间，用于展示运行时长",
+  },
+  "site.live.general": { label: "通用" },
+  "site.live.general.enabled": {
+    label: "启用直播功能",
+    description: "控制站点是否开放直播相关能力",
+  },
+  "site.live.access": { label: "访问控制" },
+  "site.live.access.admin_only": {
+    label: "仅管理员可开播",
+    description: "开启后仅管理员账号可以发起直播",
+  },
+  "site.live.security": { label: "安全" },
+  "site.live.security.hook_secret": {
+    label: "推流回调密钥",
+    description: "用于鉴权推流服务回调请求",
+  },
+  "site.live.stream": { label: "推拉流" },
+  "site.live.stream.rtmp_server": {
+    label: "RTMP 推流地址",
+    description: "主播推流时使用的 RTMP 服务器地址",
+  },
+  "site.live.stream.playback_base_url": {
+    label: "播放地址前缀",
+    description: "前端拼接播放链接时使用的基础路径",
+  },
+  "site.live.danmaku": { label: "弹幕" },
+  "site.live.danmaku.enabled": {
+    label: "启用弹幕",
+    description: "控制直播间是否允许发送实时弹幕",
   },
   "site.comment": { label: "评论设置" },
   "site.comment.guest": { label: "访客" },
