@@ -365,11 +365,34 @@ onBeforeUnmount(async () => {
 
               <div class="flex gap-2 items-center">
                 <input v-model="danmakuColor" type="color" class="danmaku-color-picker" aria-label="弹幕颜色" />
-                <select v-model="danmakuMode" class="danmaku-mode-select">
-                  <option value="scroll">滚动</option>
-                  <option value="top">上置顶</option>
-                  <option value="bottom">下置底</option>
-                </select>
+                <div class="danmaku-mode-toggle">
+                  <UButton
+                    label="滚动"
+                    size="xs"
+                    :color="danmakuMode === 'scroll' ? 'primary' : 'secondary'"
+                    :variant="danmakuMode === 'scroll' ? 'solid' : 'ghost'"
+                    class="rounded-none border-none"
+                    @click="danmakuMode = 'scroll'"
+                  />
+                  <div class="w-px h-4 bg-default" />
+                  <UButton
+                    label="上置顶"
+                    size="xs"
+                    :color="danmakuMode === 'top' ? 'primary' : 'secondary'"
+                    :variant="danmakuMode === 'top' ? 'solid' : 'ghost'"
+                    class="rounded-none border-none"
+                    @click="danmakuMode = 'top'"
+                  />
+                  <div class="w-px h-4 bg-default" />
+                  <UButton
+                    label="下置底"
+                    size="xs"
+                    :color="danmakuMode === 'bottom' ? 'primary' : 'secondary'"
+                    :variant="danmakuMode === 'bottom' ? 'solid' : 'ghost'"
+                    class="rounded-none border-none"
+                    @click="danmakuMode = 'bottom'"
+                  />
+                </div>
                 <UButton :loading="sending" :disabled="!danmakuConnected || !danmakuInput.trim()" color="primary" @click="sendDanmaku">
                   发送
                 </UButton>
@@ -476,13 +499,13 @@ video {
   gap: 0.25rem;
 }
 
-.danmaku-mode-select {
+.danmaku-mode-toggle {
+  display: flex;
+  align-items: center;
   border: 1px solid rgba(148, 163, 184, 0.4);
   border-radius: 0.5rem;
-  background: rgba(255, 255, 255, 0.04);
-  color: inherit;
-  padding: 0.45rem 0.6rem;
-  font-size: 0.875rem;
+  overflow: hidden;
+  padding: 0 0.1rem;
 }
 
 .danmaku-color-picker {
