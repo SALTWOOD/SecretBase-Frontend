@@ -10,8 +10,26 @@ const unavailableReason = ref("");
 const videoRef = ref<HTMLVideoElement | null>(null);
 const statusText = ref("等待初始化...");
 const status = ref("idle");
+const requestUrl = useRequestURL();
 
 const roomId = computed(() => Number(route.params.id));
+
+const resolvePlaybackUrl = (rawUrl?: string) => {
+  if (!rawUrl) return "";
+
+  if (/^[a-z][a-z\d+.-]*:\/\//i.test(rawUrl)) {
+    return rawUrl;
+  }
+
+  if (rawUrl.startsWith("//")) {
+    return `${requestUrl.protocol}${rawUrl}`;
+  }
+
+  const normalizedPath = rawUrl.startsWith("/") ? rawUrl : `/${rawUrl}`;
+  return `${requestUrl.protocol}//${requestUrl.host}${normalizedPath}`;
+};
+
+const playbackUrl = computed(() => resolvePlaybackUrl(room.value?.playbackUrl));
 
 let hls: Hls | null = null;
 
@@ -24,7 +42,7 @@ const destroyHls = () => {
 
 const initHls = () => {
   const video = videoRef.value;
-  const streamUrl = room.value?.playbackUrl;
+  const streamUrl = playbackUrl.value;
 
   if (!video || !streamUrl) return;
 
@@ -192,7 +210,7 @@ onBeforeUnmount(() => {
             </p>
 
           <UFormField label="播放地址">
-            <UInput :model-value="room.playbackUrl" readonly />
+            <UInput :model-value="playbackUrl" readonly />
           </UFormField>
         </div>
       </UCard>
