@@ -13,6 +13,16 @@ const unavailableReason = ref("");
 const roomId = computed(() => room.value?.roomId);
 const playbackUrl = computed(() => room.value?.playbackUrl);
 
+const resolvePlaybackUrl = (url?: string) => {
+  if (!url || typeof window === 'undefined') return url;
+  if (/^https?:\/\//i.test(url)) return url;
+  if (url.startsWith('//')) return `${window.location.protocol}${url}`;
+  if (url.startsWith('/')) return `${window.location.origin}${url}`;
+  return `${window.location.origin}/${url}`;
+};
+
+const playbackResolvedUrl = computed(() => resolvePlaybackUrl(playbackUrl.value));
+
 let hls: Hls | null = null;
 
 const initHls = () => {
@@ -22,7 +32,7 @@ const initHls = () => {
   }
 
   const video = videoRef.value;
-  const url = playbackUrl.value;
+  const url = playbackResolvedUrl.value;
 
   if (!video || !url) return;
 
@@ -192,7 +202,7 @@ onBeforeUnmount(() => {
           </p>
 
           <UFormField label="播放地址">
-            <UInput :model-value="playbackUrl" readonly icon="i-lucide-link" />
+            <UInput :model-value="playbackResolvedUrl" readonly icon="i-lucide-link" />
           </UFormField>
         </div>
       </UCard>
