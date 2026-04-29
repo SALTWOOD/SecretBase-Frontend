@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
+import { ref, onMounted, onBeforeUnmount, computed, nextTick } from 'vue';
 import Hls from 'hls.js';
 import { getLiveRoomsByRoomId } from "~~/packages/api/src";
 
@@ -7,18 +7,22 @@ const videoRef = ref<HTMLVideoElement | null>(null);
 const statusText = ref('等待初始化...');
 const status = ref('idle');
 const loading = ref(false);
-
 const room = ref();
+const unavailableReason = ref("");
 
 const roomId = computed(() => room.value?.roomId);
 const playbackUrl = computed(() => room.value?.playbackUrl);
-const unavailableReason = ref();
 
 let hls: Hls | null = null;
 
 const initHls = () => {
+  if (hls) {
+    hls.destroy();
+    hls = null;
+  }
+
   const video = videoRef.value;
-  const url = playbackUrl.value; // 获取地址
+  const url = playbackUrl.value;
 
   if (!video || !url) return;
 
@@ -38,7 +42,7 @@ const initHls = () => {
       statusText.value = '解析成功，准备播放';
       video.play().catch(e => {
         statusText.value = '自动播放受阻，请点击播放';
-        console.warn('Auto-play failed:', e);
+        console.warn(e);
       });
       status.value = 'success';
     });
@@ -80,18 +84,14 @@ const fetchRoom = async () => {
 
   try {
     const response = await getLiveRoomsByRoomId({
-      path: { roomId: roomId.value },
+      path: { roomId: 1 },
     });
 
     if (response.error) {
       const code = response.response.status;
-      if (code === 403) {
-        unavailableReason.value = "直播功能未开放。";
-      } else if (code === 404) {
-        unavailableReason.value = "直播间不存在。";
-      } else {
-        unavailableReason.value = `加载失败 (HTTP ${code})`;
-      }
+      if (code === 403) unavailableReason.value = "直播功能未开放。";
+      else if (code === 404) unavailableReason.value = "直播间不存在。";
+      else unavailableReason.value = `加载失败 (HTTP ${code})`;
       room.value = null;
       return;
     }
@@ -103,7 +103,6 @@ const fetchRoom = async () => {
       return;
     }
   } catch (err) {
-    console.error('Fetch room error:', err);
     unavailableReason.value = "网络请求失败。";
     room.value = null;
     statusText.value = "加载失败";
@@ -115,6 +114,7 @@ const fetchRoom = async () => {
 
 onMounted(async () => {
   await fetchRoom();
+  await nextTick();
   initHls();
 });
 
@@ -128,7 +128,7 @@ onBeforeUnmount(() => {
     <div class="flex items-center justify-between gap-3">
       <div>
         <h1 class="text-2xl font-bold">直播观看</h1>
-        <p class="text-sm text-muted mt-1">房间 ID: {{ roomId }}</p>
+        <p class="text-sm text-muted mt-1">房间 ID: {{ roomId || '-' }}</p>
       </div>
       <UButton to="/dash/live/rooms" variant="ghost" icon="i-lucide-arrow-left">
         返回列表
@@ -175,7 +175,16 @@ onBeforeUnmount(() => {
 
           <div class="text-sm flex items-center gap-2">
             <span class="text-muted">播放状态:</span>
-            <span :class="status" class="font-medium">{{ statusText }}</span>
+            <span
+              :class="{
+                'text-green-500': status === 'success',
+                'text-red-500': status === 'error',
+                'text-gray-400': status === 'idle'
+              }"
+              class="font-medium"
+            >
+              {{ statusText }}
+            </span>
           </div>
 
           <p class="text-xs text-muted">
@@ -196,7 +205,4 @@ video {
   outline: none;
   object-fit: contain;
 }
-.success { color: rgb(34, 197, 94); }
-.error { color: rgb(239, 68, 68); }
-.idle { color: rgb(156, 163, 175); }
 </style>
