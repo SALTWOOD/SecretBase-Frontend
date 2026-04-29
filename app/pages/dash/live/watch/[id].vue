@@ -381,8 +381,84 @@ onBeforeUnmount(async () => {
     />
 
     <template v-else-if="room">
-      <div class="grid gap-4 lg:grid-cols-[300px_minmax(0,1fr)]">
-        <UCard>
+      <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <UCard class="order-1">
+        <template #header>
+          <div class="flex items-center justify-between gap-3">
+            <div>
+              <div class="font-semibold text-lg">{{ room.title }}</div>
+              <div class="text-sm text-muted">主播：{{ room.ownerUsername }}</div>
+            </div>
+            <UBadge :color="room.isLive ? 'success' : 'neutral'" variant="subtle">
+              {{ room.isLive ? "直播中" : "未开播" }}
+            </UBadge>
+          </div>
+        </template>
+
+        <div class="space-y-4">
+          <div class="relative rounded-xl overflow-hidden border border-default bg-black/90">
+            <video
+              ref="videoRef"
+              class="w-full aspect-video"
+              controls
+              playsinline
+              muted
+            />
+
+            <div class="danmaku-overlay pointer-events-none">
+              <div
+                v-for="item in scrollOverlayItems"
+                :key="item.id"
+                class="danmaku-scroll-item"
+                :style="{
+                  top: `${16 + item.lane * 30}px`,
+                  animationDuration: `${item.duration}s`,
+                  color: item.color || '#ffffff',
+                  opacity: danmakuOpacity
+                }"
+              >
+                {{ item.content }}
+              </div>
+
+              <div class="danmaku-static-layer top">
+                <div v-for="item in topOverlayItems" :key="item.id" class="danmaku-static-item" :style="{ color: item.color || '#ffffff', opacity: danmakuOpacity }">
+                  {{ item.content }}
+                </div>
+              </div>
+
+              <div class="danmaku-static-layer bottom">
+                <div v-for="item in bottomOverlayItems" :key="item.id" class="danmaku-static-item" :style="{ color: item.color || '#ffffff', opacity: danmakuOpacity }">
+                  {{ item.content }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-sm flex items-center gap-2">
+            <span class="text-muted">播放状态:</span>
+            <span
+              :class="{
+                'text-green-500': status === 'success',
+                'text-red-500': status === 'error',
+                'text-gray-400': status === 'idle'
+              }"
+              class="font-medium"
+            >
+              {{ statusText }}
+            </span>
+          </div>
+
+          <p class="text-xs text-muted">
+            如当前浏览器无法直接播放，可复制播放地址到 VLC 观看。
+          </p>
+
+          <UFormField label="播放地址">
+            <UInput :model-value="playbackResolvedUrl" readonly icon="i-lucide-link" class="w-full" />
+          </UFormField>
+        </div>
+        </UCard>
+
+        <UCard class="order-2">
           <template #header>
             <div class="font-semibold">实时弹幕列表</div>
           </template>
@@ -462,82 +538,6 @@ onBeforeUnmount(async () => {
               </div>
             </div>
           </div>
-        </UCard>
-
-        <UCard>
-        <template #header>
-          <div class="flex items-center justify-between gap-3">
-            <div>
-              <div class="font-semibold text-lg">{{ room.title }}</div>
-              <div class="text-sm text-muted">主播：{{ room.ownerUsername }}</div>
-            </div>
-            <UBadge :color="room.isLive ? 'success' : 'neutral'" variant="subtle">
-              {{ room.isLive ? "直播中" : "未开播" }}
-            </UBadge>
-          </div>
-        </template>
-
-        <div class="space-y-4">
-          <div class="relative rounded-xl overflow-hidden border border-default bg-black/90">
-            <video
-              ref="videoRef"
-              class="w-full aspect-video"
-              controls
-              playsinline
-              muted
-            />
-
-            <div class="danmaku-overlay pointer-events-none">
-              <div
-                v-for="item in scrollOverlayItems"
-                :key="item.id"
-                class="danmaku-scroll-item"
-                :style="{
-                  top: `${16 + item.lane * 30}px`,
-                  animationDuration: `${item.duration}s`,
-                  color: item.color || '#ffffff',
-                  opacity: danmakuOpacity
-                }"
-              >
-                {{ item.content }}
-              </div>
-
-              <div class="danmaku-static-layer top">
-                <div v-for="item in topOverlayItems" :key="item.id" class="danmaku-static-item" :style="{ color: item.color || '#ffffff', opacity: danmakuOpacity }">
-                  {{ item.content }}
-                </div>
-              </div>
-
-              <div class="danmaku-static-layer bottom">
-                <div v-for="item in bottomOverlayItems" :key="item.id" class="danmaku-static-item" :style="{ color: item.color || '#ffffff', opacity: danmakuOpacity }">
-                  {{ item.content }}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="text-sm flex items-center gap-2">
-            <span class="text-muted">播放状态:</span>
-            <span
-              :class="{
-                'text-green-500': status === 'success',
-                'text-red-500': status === 'error',
-                'text-gray-400': status === 'idle'
-              }"
-              class="font-medium"
-            >
-              {{ statusText }}
-            </span>
-          </div>
-
-          <p class="text-xs text-muted">
-            如当前浏览器无法直接播放，可复制播放地址到 VLC 观看。
-          </p>
-
-          <UFormField label="播放地址">
-            <UInput :model-value="playbackResolvedUrl" readonly icon="i-lucide-link" class="w-full" />
-          </UFormField>
-        </div>
         </UCard>
       </div>
     </template>
