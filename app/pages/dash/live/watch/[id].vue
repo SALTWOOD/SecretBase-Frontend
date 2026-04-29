@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, computed, nextTick } from 'vue';
+import { ref, onMounted, onBeforeUnmount, computed, nextTick, watch } from 'vue';
 import Hls from 'hls.js';
 import * as signalR from '@microsoft/signalr';
 import { getLiveRoomsByRoomId } from "~~/packages/api/src";
@@ -52,11 +52,45 @@ const bottomOverlayItems = ref<StaticOverlayItem[]>([]);
 const MAX_SCROLL_LANES = 8;
 const MAX_LIST_ITEMS = 80;
 const MAX_STATIC_ITEMS = 2;
+const DANMAKU_PREFS_KEY = 'live:danmaku:display-prefs';
+
+const scrollSpeed = ref(1);
+const staticDurationSeconds = ref(3.5);
+const danmakuOpacity = ref(1);
 
 let scrollId = 0;
 let staticId = 0;
 let laneCursor = 0;
 let hubConnection: signalR.HubConnection | null = null;
+
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+
+const normalizePrefs = (raw: Partial<{ scrollSpeed: number; staticDurationSeconds: number; danmakuOpacity: number }>) => {
+  scrollSpeed.value = clamp(Number(raw.scrollSpeed ?? 1), 0.4, 3);
+  staticDurationSeconds.value = clamp(Number(raw.staticDurationSeconds ?? 3.5), 1, 10);
+  danmakuOpacity.value = clamp(Number(raw.danmakuOpacity ?? 1), 0.2, 1);
+};
+
+const loadDanmakuPrefs = () => {
+  if (typeof window === 'undefined') return;
+  try {
+    const raw = window.localStorage.getItem(DANMAKU_PREFS_KEY);
+    if (!raw) return;
+    const parsed = JSON.parse(raw) as Partial<{ scrollSpeed: number; staticDurationSeconds: number; danmakuOpacity: number }>;
+    normalizePrefs(parsed);
+  } catch {
+    normalizePrefs({});
+  }
+};
+
+const saveDanmakuPrefs = () => {
+  if (typeof window === 'undefined') return;
+  window.localStorage.setItem(DANMAKU_PREFS_KEY, JSON.stringify({
+    scrollSpeed: scrollSpeed.value,
+    staticDurationSeconds: staticDurationSeconds.value,
+    danmakuOpacity: danmakuOpacity.value,
+  }));
+};
 
 const roomId = computed(() => {
   const raw = route.params.id;
@@ -199,12 +233,13 @@ const appendMessage = (message: DanmakuMessage) => {
 const spawnScrollOverlay = (content: string, color: string) => {
   const lane = laneCursor % MAX_SCROLL_LANES;
   laneCursor += 1;
+  const baseDuration = 8 + Math.random() * 3;
   const item: ScrollOverlayItem = {
     id: ++scrollId,
     content,
     color,
     lane,
-    duration: 8 + Math.random() * 3,
+    duration: baseDuration / scrollSpeed.value,
   };
   scrollOverlayItems.value.push(item);
   window.setTimeout(() => {
@@ -218,7 +253,7 @@ const spawnStaticOverlay = (content: string, color: string, mode: Extract<Danmak
   target.value = [item, ...target.value].slice(0, MAX_STATIC_ITEMS);
   window.setTimeout(() => {
     target.value = target.value.filter((x) => x.id !== item.id);
-  }, 3500);
+  }, staticDurationSeconds.value * 1000);
 };
 
 const handleIncomingDanmaku = (message: DanmakuMessage) => {
@@ -295,10 +330,20 @@ const sendDanmaku = async () => {
 };
 
 onMounted(async () => {
+  loadDanmakuPrefs();
   await fetchRoom();
   await nextTick();
   initHls();
   await connectDanmaku();
+});
+
+watch([scrollSpeed, staticDurationSeconds, danmakuOpacity], () => {
+  normalizePrefs({
+    scrollSpeed: scrollSpeed.value,
+    staticDurationSeconds: staticDurationSeconds.value,
+    danmakuOpacity: danmakuOpacity.value,
+  });
+  saveDanmakuPrefs();
 });
 
 onBeforeUnmount(async () => {
@@ -402,6 +447,19 @@ onBeforeUnmount(async () => {
                 {{ danmakuConnected ? '弹幕已连接' : '弹幕未连接' }}
               </div>
               <div v-if="danmakuError" class="text-xs text-red-500">{{ danmakuError }}</div>
+
+              <div class="rounded-lg border border-default p-3 space-y-2">
+                <div class="text-xs font-medium text-muted">显示设置（仅本地）</div>
+                <UFormField label="滚动速度倍率">
+                  <UInput v-model.number="scrollSpeed" type="number" min="0.4" max="3" step="0.1" />
+                </UFormField>
+                <UFormField label="置顶/置底停留时间（秒）">
+                  <UInput v-model.number="staticDurationSeconds" type="number" min="1" max="10" step="0.5" />
+                </UFormField>
+                <UFormField label="弹幕透明度">
+                  <UInput v-model.number="danmakuOpacity" type="number" min="0.2" max="1" step="0.05" />
+                </UFormField>
+              </div>
             </div>
           </div>
         </UCard>
@@ -437,20 +495,21 @@ onBeforeUnmount(async () => {
                 :style="{
                   top: `${16 + item.lane * 30}px`,
                   animationDuration: `${item.duration}s`,
-                  color: item.color || '#ffffff'
+                  color: item.color || '#ffffff',
+                  opacity: danmakuOpacity
                 }"
               >
                 {{ item.content }}
               </div>
 
               <div class="danmaku-static-layer top">
-                <div v-for="item in topOverlayItems" :key="item.id" class="danmaku-static-item" :style="{ color: item.color || '#ffffff' }">
+                <div v-for="item in topOverlayItems" :key="item.id" class="danmaku-static-item" :style="{ color: item.color || '#ffffff', opacity: danmakuOpacity }">
                   {{ item.content }}
                 </div>
               </div>
 
               <div class="danmaku-static-layer bottom">
-                <div v-for="item in bottomOverlayItems" :key="item.id" class="danmaku-static-item" :style="{ color: item.color || '#ffffff' }">
+                <div v-for="item in bottomOverlayItems" :key="item.id" class="danmaku-static-item" :style="{ color: item.color || '#ffffff', opacity: danmakuOpacity }">
                   {{ item.content }}
                 </div>
               </div>
