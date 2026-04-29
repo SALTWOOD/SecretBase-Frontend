@@ -20,12 +20,14 @@ type DanmakuMessage = {
   username: string;
   content: string;
   mode: DanmakuMode;
+  color: string;
   createdAt: string;
 };
 
 type ScrollOverlayItem = {
   id: number;
   content: string;
+  color: string;
   lane: number;
   duration: number;
 };
@@ -33,9 +35,11 @@ type ScrollOverlayItem = {
 type StaticOverlayItem = {
   id: number;
   content: string;
+  color: string;
 };
 
 const danmakuInput = ref('');
+const danmakuColor = ref('#ffffff');
 const sending = ref(false);
 const danmakuMode = ref<DanmakuMode>('scroll');
 const danmakuConnected = ref(false);
@@ -192,12 +196,13 @@ const appendMessage = (message: DanmakuMessage) => {
   }
 };
 
-const spawnScrollOverlay = (content: string) => {
+const spawnScrollOverlay = (content: string, color: string) => {
   const lane = laneCursor % MAX_SCROLL_LANES;
   laneCursor += 1;
   const item: ScrollOverlayItem = {
     id: ++scrollId,
     content,
+    color,
     lane,
     duration: 8 + Math.random() * 3,
   };
@@ -207,8 +212,8 @@ const spawnScrollOverlay = (content: string) => {
   }, item.duration * 1000 + 300);
 };
 
-const spawnStaticOverlay = (content: string, mode: Extract<DanmakuMode, 'top' | 'bottom'>) => {
-  const item: StaticOverlayItem = { id: ++staticId, content };
+const spawnStaticOverlay = (content: string, color: string, mode: Extract<DanmakuMode, 'top' | 'bottom'>) => {
+  const item: StaticOverlayItem = { id: ++staticId, content, color };
   const target = mode === 'top' ? topOverlayItems : bottomOverlayItems;
   target.value = [item, ...target.value].slice(0, MAX_STATIC_ITEMS);
   window.setTimeout(() => {
@@ -221,13 +226,18 @@ const handleIncomingDanmaku = (message: DanmakuMessage) => {
   appendMessage(message);
 
   if (message.mode === 'scroll') {
-    spawnScrollOverlay(message.content);
+    spawnScrollOverlay(message.content, message.color ?? '#ffffff');
     return;
   }
 
   if (message.mode === 'top' || message.mode === 'bottom') {
-    spawnStaticOverlay(message.content, message.mode);
+    spawnStaticOverlay(message.content, message.color ?? '#ffffff', message.mode);
   }
+};
+
+const sanitizeDanmakuColor = (value: string) => {
+  const normalized = value.trim().toLowerCase();
+  return /^#[0-9a-f]{6}$/i.test(normalized) ? normalized : '#ffffff';
 };
 
 const connectDanmaku = async () => {
@@ -275,7 +285,7 @@ const sendDanmaku = async () => {
 
   sending.value = true;
   try {
-    await hubConnection.invoke('SendDanmaku', roomId.value, content, danmakuMode.value);
+    await hubConnection.invoke('SendDanmaku', roomId.value, content, danmakuMode.value, sanitizeDanmakuColor(danmakuColor.value));
     danmakuInput.value = '';
   } catch {
     danmakuError.value = '发送失败，请稍后重试';
@@ -338,7 +348,7 @@ onBeforeUnmount(async () => {
               <div v-for="item in danmakuMessages" :key="`${item.createdAt}-${item.username}-${item.content}`" class="text-sm leading-6">
                 <span class="font-semibold text-primary">{{ item.username }}</span>
                 <span class="text-muted mx-1">:</span>
-                <span>{{ item.content }}</span>
+                <span :style="{ color: item.color || '#ffffff' }">{{ item.content }}</span>
               </div>
             </div>
 
@@ -354,6 +364,7 @@ onBeforeUnmount(async () => {
               </UFormField>
 
               <div class="flex gap-2 items-center">
+                <input v-model="danmakuColor" type="color" class="danmaku-color-picker" aria-label="弹幕颜色" />
                 <select v-model="danmakuMode" class="danmaku-mode-select">
                   <option value="scroll">滚动</option>
                   <option value="top">上置顶</option>
@@ -402,20 +413,21 @@ onBeforeUnmount(async () => {
                 class="danmaku-scroll-item"
                 :style="{
                   top: `${16 + item.lane * 30}px`,
-                  animationDuration: `${item.duration}s`
+                  animationDuration: `${item.duration}s`,
+                  color: item.color || '#ffffff'
                 }"
               >
                 {{ item.content }}
               </div>
 
               <div class="danmaku-static-layer top">
-                <div v-for="item in topOverlayItems" :key="item.id" class="danmaku-static-item">
+                <div v-for="item in topOverlayItems" :key="item.id" class="danmaku-static-item" :style="{ color: item.color || '#ffffff' }">
                   {{ item.content }}
                 </div>
               </div>
 
               <div class="danmaku-static-layer bottom">
-                <div v-for="item in bottomOverlayItems" :key="item.id" class="danmaku-static-item">
+                <div v-for="item in bottomOverlayItems" :key="item.id" class="danmaku-static-item" :style="{ color: item.color || '#ffffff' }">
                   {{ item.content }}
                 </div>
               </div>
@@ -471,6 +483,15 @@ video {
   color: inherit;
   padding: 0.45rem 0.6rem;
   font-size: 0.875rem;
+}
+
+.danmaku-color-picker {
+  width: 2.5rem;
+  height: 2.25rem;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  border-radius: 0.5rem;
+  background: transparent;
+  padding: 0.2rem;
 }
 
 .danmaku-overlay {
