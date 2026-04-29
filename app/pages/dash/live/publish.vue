@@ -21,8 +21,8 @@ const form = reactive({
 });
 
 const pushUrl = computed(() => {
-  if (!data.value?.rtmpServer || !streamKey.value) return "";
-  return `${data.value.rtmpServer}/${streamKey.value}`;
+  if (!data.value?.rtmpServer || !data.value?.roomId || !streamKey.value) return "";
+  return `${data.value.rtmpServer}/${data.value.roomId}?key=${encodeURIComponent(streamKey.value)}`;
 });
 
 const loadChannel = async () => {
