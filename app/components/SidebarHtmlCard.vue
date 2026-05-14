@@ -1,9 +1,12 @@
 <script setup lang="ts">
+import DOMPurify from "isomorphic-dompurify";
 import type { SidebarHtmlWidget } from "~/types/sidebar";
 
-defineProps<{
+const props = defineProps<{
   widget: SidebarHtmlWidget;
 }>();
+
+const sanitizedContent = computed(() => DOMPurify.sanitize(props.widget.content));
 </script>
 
 <template>
@@ -16,7 +19,7 @@ defineProps<{
     </template>
     <div
       class="text-sm text-muted leading-relaxed prose prose-sm dark:prose-invert max-w-none"
-      v-html="widget.content"
+      v-html="sanitizedContent"
     />
   </UCard>
 </template>
