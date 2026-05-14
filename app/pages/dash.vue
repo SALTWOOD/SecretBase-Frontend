@@ -189,25 +189,6 @@ const allNavigationItems = computed<NavigationItem[]>(() => [
     ],
   },
   {
-    label: "直播",
-    icon: "i-lucide-radio",
-    type: "trigger",
-    defaultOpen: true,
-    children: [
-      {
-        label: "直播间列表",
-        icon: "i-lucide-tv",
-        to: "/dash/live/rooms",
-      },
-      {
-        label: "推流控制",
-        icon: "i-lucide-wifi",
-        to: "/dash/live/publish",
-        condition: () => isAdmin.value,
-      },
-    ],
-  },
-  {
     label: "管理后台",
     icon: "i-lucide-shield-check",
     type: "trigger",
