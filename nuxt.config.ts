@@ -62,6 +62,22 @@ export default defineNuxtConfig({
         "X-Robots-Tag": "noindex, nofollow",
       },
     },
+    "/**": {
+      headers: {
+        "Content-Security-Policy":
+          "default-src 'self'; " +
+          "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
+          "style-src 'self' 'unsafe-inline'; " +
+          "img-src 'self' data: blob: https:; " +
+          "font-src 'self'; " +
+          "connect-src 'self' https: wss:; " +
+          "frame-src 'none'; " +
+          "object-src 'none'; " +
+          "base-uri 'self'; " +
+          "form-action 'self'; " +
+          "frame-ancestors 'none'",
+      },
+    },
   },
   qrcode: {
     options: {
