@@ -51,6 +51,18 @@ export default defineNuxtConfig({
   robots: {
     disallow: ["/dash/", "/auth/", "/api/"],
   },
+  routeRules: {
+    "/dash/**": {
+      headers: {
+        "X-Robots-Tag": "noindex, nofollow",
+      },
+    },
+    "/auth/**": {
+      headers: {
+        "X-Robots-Tag": "noindex, nofollow",
+      },
+    },
+  },
   qrcode: {
     options: {
       variant: {
