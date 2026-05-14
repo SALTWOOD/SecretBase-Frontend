@@ -29,6 +29,8 @@ export default defineNuxtConfig({
     "pinia-plugin-persistedstate",
     "nuxt-qrcode",
     "@nuxtjs/mdc",
+    "@nuxtjs/sitemap",
+    "@nuxtjs/robots",
   ],
   css: ["~/assets/css/main.css"],
   runtimeConfig: {
@@ -42,6 +44,12 @@ export default defineNuxtConfig({
     compilerOptions: {
       isCustomElement: (tag) => tag.startsWith("cap-"),
     },
+  },
+  sitemap: {
+    exclude: ["/dash/**", "/auth/**", "/api/**"],
+  },
+  robots: {
+    disallow: ["/dash/", "/auth/", "/api/"],
   },
   qrcode: {
     options: {
