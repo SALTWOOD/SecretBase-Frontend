@@ -28,6 +28,40 @@ useSeoMeta({
   title: article.value?.title,
 });
 
+// JSON-LD structured data for SEO
+const jsonLd = computed(() => {
+  if (!article.value) return "";
+  const a = article.value;
+  return JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: a.title,
+    datePublished: a.createdAt,
+    dateModified: a.updatedAt ?? a.createdAt,
+    author: a.author
+      ? {
+          "@type": "Person",
+          name: a.author.username,
+        }
+      : undefined,
+    image: getArticleCover(a) || undefined,
+    description: a.title,
+  });
+});
+
+useHead(
+  computed(() => ({
+    script: article.value
+      ? [
+          {
+            type: "application/ld+json",
+            innerHTML: jsonLd.value,
+          },
+        ]
+      : [],
+  })),
+);
+
 const formatDate = (date: any) => {
   if (!date) return "";
   return new Date(date).toLocaleDateString("zh-CN", {
