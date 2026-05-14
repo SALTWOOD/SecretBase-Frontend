@@ -27,13 +27,11 @@ export default defineNuxtPlugin(() => {
 
   client.interceptors.response.use(async (response, request) => {
     if (!response.ok) {
-      console.log(response);
       if (response.status === 428) {
         const data = await response
           .clone()
           .json()
           .catch(() => ({}));
-        console.log(data);
         if (data.type !== "2fa_challenge") return response;
         const { openChallengeModal } = useChallenge();
 
