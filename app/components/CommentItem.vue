@@ -289,7 +289,7 @@ onMounted(async () => {
           {{ comment.content }}
         </div>
 
-        <img :src="sticker?.src" :alt="sticker?.name" v-else-if="!isEditing" />
+        <NuxtImg :src="sticker?.src" :alt="sticker?.name" v-else-if="!isEditing" loading="lazy" />
 
         <div class="flex items-center gap-4">
           <UButton

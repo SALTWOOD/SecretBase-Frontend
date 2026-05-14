@@ -31,6 +31,7 @@ export default defineNuxtConfig({
     "@nuxtjs/mdc",
     "@nuxtjs/sitemap",
     "@nuxtjs/robots",
+    "@nuxt/image",
   ],
   css: ["~/assets/css/main.css"],
   runtimeConfig: {

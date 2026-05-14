@@ -113,11 +113,14 @@ const handleCommentCountChange = (count: number) => {
               />
 
               <!-- 封面图片 -->
-              <img
+              <NuxtImg
                 v-if="getArticleCover(article)"
                 :src="getArticleCover(article)!"
                 :alt="article.title"
                 class="w-full h-64 md:h-80 object-cover rounded-xl mb-6"
+                loading="lazy"
+                width="800"
+                height="320"
               />
 
               <h1
