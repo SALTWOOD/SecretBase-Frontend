@@ -1,6 +1,27 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
+  app: {
+    head: {
+      htmlAttrs: { lang: "zh-CN" },
+      charset: "utf-8",
+      viewport: "width=device-width, initial-scale=1",
+      title: "SecretBase",
+      meta: [
+        { name: "description", content: "SecretBase - A modern community platform" },
+        { property: "og:type", content: "website" },
+        { property: "og:title", content: "SecretBase" },
+        { property: "og:description", content: "SecretBase - A modern community platform" },
+        { property: "og:image", content: "/og-image.png" },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: "SecretBase" },
+        { name: "twitter:description", content: "SecretBase - A modern community platform" },
+      ],
+      link: [
+        { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
+      ],
+    },
+  },
   devtools: { enabled: true },
   modules: [
     "@nuxt/ui",
