@@ -74,6 +74,18 @@
 
 <script lang="ts" setup>
 import * as api from "~~/packages/api/src/sdk.gen";
+import { UserRole } from "~/stores/user-role";
+
+definePageMeta({
+  middleware: [
+    function (to, from) {
+      const userStore = useUserStore();
+      if (userStore.user?.role !== UserRole.ADMIN) {
+        return navigateTo("/dash");
+      }
+    },
+  ],
+});
 
 interface Log {
   type: "in" | "out" | "err";
